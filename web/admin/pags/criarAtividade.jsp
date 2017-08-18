@@ -65,6 +65,8 @@
             }catch(IllegalArgumentException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
+                request.setAttribute("msg", e.getMessage()+" Aqui ");
+            }catch(Exception e){
                 request.setAttribute("msg", e.getMessage());
             }
         }

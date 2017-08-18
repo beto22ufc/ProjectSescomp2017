@@ -103,6 +103,14 @@
         <url-pattern>/painelUsuario/listarAtividades</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>listarPeriodosEvento</servlet-name>
+        <jsp-file>/admin/listarPeriodosEvento.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarPeriodosEvento</servlet-name>
+        <url-pattern>/painelUsuario/evento/listarPeriodos</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>listarAtividadesEvento</servlet-name>
         <jsp-file>/admin/listarAtividadesEvento.jsp</jsp-file>
     </servlet>

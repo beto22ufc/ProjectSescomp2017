@@ -188,7 +188,8 @@ public class Facade {
     
     public AtividadeBeans cadastraAtividade(AtividadeBeans atividade) throws IllegalAccessException{
         EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
-        return (AtividadeBeans) new AtividadeBeans().toBeans(ep.novaAtividade((Atividade) atividade.toBusiness()));
+        Atividade a = ep.novaAtividade((Atividade) atividade.toBusiness());
+        return (AtividadeBeans) new AtividadeBeans().toBeans(a);
     }
     
     public void atualizaAtividade(AtividadeBeans atividade) throws IllegalAccessException{

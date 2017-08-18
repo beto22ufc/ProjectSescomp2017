@@ -66,7 +66,7 @@ public class EventoProxy extends Evento{
     
     @Override
     public Atividade novaAtividade(Atividade atividade) throws IllegalAccessException{
-        if(getUsuario().getTipo().contains("admin")){
+        if(getUsuario().getTipo().contains("adminEvento")){
             return super.novaAtividade(atividade);
         }else{
             throw new IllegalAccessException("Acesso negado!");

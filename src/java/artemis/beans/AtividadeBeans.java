@@ -293,12 +293,8 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
         if(this.getCodAtividade()>0){
             a.setCodAtividade(this.getCodAtividade());
         }
-        if(this.getNome() != null && !this.getNome().isEmpty()){
-            a.setNome(this.getNome());
-        }
-        if(this.getDescricao() != null && !this.getDescricao().isEmpty()){
-            a.setDescricao(this.getDescricao());
-        }
+        a.setNome(this.getNome());
+        a.setDescricao(this.getDescricao());
         a.setLimiteVagas(this.getLimiteVagas());
         a.setNivel(this.getNivel());
         a.setVagasInternas(this.getVagasInternas());
@@ -316,12 +312,16 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
         List<Espera> listaDeEspera = Collections.synchronizedList(new ArrayList<Espera>());
         List<Usuario> administradores = Collections.synchronizedList(new ArrayList<Usuario>());
         List<Usuario> organizadores = Collections.synchronizedList(new ArrayList<Usuario>());
-        for(int i=0;i<this.getAdministradores().size();i++){
-            administradores.add((Usuario) this.getAdministradores().get(i).toBusiness());
+        if(this.getAdministradores()!=null){
+            for(int i=0;i<this.getAdministradores().size();i++){
+                administradores.add((Usuario) this.getAdministradores().get(i).toBusiness());
+            }
         }
         a.setAdministradores(administradores);
-        for(int i=0;i<this.getOrganizadores().size();i++){
-            organizadores.add((Usuario) this.getOrganizadores().get(i).toBusiness());
+        if(this.getOrganizadores() != null){
+            for(int i=0;i<this.getOrganizadores().size();i++){
+                organizadores.add((Usuario) this.getOrganizadores().get(i).toBusiness());
+            }
         }
         a.setOrganizadores(organizadores);
         if(this.getInscricoes()!= null){
