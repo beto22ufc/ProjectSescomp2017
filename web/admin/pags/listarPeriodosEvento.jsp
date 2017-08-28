@@ -4,6 +4,7 @@
     Author     : Wallison
 --%>
 
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="artemis.beans.PeriodoBeans"%>
 <%@page import="java.util.List"%>
 <%@page import="artemis.beans.EventoBeans"%>
@@ -19,7 +20,8 @@
 <div class="col-xs-12">
     <div class="box">
   <div class="box-header">
-    <h3 class="box-title">Meus eventos</h3>
+    <h3 class="box-title">Períodos do evento <%=e.getNome().toUpperCase() %></h3>
+    <p><a href="/<%=dir%>/painelUsuario/evento/adicionarPeriodo?e=<%=e.getNome().toLowerCase().replace(" ", "_")+"_"+e.getCodEvento() %>">Adicionar novo período</a></p>
   </div>
   <!-- /.box-header -->
   <div class="box-body">
@@ -35,16 +37,17 @@
       <tbody>
       <%
           List<PeriodoBeans> periodos = e.getPeriodos();
+          DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm");
           for(int i=0;i<periodos.size();i++){
               PeriodoBeans p = periodos.get(i);
       %>    
                 <tr>
                   <td><%=p.getCodPeriodo() %></td>
-                  <td><%=p.getInicio().toString() %></td>
-                  <td><%=p.getTermino().toString() %></td>
+                  <td><%=p.getInicio().format(dtf) %></td>
+                  <td><%=p.getTermino().format(dtf) %></td>
                   <td><a href="#">Editar</a>/<a href="#">Remover</a></td>
                 </tr>
-      <%    }
+      <%    
          } %>
       </tbody>
       <tfoot>

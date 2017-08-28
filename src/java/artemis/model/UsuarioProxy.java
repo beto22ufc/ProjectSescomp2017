@@ -30,4 +30,22 @@ public class UsuarioProxy extends Usuario{
     public void atualizaDados(){
         super.atualizaDados();
     }
+    @Override
+    public Usuario adicionaNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
+        if(usuario.getTipo().contains("adminGeral") || usuario.getTipo().contains("adminEvento")){
+            return super.adicionaNivelUsuario(u, nivel);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
+    
+    @Override
+    public Usuario removeNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
+        if(usuario.getTipo().contains("adminGeral") || usuario.getTipo().contains("adminEvento")){
+            return super.removeNivelUsuario(u, nivel);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
+    
 }

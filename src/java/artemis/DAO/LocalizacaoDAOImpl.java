@@ -30,7 +30,7 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
     
     @Override
     public void adicionarLocalizacao(Localizacao localizacao) {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             if(localizacao != null){
@@ -47,7 +47,7 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
 
     @Override
     public void atualizarLocalizacao(Localizacao localizacao) {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             if(localizacao != null){
@@ -64,7 +64,7 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
 
     @Override
     public List<Localizacao> listaLocalizacoes() {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             List<Localizacao> localizacaos = Collections.synchronizedList(session.createCriteria(Localizacao.class).list());
@@ -78,7 +78,7 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
 
     @Override
     public void removerLocalizacao(Localizacao localizacao) {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             if(localizacao != null){
@@ -95,7 +95,7 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
 
     @Override
     public Localizacao getLocalizacao(long codLocalizacao) {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             Localizacao localizacao = (Localizacao) session.get(Localizacao.class, codLocalizacao);

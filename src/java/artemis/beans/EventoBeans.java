@@ -6,8 +6,10 @@
 package artemis.beans;
 
 import artemis.model.Atividade;
+import artemis.model.ContasSociais;
 import artemis.model.Evento;
-import artemis.model.InscricaoEvento;
+import artemis.model.Imagem;
+import artemis.model.Inscricao;
 import artemis.model.Localizacao;
 import artemis.model.Periodo;
 import artemis.model.Usuario;
@@ -25,11 +27,16 @@ public class EventoBeans implements Beans, InscrevivelBeans{
     private String descricao;
     private List<PeriodoBeans> periodos;
     private String categoria;
-    private List<InscricaoEventoBeans> inscricoes;
+    private List<InscricaoBeans> inscricoes;
     private List<AtividadeBeans> atividades;
     private List<UsuarioBeans> administradores;
+    private List<UsuarioBeans> organizadores;
     private List<EventoBeans> eventos;
+    private List<ImagemBeans> galeria;
+    private List<ImagemBeans> slideshow;
+    private String email;
     private LocalizacaoBeans localizacao;
+    private ContasSociaisBeans contasSociais;
     
     public EventoBeans(){
     
@@ -86,11 +93,11 @@ public class EventoBeans implements Beans, InscrevivelBeans{
         this.categoria = categoria;
     }
 
-    public List<InscricaoEventoBeans> getInscricoes() {
+    public List<InscricaoBeans> getInscricoes() {
         return inscricoes;
     }
 
-    public void setInscricoes(List<InscricaoEventoBeans> inscricoes) {
+    public void setInscricoes(List<InscricaoBeans> inscricoes) {
         this.inscricoes = inscricoes;
     }
 
@@ -125,6 +132,46 @@ public class EventoBeans implements Beans, InscrevivelBeans{
     public void setLocalizacao(LocalizacaoBeans localizacao) {
         this.localizacao = localizacao;
     }
+
+    public List<ImagemBeans> getGaleria() {
+        return galeria;
+    }
+
+    public void setGaleria(List<ImagemBeans> galeria) {
+        this.galeria = galeria;
+    }
+
+    public List<ImagemBeans> getSlideshow() {
+        return slideshow;
+    }
+
+    public void setSlideshow(List<ImagemBeans> slideshow) {
+        this.slideshow = slideshow;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public ContasSociaisBeans getContasSociais() {
+        return contasSociais;
+    }
+
+    public void setContasSociais(ContasSociaisBeans contasSociais) {
+        this.contasSociais = contasSociais;
+    }
+
+    public List<UsuarioBeans> getOrganizadores() {
+        return organizadores;
+    }
+
+    public void setOrganizadores(List<UsuarioBeans> organizadores) {
+        this.organizadores = organizadores;
+    }
     
     
     
@@ -137,14 +184,32 @@ public class EventoBeans implements Beans, InscrevivelBeans{
                 this.setNome(e.getNome());
                 this.setDescricao(e.getDescricao());
                 this.setCategoria(e.getCategoria());
-                List<InscricaoEventoBeans> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoEventoBeans>());
+                List<InscricaoBeans> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoBeans>());
                 List<PeriodoBeans> periodos = Collections.synchronizedList(new ArrayList<PeriodoBeans>());
                 List<AtividadeBeans> atividades = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
                 List<UsuarioBeans> administradores = Collections.synchronizedList(new ArrayList<UsuarioBeans>());
+                List<UsuarioBeans> organizadores = Collections.synchronizedList(new ArrayList<UsuarioBeans>());
                 List<EventoBeans> eventos = Collections.synchronizedList(new ArrayList<EventoBeans>());
-                InscricaoEventoBeans inscricaoBeans = null;
+                List<ImagemBeans> slideshow = Collections.synchronizedList(new ArrayList<ImagemBeans>());
+                List<ImagemBeans> galeria = Collections.synchronizedList(new ArrayList<ImagemBeans>());
+                ImagemBeans imagemBeans = null;
+                if(e.getSlideshow() != null){
+                    for(int i=0;i<e.getSlideshow().size();i++){
+                        imagemBeans = new ImagemBeans();
+                        imagemBeans.toBeans(e.getSlideshow().get(i));
+                        slideshow.add(imagemBeans);
+                    }
+                }
+                if(e.getGaleria() != null){
+                    for(int i=0;i<e.getGaleria().size();i++){
+                        imagemBeans = new ImagemBeans();
+                        imagemBeans.toBeans(e.getGaleria().get(i));
+                        galeria.add(imagemBeans);
+                    }
+                }
+                InscricaoBeans inscricaoBeans = null;
                 for(int i=0;i<e.getInscricoes().size();i++){
-                    inscricaoBeans = new InscricaoEventoBeans();
+                    inscricaoBeans = new InscricaoBeans();
                     inscricaoBeans.toBeans(e.getInscricoes().get(i));
                     inscricoes.add(inscricaoBeans);
                 }
@@ -158,13 +223,19 @@ public class EventoBeans implements Beans, InscrevivelBeans{
                 }
                 this.setEventos(eventos);
                 eventoBeans = null;
-                 UsuarioBeans usuarioBeans = null;
+                UsuarioBeans usuarioBeans = null;
                 for(int i=0;i<e.getAdministradores().size();i++){
                     usuarioBeans = new UsuarioBeans();
                     usuarioBeans.toBeans(e.getAdministradores().get(i));
                     administradores.add(usuarioBeans);
                 }
                 this.setAdministradores(administradores);
+                for(int i=0;i<e.getOrganizadores().size();i++){
+                    usuarioBeans = new UsuarioBeans();
+                    usuarioBeans.toBeans(e.getOrganizadores().get(i));
+                    organizadores.add(usuarioBeans);
+                }
+                this.setOrganizadores(organizadores);
                 usuarioBeans = null;
                 PeriodoBeans periodoBeans = null;
                 for(int i=0;i<e.getPeriodos().size();i++){
@@ -182,8 +253,14 @@ public class EventoBeans implements Beans, InscrevivelBeans{
                 }
                 periodoBeans = null;
                 this.setAtividades(atividades);
+                this.setEmail(e.getEmail());
+                if(e.getContasSociais() != null){
+                    this.setContasSociais((ContasSociaisBeans) new ContasSociaisBeans().toBeans(e.getContasSociais()));
+                }
                 LocalizacaoBeans localizacao = (LocalizacaoBeans) new LocalizacaoBeans().toBeans(e.getLocalizacao());
                 this.setLocalizacao(localizacao);
+                this.setGaleria(galeria);
+                this.setSlideshow(slideshow);
                 return this;
             }else{
                 throw new IllegalArgumentException("Isso não é um Evento!");
@@ -195,19 +272,38 @@ public class EventoBeans implements Beans, InscrevivelBeans{
 
     @Override
     public Object toBusiness() {
-        List<InscricaoEvento> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoEvento>());
+        List<Inscricao> inscricoes = Collections.synchronizedList(new ArrayList<Inscricao>());
         List<Periodo> periodos = Collections.synchronizedList(new ArrayList<Periodo>());
         List<Atividade> atividades = Collections.synchronizedList(new ArrayList<Atividade>());
         List<Usuario> administradores = Collections.synchronizedList(new ArrayList<Usuario>());
+        List<Usuario> organizadores = Collections.synchronizedList(new ArrayList<Usuario>());
         List<Evento> eventos = Collections.synchronizedList(new ArrayList<Evento>());
+        List<Imagem> galeria = Collections.synchronizedList(new ArrayList<Imagem>());
+        List<Imagem> slideshow = Collections.synchronizedList(new ArrayList<Imagem>());
+        if(this.getSlideshow() != null){
+            for(int i=0;i<this.getSlideshow().size();i++){
+                slideshow.add((Imagem) this.getSlideshow().get(i).toBusiness());
+            }   
+        }
+        if(this.getGaleria()!= null){
+            for(int i=0;i<this.getGaleria().size();i++){
+                galeria.add((Imagem) this.getGaleria().get(i).toBusiness());
+            }   
+        }
+        
         if(this.getInscricoes()!= null){
             for(int i=0;i<this.getInscricoes().size();i++){
-                inscricoes.add((InscricaoEvento)this.getInscricoes().get(i).toBusiness());
+                inscricoes.add((Inscricao)this.getInscricoes().get(i).toBusiness());
             }
         }
         if(this.getAdministradores()!= null){
             for(int i=0;i<this.getAdministradores().size();i++){
                 administradores.add((Usuario)this.getAdministradores().get(i).toBusiness());
+            }
+        }
+        if(this.getOrganizadores()!= null){
+            for(int i=0;i<this.getOrganizadores().size();i++){
+                organizadores.add((Usuario)this.getOrganizadores().get(i).toBusiness());
             }
         }
         if(this.getEventos() != null){
@@ -230,7 +326,10 @@ public class EventoBeans implements Beans, InscrevivelBeans{
         e.setInscricoes(inscricoes);
         e.setAtividades(atividades);
         e.setAdministradores(administradores);
+        e.setOrganizadores(organizadores);
         e.setEventos(eventos);
+        e.setGaleria(galeria);
+        e.setSlideshow(slideshow);
         if(this.getCodEvento()>0){
             e.setCodEvento(this.getCodEvento());
         };
@@ -239,6 +338,12 @@ public class EventoBeans implements Beans, InscrevivelBeans{
         }
         if(this.getLocalizacao()!= null){
             e.setLocalizacao((Localizacao) this.getLocalizacao().toBusiness());
+        }
+        if(this.getEmail() != null){
+            e.setEmail(this.getEmail());
+        }
+        if(this.getContasSociais() != null){
+            e.setContasSociais((ContasSociais) this.getContasSociais().toBusiness());
         }
         return e;
     }

@@ -5,6 +5,7 @@
 --%>
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%
+    String dir = config.getServletContext().getInitParameter("dir");
     if(session.getAttribute("usuario") != null){
 %>
 <%@page import="java.util.ArrayList"%>
@@ -12,7 +13,7 @@
 
 <!DOCTYPE html>
 <%
-   String dir = config.getServletContext().getInitParameter("dir");
+   
 %>
 <html>
 <head>
@@ -48,6 +49,5 @@
 </body>
 </html>
 <% }else{
-       RequestDispatcher rd = request.getRequestDispatcher("/login");
-        rd.forward(request, response);
+      response.sendRedirect("/"+dir+"/login");
 } %>

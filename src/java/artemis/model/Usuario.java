@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
@@ -60,10 +61,14 @@ public class Usuario implements AttributeConverter<LocalDate, Date>, Serializabl
     private String tipo;
     @Column(name="nascimento")
     private LocalDate nascimento;
+    @ManyToOne
+    @JoinColumn(name = "contas_sociais", referencedColumnName = "codContasSociais", nullable = true)
+    private ContasSociais contasSociais;
     
     public Usuario(){
     
     }
+    
     public Usuario(long codUsuario, Matricula matricula, String nome,String login, String email, String senha,CPF cpf, LocalDate nascimento, String formacao, String lattes, String ocupacao, String tipo, int status, LocalDate cadastro) throws Exception{
         setCodUsuario(codUsuario);
         setMatricula(matricula);
@@ -314,6 +319,17 @@ public class Usuario implements AttributeConverter<LocalDate, Date>, Serializabl
             throw new NullPointerException("Imagem do perfil não pode ser vazia!");
     }
     
+    public ContasSociais getContasSociais() {
+        return contasSociais;
+    }
+
+    public void setContasSociais(ContasSociais contasSociais) {
+        if(contasSociais != null)
+            this.contasSociais = contasSociais;
+        else
+            throw new NullPointerException("Contas sociais não pode ser nula!");
+    }
+    
     @Override
     public boolean equals(Object o){
         return (this.getEmail().equalsIgnoreCase(((Usuario) o).getEmail()));
@@ -345,6 +361,23 @@ public class Usuario implements AttributeConverter<LocalDate, Date>, Serializabl
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    public Usuario adicionaNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
+        UsuarioDAOImpl udaoi = new UsuarioDAOImpl();
+        if(!u.getTipo().contains(nivel)){
+            u.setTipo(u.getTipo()+","+nivel);
+        }
+        udaoi.adicionarUsuario(u);
+        return u;
+    }
+    
+    public Usuario removeNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
+        UsuarioDAOImpl udaoi = new UsuarioDAOImpl();
+        if(u.getTipo().contains(nivel)){
+            u.setTipo(u.getTipo().replace(","+nivel, ""));
+        }
+        udaoi.adicionarUsuario(u);
+        return u;
+    }
     
     
 }

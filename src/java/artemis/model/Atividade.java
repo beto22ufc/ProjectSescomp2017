@@ -5,6 +5,7 @@
  */
 package artemis.model;
 
+import artemis.DAO.InscricaoDAOImpl;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -36,36 +37,36 @@ public class Atividade implements Inscrevivel{
     private int limiteVagas;
     private int nivel;
     private int tipoPagamento;
-    @ManyToMany(targetEntity = ReservaLocal.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = ReservaLocal.class)
     @JoinTable(name="locais_reservados", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name = "reserva", referencedColumnName = "codReserva")})
     private List<ReservaLocal> locaisReservados;
-    @ManyToMany(targetEntity = ReservaBem.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = ReservaBem.class)
     @JoinTable(name="bens_reservados", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name = "reserva", referencedColumnName = "codReserva")})
     private List<ReservaBem> bensReservados;
-    @ManyToMany(targetEntity = Espera.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Espera.class)
     @JoinTable(name="lista_de_espera", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="espera", referencedColumnName = "codEspera")})
     private List<Espera> listaDeEspera;
-    @ManyToMany(targetEntity = InscricaoAtividade.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Inscricao.class)
     @JoinTable(name="inscricoes_atividade", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="inscricao", referencedColumnName = "codInscricao")})
-    private List<InscricaoAtividade> inscricaoAtividades;
-    @ManyToMany(targetEntity = Usuario.class, cascade = CascadeType.ALL)
+    private List<Inscricao> inscricaoAtividades;
+    @ManyToMany(targetEntity = Usuario.class)
     @JoinTable(name="organizadores_atividade", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="organizador", referencedColumnName = "codUsuario")})
     private List<Usuario> organizadores;
-    @ManyToMany(targetEntity = Usuario.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Usuario.class)
     @JoinTable(name="administradores_atividade", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="administrador", referencedColumnName = "codUsuario")})
     private List<Usuario> administradores;
-   
+    private String recursosSolicitados;
     
     public Atividade(){
     
     }
-    public Atividade(long codAtividade, String nome, String descricao, List<Periodo> periodos, Usuario ministrante, String categoria, int vagasInternas, int vagasPublicas, int limiteVagas, int nivel, List<ReservaLocal> locaisReservados, List<ReservaBem> bensReservados, List<InscricaoAtividade> inscricaoAtividades, List<Espera> listaDeEspera, int tipoPagamento){
+    public Atividade(long codAtividade, String nome, String descricao, List<Periodo> periodos, Usuario ministrante, String categoria, int vagasInternas, int vagasPublicas, int limiteVagas, int nivel, List<ReservaLocal> locaisReservados, List<ReservaBem> bensReservados, List<Inscricao> inscricaoAtividades, List<Espera> listaDeEspera, int tipoPagamento){
         setCodAtividade(codAtividade);
         setNome(nome);
         setDescricao(descricao);
@@ -82,7 +83,7 @@ public class Atividade implements Inscrevivel{
         setListaDeEspera(listaDeEspera);
         setTipoPagamento(tipoPagamento);
     }
-    public Atividade(String nome, String descricao, List<Periodo> periodos, Usuario ministrante, String categoria, int vagasInternas, int vagasPublicas, int limiteVagas, int nivel, List<ReservaLocal> locaisReservados, List<ReservaBem> bensReservados, List<InscricaoAtividade> inscricaoAtividades, List<Espera> listaDeEspera, int tipoPagamento){
+    public Atividade(String nome, String descricao, List<Periodo> periodos, Usuario ministrante, String categoria, int vagasInternas, int vagasPublicas, int limiteVagas, int nivel, List<ReservaLocal> locaisReservados, List<ReservaBem> bensReservados, List<Inscricao> inscricaoAtividades, List<Espera> listaDeEspera, int tipoPagamento){
         setNome(nome);
         setDescricao(descricao);
         setPeriodos(periodos);
@@ -97,30 +98,6 @@ public class Atividade implements Inscrevivel{
         setInscricaoAtividades(inscricaoAtividades);
         setListaDeEspera(listaDeEspera);
         setTipoPagamento(tipoPagamento);
-    }
-    
-    public void excluiReserva(Reserva reserva){
-    
-    }
-    
-    public void mudaPeriodo(Periodo novo, Periodo antigo){
-        
-    }
-    
-    public void novoPeriodo(LocalDateTime inicio, LocalDateTime termino, ZoneId zoneId){
-    
-    }
-    
-    public void reservaBem(Bem bem){
-    
-    }
-    
-    public void reservaLocal(Local local){
-    
-    }
-    
-    public void removeInscricao(Usuario usuario){
-    
     }
     
     public long getCodAtividade() {
@@ -274,11 +251,11 @@ public class Atividade implements Inscrevivel{
             throw new NullPointerException("Lista de espera não pode ser vazia!");
     }
 
-    public List<InscricaoAtividade> getInscricaoAtividades() {
+    public List<Inscricao> getInscricaoAtividades() {
         return inscricaoAtividades;
     }
 
-    public void setInscricaoAtividades(List<InscricaoAtividade> inscricaoAtividades) {
+    public void setInscricaoAtividades(List<Inscricao> inscricaoAtividades) {
         if(inscricaoAtividades != null)
             this.inscricaoAtividades = inscricaoAtividades;
         else
@@ -306,6 +283,17 @@ public class Atividade implements Inscrevivel{
         else
             throw new NullPointerException("Lista de administradores não pode ser nula!");
     } 
+
+    public String getRecursosSolicitados() {
+        return recursosSolicitados;
+    }
+
+    public void setRecursosSolicitados(String recursosSolicitados) {
+        if(recursosSolicitados != null)
+            this.recursosSolicitados = recursosSolicitados;
+        else
+            throw new NullPointerException("Recursos solicitados não pode nulo!");
+    }
     
     public boolean colisaoPeriodos(){
         for(int i=0;i<this.getPeriodos().size();i++){
@@ -318,6 +306,57 @@ public class Atividade implements Inscrevivel{
             }
         }
         return false;
+    }
+    
+    public void excluiReserva(Reserva reserva){
+    
+    }
+    
+    public void mudaPeriodo(Periodo novo, Periodo antigo){
+        
+    }
+    
+    public void novoPeriodo(LocalDateTime inicio, LocalDateTime termino, ZoneId zoneId){
+    
+    }
+    
+    public void reservaBem(Bem bem){
+    
+    }
+    
+    public void reservaLocal(Local local){
+    
+    }
+    
+    public void removeInscricao(Usuario usuario){
+    
+    }
+    
+    public Inscricao criaInscricao(Inscricao inscricao) throws IllegalAccessException{
+        if(!this.getInscricaoAtividades().contains(inscricao)){
+            this.getInscricaoAtividades().add(inscricao);
+            Evento evento = new Evento();
+            evento.atualizaAtividade(this);
+        }else{
+            throw new EntityExistsException("Inscrição já existe!");
+        }
+        return inscricao;
+    }
+    
+    public void removeInscricao(Inscricao inscricao, Usuario usuario) throws IllegalAccessException{
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        if(inscricao.getParticipante().equals(usuario)){
+            if(this.getInscricaoAtividades().contains(inscricao)){
+                this.getInscricaoAtividades().remove(inscricao);
+                Evento evento = new Evento();
+                evento.atualizaAtividade(this);
+                idao.removerInscricao(inscricao);
+            }else{
+                throw new IllegalArgumentException("Essa inscrição não exite!");
+            }
+        }else{
+            throw new IllegalArgumentException("Essa inscrição não é sua!");
+        }
     }
     
 }

@@ -5,8 +5,13 @@
  */
 package artemis.model;
 
+import artemis.DAO.EventoDAOImpl;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 
 /**
@@ -16,8 +21,7 @@ import javax.persistence.*;
 @Converter(autoApply = true)
 @Entity
 @Table(name="inscricao")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Inscricao implements AttributeConverter<LocalDate, Date>{
+public class Inscricao implements AttributeConverter<LocalDate, Date>{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name="codInscricao")
@@ -89,5 +93,62 @@ public abstract class Inscricao implements AttributeConverter<LocalDate, Date>{
         return (dbData == null ? null : dbData.toLocalDate());
     }
     
+    public List<List> verificaChoque(Evento evento){
+        EventoDAOImpl edao = new EventoDAOImpl();
+        List<Evento> eventos = edao.listaEventos();
+        List<List> choques = Collections.synchronizedList(new ArrayList<List>());
+        List<Atividade> chocadas = Collections.synchronizedList(new ArrayList<Atividade>());
+        List<Evento> chocados = Collections.synchronizedList(new ArrayList<Evento>());
+        Evento vinculado = null;
+        for(int i=0;i<eventos.size();i++){
+            Evento e = eventos.get(i);
+            if(e.getEventos().contains(evento)){
+                vinculado = e;
+                break;
+            }
+        }
+        if(vinculado!=null){
+            for(int i=0;i<vinculado.getAtividades().size();i++){
+                Atividade a = vinculado.getAtividades().get(i);
+                List<Periodo> periodos = a.getPeriodos();
+                for(int j=0;j<evento.getPeriodos().size();j++){
+                    Periodo p = evento.getPeriodos().get(i);
+                    if(p.detectaColisao(periodos).size()>0){
+                        chocadas.add(a);
+                        break;
+                    }
+                }
+            }
+            for(int i=0;i<vinculado.getEventos().size();i++){
+                Evento e = vinculado.getEventos().get(i);
+                List<Periodo> periodos = e.getPeriodos();
+                if(e.getCodEvento() != evento.getCodEvento()){
+                    for(int j=0;j<evento.getPeriodos().size();j++){
+                        Periodo p = evento.getPeriodos().get(i);
+                        if(p.detectaColisao(periodos).size()>0){
+                            chocados.add(e);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        choques.add(chocadas);
+        choques.add(chocados);
+        return choques;
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        Inscricao inscricao = (Inscricao) o;
+        return (this.getParticipante().equals(inscricao.getParticipante()));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + Objects.hashCode(this.participante);
+        return hash;
+    }
     
 }

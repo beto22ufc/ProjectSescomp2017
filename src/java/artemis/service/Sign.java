@@ -5,11 +5,8 @@
  */
 package artemis.service;
 
-import artemis.DAO.ContaAtivacaoDAO;
 import artemis.DAO.ContaAtivacaoDAOImpl;
-import artemis.DAO.UsuarioDAO;
 import artemis.DAO.UsuarioDAOImpl;
-import artemis.model.CPF;
 import artemis.model.ContaAtivacao;
 import artemis.model.Crip;
 import artemis.model.Email;
@@ -18,9 +15,8 @@ import hibernate.HibernateUtil;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import org.apache.commons.mail.EmailException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -90,6 +86,20 @@ public class Sign {
                     + "\n(Obs.: Link válido até 12 horas após o cadastro)", this.getUsuario().getEmail(), this.getUsuario().getNome());
             email.sendEmail();
         }
+    }
+    
+    public void recuperaSenha() throws EmailException{
+        String senha = geraSenhaAleatoria();
+        usuario.setSenha(crip.enc(senha));
+        usuarioDAOImpl.adicionarUsuario(usuario);
+        Email email = new Email("Recuperação de senha Artemis", "Olá senhor(a) "+usuario.getNome()+" sua senha foi"
+                + " alterada para "+senha+", por favor realize o login e alteração da sua senha!", usuario.getEmail(), usuario.getNome());
+        email.sendEmail();
+    }
+    
+    private String geraSenhaAleatoria(){
+        Random rand = new Random();
+        return (String.valueOf(Long.toHexString(rand.nextLong()+System.currentTimeMillis())));
     }
     
     public Usuario getUsuario() {

@@ -50,5 +50,6 @@ Contributor(s):
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/artemis</property>
     <property name="hibernate.connection.username">postgres</property>
     <property name="hibernate.connection.password">aqbp!@12</property>
+    <property name="hibernate.event.merge.entity_copy_observer">allow</property>
   </session-factory>
 </hibernate-configuration>

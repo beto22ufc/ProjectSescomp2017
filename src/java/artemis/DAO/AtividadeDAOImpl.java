@@ -7,7 +7,6 @@ package artemis.DAO;
 
 import artemis.model.Atividade;
 import hibernate.HibernateUtil;
-import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import org.hibernate.Session;
@@ -39,10 +38,13 @@ public class AtividadeDAOImpl implements AtividadeDAO{
                 throw new NullPointerException("Atividade não pode ser nula!");
             }
             t.commit();
+            session.clear();
             return atividade;
         }catch(RuntimeException e){
             t.rollback();
             throw e;
+        }finally{
+            session.close();
         }
     }
 
@@ -57,19 +59,22 @@ public class AtividadeDAOImpl implements AtividadeDAO{
                 throw new NullPointerException("Atividade não pode ser nula!");
             }
             t.commit();
+            session.clear();
         }catch(RuntimeException e){
             t.rollback();
             throw e;
+        }finally{
+            session.close();
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Atividade> listaAtividades() {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t= session.beginTransaction();
         try{
-            List<Atividade> atividades = Collections.synchronizedList(session.createQuery("from atividade").list());
+            List<Atividade> atividades = Collections.synchronizedList(session.createCriteria(Atividade.class).list());
             t.commit();
             return atividades;
         }catch(RuntimeException e){

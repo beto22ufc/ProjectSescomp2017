@@ -3,9 +3,22 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/DAO/ContaAtivacaoDAOImpl.java</file>
             <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/reenviarEmailValidacao.jsp</file>
             <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/model/ContaAtivacao.java</file>
+=======
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/controller/InscreveAtividade.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/theme/evento/default/index.jsp</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/admin/pags/listarInscricoesEvento.jsp</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/controller/DesfazerInscricaoEvento.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/controller/DesfazerInscricaoAtividade.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/theme/evento/default/js/script.js</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/DAO/InscricaoDAO.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/DAO/InscricaoDAOImpl.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/Facade.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/WEB-INF/web.xml</file>
+>>>>>>> c680968682f9f1d0ad1829ffc1372c28c41403d1
         </group>
     </open-files>
 </project-private>

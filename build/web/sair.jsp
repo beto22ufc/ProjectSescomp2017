@@ -7,7 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
+    String dir = config.getServletContext().getInitParameter("dir");
     session.removeAttribute("usuario");
-    RequestDispatcher rd = request.getRequestDispatcher("/");
-    rd.forward(request, response);
+    response.sendRedirect("/"+dir+"/");
 %>

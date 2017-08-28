@@ -39,6 +39,7 @@ public class CursoDAOImpl implements CursoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 
@@ -55,6 +56,7 @@ public class CursoDAOImpl implements CursoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 
@@ -88,6 +90,7 @@ public class CursoDAOImpl implements CursoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 

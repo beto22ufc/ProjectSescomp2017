@@ -92,8 +92,13 @@
     </form>
     <!-- /.social-auth-links -->
 
+<<<<<<< HEAD
     <a href="#">Esqueci minha senha</a><br>
     <a href="/<%=dir %>/cadastro" class="text-center">Registar novo menbro</a>
+=======
+    <a href="/<%=dir %>/recuperarConta">Eu esqueci minha senha</a><br>
+    <a href="/<%=dir %>/cadastro" class="text-center">Register a new membership</a>
+>>>>>>> c680968682f9f1d0ad1829ffc1372c28c41403d1
 
   </div>
   <!-- /.login-box-body -->

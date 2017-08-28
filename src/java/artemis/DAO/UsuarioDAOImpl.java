@@ -42,8 +42,10 @@ public class UsuarioDAOImpl implements UsuarioDAO{
                 throw new NullPointerException("Usuário não pode ser nulo!");
             }
             t.commit();
+            session.close();
         }catch(RuntimeException e){
             t.rollback();
+            session.close();
         }
         logger.info("Usuário cadastrado com sucesso!");
     }
@@ -74,6 +76,7 @@ public class UsuarioDAOImpl implements UsuarioDAO{
         try{
             List<Usuario> usuarios = session.createCriteria(Usuario.class).list();
             t.commit();
+            session.close();
             if(usuarios != null)
                 return usuarios;
             else
