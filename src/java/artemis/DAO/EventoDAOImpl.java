@@ -41,6 +41,7 @@ public class EventoDAOImpl implements EventoDAO {
             return evento;
         }catch(RuntimeException e){
             t.rollback();
+            session.close();
             throw e;
         }
     }
@@ -59,6 +60,8 @@ public class EventoDAOImpl implements EventoDAO {
         }catch(RuntimeException e){
             t.rollback();
             throw e;
+        }finally{
+            session.close();
         }    
     }
 
@@ -80,8 +83,17 @@ public class EventoDAOImpl implements EventoDAO {
     @Override
     public void removerEvento(Evento evento) {
         Session session = this.sessionFactory.openSession();
-        if(evento != null){
-            session.delete(evento);
+        Transaction t = session.beginTransaction();
+        try{
+            if(evento != null){
+                session.delete(evento);
+            }else{
+                throw new NullPointerException("Evento não pode ser nulo!");
+            }
+            t.commit();
+        }catch(RuntimeException e){
+            t.rollback();
+            throw e;
         }
     }
 
@@ -99,4 +111,8 @@ public class EventoDAOImpl implements EventoDAO {
         }
     }
     
+    public void remevoInstanceSession(Evento evento){
+        Session session = this.sessionFactory.openSession();
+        
+    }
 }

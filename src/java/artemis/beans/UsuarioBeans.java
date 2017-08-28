@@ -6,6 +6,7 @@
 package artemis.beans;
 
 import artemis.model.CPF;
+import artemis.model.ContasSociais;
 import artemis.model.Matricula;
 import artemis.model.Usuario;
 import java.io.File;
@@ -31,7 +32,7 @@ public class UsuarioBeans implements Beans{
     private int status;
     private String tipo;
     private LocalDate nascimento;
-    
+    private ContasSociaisBeans contasSociais;
     public UsuarioBeans(){
     
     }
@@ -194,6 +195,15 @@ public class UsuarioBeans implements Beans{
         this.imagemPerfil = imagemPerfil;
     }
 
+    public ContasSociaisBeans getContasSociais() {
+        return contasSociais;
+    }
+
+    public void setContasSociais(ContasSociaisBeans contasSociais) {
+        this.contasSociais = contasSociais;
+    }
+    
+
     @Override
     public Beans toBeans(Object o) {
         if(o != null){
@@ -215,6 +225,9 @@ public class UsuarioBeans implements Beans{
                 this.setNascimento(u.getNascimento());
                 this.setCadastro(u.getCadastro());
                 this.setImagemPerfil(u.getImagemPerfil());
+                if(u.getContasSociais() != null){
+                    this.setContasSociais((ContasSociaisBeans) new ContasSociaisBeans().toBeans(u.getContasSociais()));
+                }
                 return this;
             }else{
                 throw new IllegalArgumentException("Isso não é um Usuário!");
@@ -265,6 +278,9 @@ public class UsuarioBeans implements Beans{
         
         if(ub.getNome()!= null && !ub.getNome().isEmpty()){
             u.setNome(ub.getNome());
+        }
+        if(this.getContasSociais() != null){
+            u.setContasSociais((ContasSociais) this.getContasSociais().toBusiness());
         }
         return u;
     }

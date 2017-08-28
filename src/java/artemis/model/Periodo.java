@@ -8,7 +8,6 @@ package artemis.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,8 +40,6 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
     private LocalDateTime inicio;
     @Column
     private LocalDateTime termino;
-    private ZonedDateTime zdtT = null;
-    private ZonedDateTime zdtI = null;
     //Default
     private ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
     public Periodo(){
@@ -72,21 +69,14 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
 
     public void setInicio(LocalDateTime inicio) {
         if(inicio != null){
-            zdtI = inicio.atZone(this.zoneId);
-            if(termino != null){
-                zdtT = this.termino.atZone(this.zoneId);
-                if(zdtT.toInstant().toEpochMilli() > zdtI.toInstant().toEpochMilli()){
+            if(this.getTermino()!= null){
+                if((inicio.isBefore(this.getTermino()) || inicio.equals(this.getTermino()))){
                     this.inicio = inicio;
                 }else{
-                    throw new IllegalArgumentException("Inicio não pode ser maior que o termino do pediodo!");
+                    throw new IllegalArgumentException("Inicio não pode ser maior que o termino!");
                 }
             }else{
-                zdtT = LocalDateTime.now().atZone(this.zoneId);
-                if(zdtI.toInstant().toEpochMilli() > zdtT.toInstant().toEpochMilli()){
-                    this.inicio = inicio;
-                }else{
-                    throw new IllegalArgumentException("Inicio de periodo não pode ser menor do que o tempo atual!");
-                }
+                this.inicio = inicio;
             }
         }else{
             throw new NullPointerException("Inicio de periodo não pode ser nulo!");
@@ -99,21 +89,14 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
 
     public void setTermino(LocalDateTime termino) {
         if(termino != null){
-            zdtT = termino.atZone(this.zoneId);
-            if(inicio != null){
-                zdtI = this.inicio.atZone(this.zoneId);
-                if(zdtT.toInstant().toEpochMilli() > zdtI.toInstant().toEpochMilli()){
+            if(this.getInicio()!= null){
+                if((termino.isAfter(this.getInicio()) || termino.equals(this.getInicio()))){
                     this.termino = termino;
                 }else{
-                    throw new IllegalArgumentException("Termino não de ser menor que o inicio do periodo!");
+                    throw new IllegalArgumentException("Termino não pode ser menor que o inicio!");
                 }
             }else{
-                zdtI = LocalDateTime.now().atZone(this.zoneId);
-                if(zdtT.toInstant().toEpochMilli() > zdtI.toInstant().toEpochMilli()){
-                    this.termino = termino;
-                }else{
-                    throw new IllegalArgumentException("Termino de periodo não pode ser menor do que o tempo atual!");
-                }
+                this.termino = termino;
             }
         }else{
             throw new NullPointerException("Termino de periodo não pode ser nulo!");
@@ -152,6 +135,10 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
             }
         }
         return PeriodosEmchoque;
+    }
+    
+    public boolean contido(Periodo p){
+        return ((this.getInicio().isAfter(p.getInicio()) || this.getInicio().equals(p.getInicio())) && (this.getTermino().isBefore(p.getTermino()) || this.getTermino().equals(p.getTermino())));
     }
 
     public boolean detectaColisao(Periodo outroPeriodo){

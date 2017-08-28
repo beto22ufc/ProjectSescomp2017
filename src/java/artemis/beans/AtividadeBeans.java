@@ -8,7 +8,6 @@ package artemis.beans;
 import artemis.model.Atividade;
 import artemis.model.Espera;
 import artemis.model.Inscricao;
-import artemis.model.InscricaoAtividade;
 import artemis.model.Periodo;
 import artemis.model.Reserva;
 import artemis.model.ReservaBem;
@@ -31,12 +30,13 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
     private int limiteVagas;
     private int nivel;
     private int tipoPagamento;
-    private List<InscricaoAtividadeBeans> inscricoes;
+    private List<InscricaoBeans> inscricoes;
     private List<ReservaLocalBeans> locaisReservados;
     private List<ReservaBemBeans> bensReservados;
     private List<EsperaBeans> listaDeEspera;
     private List<UsuarioBeans> administradores;
     private List<UsuarioBeans> organizadores;
+    private String recursosSolicitados;
 	
     public AtividadeBeans(){}
     public AtividadeBeans(long codAtividade, String nome, String descricao, List<PeriodoBeans> periodoBeanses, UsuarioBeans ministrante, 
@@ -170,11 +170,11 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
         this.periodoBeanses = periodoBeanses;
     }
 
-    public List<InscricaoAtividadeBeans> getInscricoes() {
+    public List<InscricaoBeans> getInscricoes() {
         return inscricoes;
     }
 
-    public void setInscricoes(List<InscricaoAtividadeBeans> inscricoes) {
+    public void setInscricoes(List<InscricaoBeans> inscricoes) {
         this.inscricoes = inscricoes;
     }
 
@@ -192,6 +192,14 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
 
     public void setOrganizadores(List<UsuarioBeans> organizadores) {
         this.organizadores = organizadores;
+    }
+
+    public String getRecursosSolicitados() {
+        return recursosSolicitados;
+    }
+
+    public void setRecursosSolicitados(String recursosSolicitados) {
+        this.recursosSolicitados = recursosSolicitados;
     }
         
     
@@ -216,7 +224,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
                    ub = (UsuarioBeans) (new UsuarioBeans().toBeans(a.getMinistrante()));
                 }
                 this.setMinistrante(ub);
-                List<InscricaoAtividadeBeans> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoAtividadeBeans>());
+                List<InscricaoBeans> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoBeans>());
                 List<PeriodoBeans> periodos = Collections.synchronizedList(new ArrayList<PeriodoBeans>());
                 List<ReservaBemBeans> bensReservados = Collections.synchronizedList(new ArrayList<ReservaBemBeans>());
                 List<ReservaLocalBeans> locaisReservados = Collections.synchronizedList(new ArrayList<ReservaLocalBeans>());
@@ -238,10 +246,10 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
                     }
                 }
                 this.setOrganizadores(organizadores);
-                InscricaoAtividadeBeans inscricaoBeans = null;
+                InscricaoBeans inscricaoBeans = null;
                 if(a.getInscricaoAtividades() != null){
                     for(int i=0;i<a.getInscricaoAtividades().size();i++){
-                        inscricaoBeans = (InscricaoAtividadeBeans) (new InscricaoAtividadeBeans().toBeans(a.getInscricaoAtividades().get(i)));
+                        inscricaoBeans = (InscricaoBeans) (new InscricaoBeans().toBeans(a.getInscricaoAtividades().get(i)));
                         inscricoes.add(inscricaoBeans);
                     }
                 }
@@ -263,6 +271,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
                     }
                 }
                 this.setBensReservados(bensReservados);
+                this.setRecursosSolicitados(a.getRecursosSolicitados());
                 EsperaBeans esperaBeans = null;
                 if(a.getListaDeEspera() != null){
                     for(int i=0;i<a.getListaDeEspera().size();i++){
@@ -305,7 +314,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
             Usuario u = (Usuario) this.getMinistrante().toBusiness();
             a.setMinistrante(u);
         }
-        List<InscricaoAtividade> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoAtividade>());
+        List<Inscricao> inscricoes = Collections.synchronizedList(new ArrayList<Inscricao>());
         List<Periodo> periodos = Collections.synchronizedList(new ArrayList<Periodo>());
         List<ReservaBem> bensReservados = Collections.synchronizedList(new ArrayList<ReservaBem>());
         List<ReservaLocal> locaisReservados = Collections.synchronizedList(new ArrayList<ReservaLocal>());
@@ -326,7 +335,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
         a.setOrganizadores(organizadores);
         if(this.getInscricoes()!= null){
             for(int i=0;i<this.getInscricoes().size();i++){
-                inscricoes.add((InscricaoAtividade) this.getInscricoes().get(i).toBusiness());
+                inscricoes.add((Inscricao) this.getInscricoes().get(i).toBusiness());
             }
         }
         a.setInscricaoAtividades(inscricoes);
@@ -351,6 +360,9 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
             for(int i=0;i<this.getLocaisReservados().size();i++){
                 locaisReservados.add((ReservaLocal) this.getLocaisReservados().get(i).toBusiness());
             }
+        }
+        if(this.getRecursosSolicitados() != null){
+            a.setRecursosSolicitados(this.getRecursosSolicitados());
         }
         a.setLocaisReservados(locaisReservados);
         a.setBensReservados(bensReservados);

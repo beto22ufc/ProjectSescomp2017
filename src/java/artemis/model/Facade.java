@@ -7,7 +7,9 @@ package artemis.model;
 
 import artemis.DAO.AtividadeDAOImpl;
 import artemis.DAO.ContaAtivacaoDAOImpl;
+import artemis.DAO.ContasSociaisDAOImpl;
 import artemis.DAO.EventoDAOImpl;
+import artemis.DAO.InscricaoDAOImpl;
 import artemis.DAO.InstituicaoDAOImpl;
 import artemis.DAO.MatriculaDAOImpl;
 import artemis.DAO.UsuarioDAOImpl;
@@ -17,6 +19,7 @@ import hibernate.HibernateUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -213,6 +216,16 @@ public class Facade {
         return usuarios;
     }
     
+    public UsuarioBeans adicionaNivelUsuario(UsuarioBeans u, String nivel) throws IllegalAccessException{
+        UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+        return (UsuarioBeans) new UsuarioBeans().toBeans(up.adicionaNivelUsuario((Usuario) u.toBusiness(), nivel));
+    }
+    
+    public UsuarioBeans removeNivelUsuario(UsuarioBeans u, String nivel) throws IllegalAccessException{
+        UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+        return (UsuarioBeans) new UsuarioBeans().toBeans(up.removeNivelUsuario((Usuario) u.toBusiness(), nivel));
+    }
+    
     public List<InstituicaoBeans> getInstituicoes(){
         InstituicaoDAOImpl idaoi = new InstituicaoDAOImpl();
         idaoi.setSessionFactory(HibernateUtil.getSessionFactory());
@@ -273,4 +286,115 @@ public class Facade {
         return ab;
     }
     
+    public AtividadeBeans getAtividade(long codAtividade){
+        AtividadeDAOImpl dao = new AtividadeDAOImpl();
+        return (AtividadeBeans) new AtividadeBeans().toBeans(dao.getAtividade(codAtividade));
+    }
+    
+    public void recuperaSenha(String c) throws EmailException, Exception{
+        UsuarioDAOImpl dao = new  UsuarioDAOImpl();
+        CPF cpf = new CPF(c);
+        Usuario usuario = null;
+        List<Usuario> usuarios = dao.listaUsuarios();
+        for(int i=0;i<usuarios.size();i++){
+            Usuario u = usuarios.get(i);
+            if(u.getCpf().getFormatedCpf().equals(cpf.getFormatedCpf())){
+                usuario = u;
+            }
+        }
+        if(usuario != null){
+            Sign sign = new Sign(usuario);
+            sign.recuperaSenha();
+        }else
+            throw new NullPointerException("Não exite usuário cadastrado com esse e-mail!");
+    }
+    
+    public String getAtividadesEventosJSON(EventoBeans evento){
+        String data = "";
+        for(int i=0;i<evento.getAtividades().size();i++){
+            AtividadeBeans atividade = evento.getAtividades().get(i);
+            for(int j=0;j<atividade.getPeriodoBeanses().size();j++){
+                PeriodoBeans periodo = atividade.getPeriodoBeanses().get(j);
+                data += "{title: \'"+atividade.getNome()+"\', start: \'"+periodo.getInicio().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\', "
+                        + "end: \'"+periodo.getTermino().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\',"+
+                        "backgroundColor: \'#00a65a\',"+ 
+                        "borderColor: \'#00a65a\'}";
+                if(j+1<atividade.getPeriodoBeanses().size()){
+                    data += ",";
+                }
+            }
+            if(i+1<evento.getAtividades().size()){
+                data += ",";
+            }
+        }
+        if(evento.getEventos().size()>0){
+            data += ",";
+        }
+        for(int i=0;i<evento.getEventos().size();i++){
+            EventoBeans e = evento.getEventos().get(i);
+            for(int j=0;j<e.getPeriodos().size();j++){
+                PeriodoBeans periodo = e.getPeriodos().get(j);
+                data += "{title: \'"+e.getNome()+"\', start: \'"+periodo.getInicio().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\', "
+                        + "end: \'"+periodo.getTermino().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\',"+
+                        "backgroundColor: \'#0073b7\',"+ 
+                        "borderColor: \'#0073b7\'}";
+                if(j+1<e.getPeriodos().size()){
+                    data += ",";
+                }
+            }
+        }
+        return data;
+    }
+    
+    public List<UsuarioBeans> getMinistrantes(EventoBeans e){
+        List<AtividadeBeans> atividades = e.getAtividades();
+        List<UsuarioBeans> ministrantes = Collections.synchronizedList(new ArrayList<>());
+        for(int i=0;i<atividades.size();i++){
+            AtividadeBeans a = atividades.get(i);
+            UsuarioBeans u = a.getMinistrante();
+            if(u != null && !ministrantes.contains(u)){
+                ministrantes.add(u);
+            }
+        }
+        return ministrantes;
+    }
+    public ContasSociaisBeans adicionaContasSociais(ContasSociaisBeans contas){
+        ContasSociaisDAOImpl dao = new ContasSociaisDAOImpl();
+        ContasSociais contasSociais = (ContasSociais) contas.toBusiness();
+        return (ContasSociaisBeans) new ContasSociaisBeans().toBeans(dao.adicionarContasSociais(contasSociais));
+    }
+    public void enviarEmailEvento(EventoBeans e, String assunto, String messagem, String emailDe, String nome) throws EmailException{
+        Email email = new Email(assunto, emailDe+", \n"+messagem, e.getEmail(), nome);
+        Evento evento = (Evento) e.toBusiness();
+        evento.enviaEmailContato(email);
+    }
+    
+    public PeriodoBeans getMenorPeriodo(EventoBeans evento){
+        Evento e = (Evento) evento.toBusiness();
+        return (PeriodoBeans) new PeriodoBeans().toBeans(e.getMenorPeriodo());
+    }    
+    public InscricaoBeans getInscricao(long codInscricao){
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        return (InscricaoBeans) new InscricaoBeans().toBeans(idao.getInscricao(codInscricao));
+    }
+    
+    public InscricaoBeans fazerInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
+        Evento e = (Evento) evento.toBusiness();
+        return (InscricaoBeans) new InscricaoBeans().toBeans(e.criaInscricao((Inscricao) inscricao.toBusiness()));
+    }
+    
+    public void removerInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
+        Evento e = (Evento) evento.toBusiness();
+        e.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
+    }
+    
+    public InscricaoBeans fazerInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
+        Atividade a = (Atividade) atividade.toBusiness();
+        return (InscricaoBeans) new InscricaoBeans().toBeans(a.criaInscricao((Inscricao) inscricao.toBusiness()));
+    }
+    
+    public void removerInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
+        Atividade a = (Atividade) atividade.toBusiness();
+        a.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
+    }
 }

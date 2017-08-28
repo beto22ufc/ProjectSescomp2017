@@ -22,6 +22,8 @@ public class artemis {
         conf.addAnnotatedClass(Matricula.class);
         conf.addAnnotatedClass(Instituicao.class);
         conf.addAnnotatedClass(Localizacao.class);
+        conf.addAnnotatedClass(ContasSociais.class);
+        conf.addAnnotatedClass(Imagem.class);
         conf.addAnnotatedClass(Usuario.class);
         conf.addAnnotatedClass(ContaAtivacao.class);
         conf.addAnnotatedClass(Periodo.class);
@@ -31,8 +33,6 @@ public class artemis {
         conf.addAnnotatedClass(ReservaBem.class);
         conf.addAnnotatedClass(ReservaLocal.class);
         conf.addAnnotatedClass(Inscricao.class);
-        conf.addAnnotatedClass(InscricaoAtividade.class);
-        conf.addAnnotatedClass(InscricaoEvento.class);
         conf.addAnnotatedClass(Espera.class);
         conf.addAnnotatedClass(Atividade.class);
         conf.addAnnotatedClass(Evento.class);

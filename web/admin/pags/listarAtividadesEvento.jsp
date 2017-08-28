@@ -41,8 +41,8 @@
         <th>Administradores</th>
         <th>Organizadores</th>
         <th>Períodos</th>
-        <th>Lista de espera</th>
-        <th>Editar/Remover</th>
+        <!--<th>Lista de espera</th>-->
+        <th>Editar / Remover</th>
       </tr>
       </thead>
       <tbody>
@@ -56,38 +56,48 @@
                   <td><a href="/<%=dir%>/evento/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade()%>"><%=atividade.getNome()%></a>
                   </td>
                   <td><%=atividade.getCategoria()%></td>
-                  <td><%=atividade.getMinistrante().getNome() %></td>
+                  <td><%
+                        if(atividade.getMinistrante() != null){
+                          out.println(atividade.getMinistrante().getNome());
+                        }else{
+                        %>
+                        <a href="/<%=dir%>/painelUsuario/atividade/adicionarMinistrante/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade()%>">Adicionar ministrante</a>
+                      <%      
+                        }
+                  %></td>
                   <td><%=atividade.getLimiteVagas() %></td>
                   <td><%=atividade.getVagasInternas()%></td>
                   <td><%=atividade.getVagasPublicas()%></td>
                   <td><%
-                        if(atividade.getNivel()==1){
+                        if(atividade.getNivel()==0){
+                            out.println("Nenhum nível");
+                        }else if(atividade.getNivel()==1){
                             out.println("Básico");
                         }else if(atividade.getNivel()==2){
                             out.println("Intermediário");
-                        }else if(atividade.getNivel()==2){
+                        }else if(atividade.getNivel()==3){
                             out.println("Avançado");
                         }else{
                             out.println("Nível inválido!");
                         }
                       %></td>
                   <td><%
-                        if(atividade.getTipoPagamento()==1){
+                        if(atividade.getTipoPagamento()==0){
                             out.println("Nenhum");
-                        }else if(atividade.getNivel()==2){
+                        }else if(atividade.getNivel()==1){
                             out.println("Dinheiro");
-                        }else if(atividade.getNivel()==3){
-                            out.println("Alimento não perecívelS");
+                        }else if(atividade.getNivel()==2){
+                            out.println("Alimento não perecível");
                         }else{
                             out.println("Pagamento inválido!");
                         }
                       %></td>
-                  <td><a href="#">Inscrições</a></td>
-                  <td><a href="#">Administradores</a></td>
-                  <td><a href="#">Organizadores</a></td>
-                  <td><a href="#">Períodos</a></td>
-                  <td><a href="#">Lista de espera</a></td>
-                  <td><a href="#">Editar</a>/<a href="#">Remover</a></td>
+                  <td><a href="/<%=dir%>/painelUsuario/atividade/inscricoes/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade() %>">Inscrições</a></td>
+                  <td><a href="/<%=dir%>/painelUsuario/atividade/administradores/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade() %>">Administradores</a></td>
+                  <td><a href="/<%=dir%>/painelUsuario/atividade/organizadores/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade() %>">Organizadores</a></td>
+                  <td><a href="/<%=dir%>/painelUsuario/atividade/periodos/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade() %>">Períodos</a></td>
+                  <!--<td><a href="#">Lista de espera</a></td>-->
+                  <td><a href="/<%=dir%>/painelUsuario/atividade/editar/?a=<%=atividade.getNome().toLowerCase().replace(" ", "_")+"_"+atividade.getCodAtividade() %>">Editar</a> / <a href="#">Remover</a></td>
                 </tr>
       <%    //}
          } %>
@@ -107,8 +117,8 @@
         <th>Administradores</th>
         <th>Organizadores</th>
         <th>Períodos</th>
-        <th>Lista de espera</th>
-        <th>Editar/Remover</th>
+        <!--<th>Lista de espera</th>-->
+        <th>Editar / Remover</th>
       </tr>
       </tfoot>
     </table>

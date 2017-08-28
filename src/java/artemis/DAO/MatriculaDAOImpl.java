@@ -41,6 +41,7 @@ public class MatriculaDAOImpl implements MatriculaDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 
@@ -57,6 +58,7 @@ public class MatriculaDAOImpl implements MatriculaDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 

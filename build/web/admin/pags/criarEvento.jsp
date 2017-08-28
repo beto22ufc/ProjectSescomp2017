@@ -24,6 +24,7 @@
                 evento.setNome(request.getParameter("nome"));
                 evento.setDescricao(request.getParameter("descricao"));
                 evento.setCategoria(request.getParameter("categoria"));
+                evento.setEmail(request.getParameter("email"));
                 LocalizacaoBeans lb = new LocalizacaoBeans(request.getParameter("localizacao"), Float.parseFloat(request.getParameter("lat")), Float.parseFloat(request.getParameter("lng")));
                 evento.setLocalizacao(lb);
                 String[] inicioDatas = request.getParameterValues("dataInicio[]"),
@@ -75,6 +76,10 @@
                 <div class="box-body pad form-group">
                     <label>Descrição</label>
                     <textarea class="textarea" name="descricao" placeholder="Descrição para o evento" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" value="<%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%>"><%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="nome">E-mail</label>
+                  <input type="text" class="form-control" id="nome" placeholder="E-mail para contato" name="email" value="<%=(request.getParameter("email") != null) ? request.getParameter("email") : ""%>">
                 </div>
                 <div class="form-group">
                 <label>Categoria</label>

@@ -5,6 +5,7 @@
 --%>
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%
+    String dir = config.getServletContext().getInitParameter("dir");
     if(session.getAttribute("usuario") != null && ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("adminEvento")){
 %>
 <%@page import="java.util.ArrayList"%>
@@ -12,7 +13,7 @@
 
 <!DOCTYPE html>
 <%
-   String dir = config.getServletContext().getInitParameter("dir");
+   
 %>
 <html>
 <head>
@@ -31,7 +32,7 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <jsp:include page="/${dir}/admin/pags/listarPeriodosEventos.jsp" ></jsp:include>
+    <jsp:include page="/${dir}/admin/pags/listarPeriodosEvento.jsp" ></jsp:include>
   </div>
   <!-- /.content-wrapper -->
     <jsp:include page="/${dir}/admin/parts/footer.jsp"></jsp:include>
@@ -48,6 +49,5 @@
 </body>
 </html>
 <% }else{
-        RequestDispatcher rd = request.getRequestDispatcher("/login");
-        rd.forward(request, response);
+        response.sendRedirect("/"+dir+"/login");
 } %>

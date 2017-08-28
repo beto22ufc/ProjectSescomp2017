@@ -48,10 +48,17 @@ public class ContaAtivacaoDAOImpl implements ContaAtivacaoDAO{
     @Override
     public void atualizarContaAtivacao(ContaAtivacao ca) {
         Session session = sessionFactory.openSession();
-        if(ca != null){
-            session.update(ca);
-        }else{
-            throw new NullPointerException("Conta ativação não pode ser nula!");
+        Transaction t = session.beginTransaction();
+        try{
+            if(ca != null){
+                session.update(ca);
+            }else{
+                throw new NullPointerException("Conta ativação não pode ser nula!");
+            }
+            t.commit();
+        }catch(RuntimeException e){
+            t.rollback();
+            throw e;
         }
     }
 
@@ -92,8 +99,15 @@ public class ContaAtivacaoDAOImpl implements ContaAtivacaoDAO{
     @Override
     public ContaAtivacao getContaAtivacao(long codContaAtivacao) {
         Session session = this.sessionFactory.openSession();
-        ContaAtivacao conta = (ContaAtivacao) session.get(ContaAtivacao.class, codContaAtivacao);
-        return conta;
+        Transaction t  = session.beginTransaction();
+        try{
+            ContaAtivacao conta = (ContaAtivacao) session.get(ContaAtivacao.class, codContaAtivacao);
+            t.commit();
+            return conta;
+        }catch(RuntimeException e){
+            t.rollback();
+            throw e;
+        }
     }
     
 }

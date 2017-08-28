@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import org.apache.commons.mail.EmailException;
 
 public class EventoProxy extends Evento{
     private Usuario usuario;
@@ -23,44 +24,18 @@ public class EventoProxy extends Evento{
     }
 	
     @Override
-    public void desvinculaEvento(Evento evento){
-        if(getUsuario().getTipo().contains("admin")){
-            super.desvinculaEvento(evento);
-        }
-    }
-	
-    @Override
-    public void desvinculaAtividade(Atividade atividade){
-        if(getUsuario().getTipo().contains("admin")){
-            super.desvinculaAtividade(atividade);
-        }
-    }
-    
-    @Override
-    public void vinculaAtividade(Atividade atividade){
-        if(getUsuario().getTipo().contains("admin")){
-            super.vinculaAtividade(atividade);
-        }
-    }
-	
-    @Override
-    public void removeAtividade(Atividade atividade){
+    public void removeAtividade(Atividade atividade) throws EmailException{
         if(getUsuario().getTipo().contains("admin")){
             super.removeAtividade(atividade);
         }
     }
     
-    @Override
-    public void vinculaEvento(Evento evento){
-        if(getUsuario().getTipo().contains("admin")){
-            super.vinculaEvento(evento);
-        }
-    }
+
     
     @Override
-    public void removePeriodo(Periodo periodo){
+    public void removePeriodo(Evento evento,Periodo periodo) throws EmailException{
         if(getUsuario().getTipo().contains("admin")){
-            super.removePeriodo(periodo);
+            super.removePeriodo(evento, periodo);
         }
     }
     
@@ -91,7 +66,7 @@ public class EventoProxy extends Evento{
     
     @Override
     public void atualizaEvento(Evento evento)throws IllegalAccessException{
-        if(getUsuario().getTipo().contains("adminEvento")){
+        if(getUsuario().getTipo().contains("adminEvento") && evento.getAdministradores().contains(getUsuario())){
             super.atualizaEvento(evento);
         }else{
             throw new IllegalAccessException("Acesso negado!");

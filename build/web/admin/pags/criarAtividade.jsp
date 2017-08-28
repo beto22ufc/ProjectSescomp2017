@@ -27,7 +27,6 @@
                 atividade.setNome(request.getParameter("nome"));
                 atividade.setDescricao(request.getParameter("descricao"));
                 atividade.setCategoria(request.getParameter("categoria"));
-                atividade.setMinistrante(facade.getUsuario(Long.parseLong(request.getParameter("ministrante"))));
                 String[] inicioDatas = request.getParameterValues("dataInicio[]"),
                 inicioTempos = request.getParameterValues("tempoInicio[]"),
                 terminoDatas = request.getParameterValues("dataTermino[]"),
@@ -43,10 +42,9 @@
                     atividade.setLimiteVagas(Integer.parseInt(request.getParameter("qtdVagas")));
                     atividade.setVagasInternas(Integer.parseInt(request.getParameter("qtdVagasInternas")));
                     atividade.setVagasPublicas(Integer.parseInt(request.getParameter("qtdVagasExternas")));
+                    atividade.setNivel(Integer.parseInt(request.getParameter("nivel")));
+                    atividade.setTipoPagamento(Integer.parseInt(request.getParameter("tipoPagamento")));
                     atividade = facade.cadastraAtividade(atividade);
-                    atividade.setAdministradores(new ArrayList<UsuarioBeans>());
-                    atividade.getAdministradores().add((UsuarioBeans)session.getAttribute("usuario"));
-                    facade.atualizaAtividade(atividade);
                     if(request.getParameter("e") != null){
                         EventoBeans evento = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
                         if(evento != null){
@@ -54,6 +52,12 @@
                             facade.atualizaEvento(evento);
                         }                
                     }
+                    if(request.getParameter("ministrante") != null || !request.getParameter("ministrante").isEmpty()){
+                        atividade.setMinistrante(facade.getUsuario(Long.parseLong(request.getParameter("ministrante"))));
+                    }
+                    atividade.setAdministradores(new ArrayList<UsuarioBeans>());
+                    atividade.getAdministradores().add((UsuarioBeans)session.getAttribute("usuario"));
+                    facade.atualizaAtividade(atividade);
                     request.setAttribute("msg", "Atividade cadastrada com sucesso!");
                 }else{
                     request.setAttribute("msg", "A soma da quantidade de vagas internas com as vagas externas devem ser igual a quantidade de vagas!");
@@ -61,12 +65,10 @@
             }catch(IllegalAccessException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NumberFormatException e){
-                request.setAttribute("msg", e.getMessage());
+                request.setAttribute("msg", "Nos campos onde se pede um número deve ser digitado um número!");
             }catch(IllegalArgumentException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
-                request.setAttribute("msg", e.getMessage()+" Aqui ");
-            }catch(Exception e){
                 request.setAttribute("msg", e.getMessage());
             }
         }

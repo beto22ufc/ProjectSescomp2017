@@ -4,6 +4,8 @@
     Author     : Wallison
 --%>
 
+<%@page import="artemis.model.ContasSociais"%>
+<%@page import="artemis.beans.ContasSociaisBeans"%>
 <%@page import="org.apache.commons.mail.EmailException"%>
 <%@page import="artemis.model.Facade"%>
 <%@page import="java.time.format.DateTimeFormatter"%>

@@ -40,6 +40,8 @@ public class InstituicaoDAOImpl implements InstituicaoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            session.close();
+            throw e;
         }
     }
 
@@ -56,6 +58,7 @@ public class InstituicaoDAOImpl implements InstituicaoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 
@@ -89,6 +92,7 @@ public class InstituicaoDAOImpl implements InstituicaoDAO{
             t.commit();
         }catch(RuntimeException e){
             t.rollback();
+            throw e;
         }
     }
 
