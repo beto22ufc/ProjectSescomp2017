@@ -3,13 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/admin/listarPeriodosEvento.jsp</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/index.xhtml</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/admin/pags/listarPeriodosEvento.jsp</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/Evento.java</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/admin/pags/listarEventos.jsp</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/Facade.java</file>
-            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/DAO/ContaAtivacaoDAOImpl.java</file>
+            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/reenviarEmailValidacao.jsp</file>
+            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/model/ContaAtivacao.java</file>
         </group>
     </open-files>
 </project-private>

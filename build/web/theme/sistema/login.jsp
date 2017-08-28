@@ -21,15 +21,15 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
-  <link rel="stylesheet" href="../../ArtemisTCC/static/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../../ArtemisTCC/static/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="../../static/css/AdminLTE.min.css">
   <!-- iCheck -->
-  <link rel="stylesheet" href="../../ArtemisTCC/static/plugins/iCheck/square/blue.css">
+  <link rel="stylesheet" href="../../static/plugins/iCheck/square/blue.css">
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -38,7 +38,7 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
-<body class="hold-transition login-page">
+<body class="hold-transition login-page" >
 <div class="login-box">
   <div class="login-logo">
       <a href="/<%=dir %>/"><b>Artemis</b></a>
@@ -65,13 +65,13 @@
                     request.setAttribute("msg", "Usuário não encontrado!");
                 }
             }catch(IllegalArgumentException e){
-                request.setAttribute("msg", e.getMessage()+" Aqui 1");
+                request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
-                request.setAttribute("msg", e.getMessage()+" Aqui 2");
+                request.setAttribute("msg", e.getMessage());
             }
         }
     %>
-      <p class="login-box-msg"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Faça o login e inicie uma sessão"%></p>
+    <p class="login-box-msg" style="color: red;"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Faça o login e inicie uma sessão"%></p>
     
     <form action="" method="post">
       <div class="form-group has-feedback">
@@ -84,7 +84,7 @@
       </div>
       <div class="row">
         <!-- /.col -->
-        <div class="col-xs-4">
+        <div class="col-xs-4" style="float: right;">
             <button type="submit" class="btn btn-primary btn-block btn-flat" name="login" value="usuario">Entrar</button>
         </div>
         <!-- /.col -->
@@ -92,8 +92,8 @@
     </form>
     <!-- /.social-auth-links -->
 
-    <a href="#">I forgot my password</a><br>
-    <a href="/<%=dir %>/cadastro" class="text-center">Register a new membership</a>
+    <a href="#">Esqueci minha senha</a><br>
+    <a href="/<%=dir %>/cadastro" class="text-center">Registar novo menbro</a>
 
   </div>
   <!-- /.login-box-body -->
@@ -101,11 +101,11 @@
 <!-- /.login-box -->
 
 <!-- jQuery 2.2.3 -->
-<script src="../../ArtemisTCC/static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="../../static/plugins/jQuery/jquery-2.2.3.min.js"></script>
 <!-- Bootstrap 3.3.6 -->
-<script src="../../ArtemisTCC/static/bootstrap/js/bootstrap.min.js"></script>
+<script src="../../static/bootstrap/js/bootstrap.min.js"></script>
 <!-- iCheck -->
-<script src="../../ArtemisTCC/static/plugins/iCheck/icheck.min.js"></script>
+<script src="../../static/plugins/iCheck/icheck.min.js"></script>
 <script>
   $(function () {
     $('input').iCheck({
