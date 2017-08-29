@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.*;
 import org.apache.commons.mail.EmailException;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -413,5 +417,7 @@ public class Evento implements Inscrevivel{
             throw new IllegalArgumentException("Essa inscrição não é sua!");
         }
     }
+    
+   
     
 }

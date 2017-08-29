@@ -397,4 +397,46 @@ public class Facade {
         Atividade a = (Atividade) atividade.toBusiness();
         a.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
     }
+    
+    public List<List> buscar(String texto){
+        texto = texto.replace("<", "").replace(">", "")
+                .replace("\'", "").replace("\"", "")
+                .replace("=", "");
+        List<List> result = Collections.synchronizedList(new ArrayList<List>());
+        result.add(buscarUsuarios(texto));
+        result.add(buscarAtividade(texto));
+        result.add(buscarEventos(texto));
+        return result;
+    }
+    public List<UsuarioBeans> buscarUsuarios(String texto){
+        UsuarioDAOImpl udao = new UsuarioDAOImpl();
+        List<UsuarioBeans> ubs = Collections.synchronizedList(new ArrayList<UsuarioBeans>());
+        List<Usuario> usuarios = udao.buscaUsuarios(texto);
+        for(int i=0;i<usuarios.size();i++){
+            ubs.add((UsuarioBeans)new UsuarioBeans().toBeans(usuarios.get(i)));
+        }
+        return ubs;
+    }
+    public List<EventoBeans> buscarEventos(String texto){
+        EventoDAOImpl edao = new EventoDAOImpl();
+        List<EventoBeans> ebs = Collections.synchronizedList(new ArrayList<EventoBeans>());
+        List<Evento> eventos = edao.buscaEvento(texto);
+        for(Evento evt : eventos){
+            ebs.add((EventoBeans)new EventoBeans().toBeans(evt));
+        }
+        return ebs;
+    }
+    public List<AtividadeBeans> buscarAtividade(String texto){
+        AtividadeDAOImpl adao = new AtividadeDAOImpl();
+        List<AtividadeBeans> abs = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
+        List<Atividade> atividades = adao.buscaAtividade(texto);
+        for(Atividade atv : atividades){
+            abs.add((AtividadeBeans)new AtividadeBeans().toBeans(atv));
+        }
+        return abs;
+    }
+    
+    
+    
+    
 }

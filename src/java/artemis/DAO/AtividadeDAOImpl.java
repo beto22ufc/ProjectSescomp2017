@@ -9,9 +9,12 @@ import artemis.model.Atividade;
 import hibernate.HibernateUtil;
 import java.util.Collections;
 import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -113,5 +116,21 @@ public class AtividadeDAOImpl implements AtividadeDAO{
             throw e;
         }
     }
+    
+    public List<Atividade>  buscaAtividade(String texto){
+        Session session = this.sessionFactory.openSession();
+        Transaction t = session.beginTransaction();
+        try{
+        Criteria crit = session.createCriteria(Atividade.class)
+                .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
+        crit.add(Restrictions.conjunction(Restrictions.ilike("categoria", texto, MatchMode.ANYWHERE)));
+        List results = crit.list();
+        return results;
+        }catch(RuntimeException e){
+            t.rollback();
+            throw  e;
+        }
+    }
+    
     
 }

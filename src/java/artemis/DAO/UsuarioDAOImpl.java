@@ -10,9 +10,13 @@ import artemis.model.Usuario;
 import hibernate.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -150,4 +154,67 @@ public class UsuarioDAOImpl implements UsuarioDAO{
             throw e;
         }
     }
+    
+    public List<Usuario>  buscaUsuarios(String texto){
+        Session session = this.sessionFactory.openSession();
+        Transaction t = session.beginTransaction();
+        try{
+        Criteria crit = session.createCriteria(Usuario.class)
+                .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
+        List<Usuario> results = crit.list();
+        return results;
+        }catch(RuntimeException e){
+            t.rollback();
+            throw  e;
+        }
+    }
+    
+    
+    
+     public List<Usuario> filtroPorLetra(String inicio){
+        Session session = this.sessionFactory.getCurrentSession();
+        Criteria crit = session.createCriteria(Usuario.class);
+        crit.add(Restrictions.ilike("nome",inicio, MatchMode.START));
+        List<Usuario> results = crit.list();
+        
+        return results;
+    }
+    public List<Usuario> filtroPorIntervaloDeLetras(String inicio, String fim){
+        Session session = this.sessionFactory.getCurrentSession();
+        Criteria crit = session.createCriteria(Usuario.class);
+        crit.add(Restrictions.between("nome", inicio, fim));
+        List<Usuario> results = crit.list();
+        
+        return results;
+    } 
+     
+    public List<Object[]> filtroPorCurso(String curso){
+        Session session = this.sessionFactory.getCurrentSession();
+        Criteria crit = session.createCriteria(Usuario.class)
+            .createAlias("curso", "c")
+            .createAlias("matricula", "m")
+            .add(Restrictions.eqProperty(curso, "c.nome"))
+            .add(Restrictions.eqProperty("c.codCurso", "m.curso"))
+            .add(Restrictions.eqProperty("m.codMatricula", "usuario.matricula"));
+
+        
+        List results = crit.list();
+        return results;
+    }
+    public List<Object[]> filtroPorInstituicao(String instituicao){
+        Session session = this.sessionFactory.getCurrentSession();
+        Criteria crit = session.createCriteria(Usuario.class)
+            .createAlias("associados", "a")
+            .createAlias("instituicao_associados", "ia")
+            .createAlias("instituicao", "i")
+            .add(Restrictions.eqProperty(instituicao, "i.nome"))
+            .add(Restrictions.eqProperty("i.codInstituicao", "ia.instituicao"))
+            .add(Restrictions.eqProperty("ia.usuario", "usuario.codUsuario"));
+        
+        
+        List<Object[]> results = crit.list();  
+        return results;  
+
+    }
+    
 }
