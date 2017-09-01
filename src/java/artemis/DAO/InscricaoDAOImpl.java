@@ -97,11 +97,15 @@ public class InscricaoDAOImpl implements InscricaoDAO{
     public List<Evento> listaInscricoesEventos(Usuario participante) {
         Session session = this.sessionFactory.getCurrentSession();
         Transaction t = session.beginTransaction();
-        String sql = "SELECT * FROM ((evento INNER JOIN inscricoes_evento ON inscricoes_evento.evento=evento.codEvento)"
-                + " INNER JOIN  inscricao ON inscricao.codInscricao=inscricoes_evento.inscricao) WHERE inscricao.participante="+participante.getCodUsuario();
-        List<Object[]> consulta = Collections.synchronizedList(session.createQuery(sql).list());
-        t.commit();
-        return null;
+        Criteria crit = session.createCriteria(Evento.class).createAlias("inscricao","i").createAlias("evento","e")
+            .createAlias("usuario", "u").createAlias("inscricoes_evento", "ie")
+            .add(Restrictions.conjuction(Restrictions.eqProperty("i.participante", participante.getCodUsuario()))
+            .add(Restrictions.conjuction(Restrictions.eqProperty("ie.evento","e.codEvento")))
+            .add(Restrictions.conjuction(Restrictions.eqProperty("i.codInscricao","ie.inscricao")));
+         
+        List results = crit.list();
+    
+        return results;
     }
 
     @Override
