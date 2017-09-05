@@ -18,4 +18,5 @@ public interface EventoDAO {
     public List<Evento> listaEventos();
     public void removerEvento(Evento evento);
     public Evento getEvento(long codEvento);
+    public List<Evento> getPrimeirosEventos(int n);
 }

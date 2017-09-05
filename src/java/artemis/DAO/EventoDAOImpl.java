@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 /**
@@ -114,6 +115,7 @@ public class EventoDAOImpl implements EventoDAO {
             throw e;
         }
     }
+   
     
     public void remevoInstanceSession(Evento evento){
         Session session = this.sessionFactory.openSession();
@@ -126,6 +128,33 @@ public class EventoDAOImpl implements EventoDAO {
         Criteria crit = session.createCriteria(Evento.class)
                 .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
         crit.add(Restrictions.conjunction(Restrictions.ilike("categoria", texto, MatchMode.ANYWHERE)));
+        List results = crit.list();
+        return results;
+        }catch(RuntimeException e){
+            t.rollback();
+            throw  e;
+        }
+    }
+    
+    @Override
+    public List<Evento> getPrimeirosEventos(int n){
+        Session session = this.sessionFactory.openSession();
+        Criteria crit = session.createCriteria(Evento.class).createAlias("periodos","p");
+        crit.addOrder(Order.asc("p.nome"));
+        crit.setFirstResult(0);
+        crit.setMaxResults(n);
+        return crit.list();
+    }
+
+    //-------------adicionar--------------------//
+    
+    public List<Evento> buscaEvento(String busca, String categoria) {
+        Session session = this.sessionFactory.openSession();
+        Transaction t = session.beginTransaction();
+        try{
+        Criteria crit = session.createCriteria(Evento.class)
+                .add(Restrictions.ilike("nome",busca, MatchMode.ANYWHERE));
+        crit.add(Restrictions.ilike("categoria", categoria, MatchMode.ANYWHERE));
         List results = crit.list();
         return results;
         }catch(RuntimeException e){

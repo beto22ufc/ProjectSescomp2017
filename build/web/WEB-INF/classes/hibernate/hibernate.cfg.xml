@@ -44,12 +44,13 @@ Contributor(s):
     <property name="hibernate.show_sql">true</property>
     <property name="hibernate.current_session_context_class">thread</property>
     <property name="hibernate.query.factory_class">org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory</property>
-    <property name="hibernate.hbm2ddl.auto">update</property>
+    <property name="hibernate.hbm2ddl.auto">create</property>
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
     <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
     <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/artemis</property>
     <property name="hibernate.connection.username">postgres</property>
-    <property name="hibernate.connection.password">aqbp!@12</property>
+ <!--   <property name="hibernate.connection.password">aqbp!@12</property> -->
+    <property name="hibernate.connection.password">senha</property>
     <property name="hibernate.event.merge.entity_copy_observer">allow</property>
   </session-factory>
 </hibernate-configuration>

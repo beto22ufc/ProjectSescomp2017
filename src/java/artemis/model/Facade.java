@@ -189,6 +189,17 @@ public class Facade {
         return (EventoBeans) new EventoBeans().toBeans(edaoi.getEvento(codEvento));
     }
     
+    public List<EventoBeans> getEventos(String busca, String categoria){
+        EventoDAOImpl edaoi = new EventoDAOImpl();
+        edaoi.setSessionFactory(HibernateUtil.getSessionFactory());
+        List<EventoBeans> eventos = Collections.synchronizedList(new ArrayList<>());
+        List<Evento> events = edaoi.buscaEvento(busca,categoria);
+        for(int i=0;i<events.size();i++){
+            eventos.add((EventoBeans) new EventoBeans().toBeans(events.get(i)));
+        }
+        return eventos;
+    }
+    
     public AtividadeBeans cadastraAtividade(AtividadeBeans atividade) throws IllegalAccessException{
         EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
         Atividade a = ep.novaAtividade((Atividade) atividade.toBusiness());
@@ -436,6 +447,15 @@ public class Facade {
         return abs;
     }
     
+    public List<EventoBeans> getPrimeirosEventos(){
+        EventoDAOImpl edao = new EventoDAOImpl();
+        List<EventoBeans> ebs = Collections.synchronizedList(new ArrayList<EventoBeans>());
+        List<Evento> eventos = edao.getPrimeirosEventos(6);
+        for(Evento evt: eventos){
+            ebs.add((EventoBeans) new EventoBeans().toBeans(evt));
+        }
+        return ebs;
+    }
     
     
     

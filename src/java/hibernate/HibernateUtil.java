@@ -44,7 +44,8 @@ public class HibernateUtil {
             conf.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/artemis");
             conf.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
             conf.setProperty("hibernate.connection.username", "postgres");
-            conf.setProperty("hibernate.connection.password", "aqbp!@12");
+            //conf.setProperty("hibernate.connection.password", "aqbp!@12");
+            conf.setProperty("hibernate.connection.password", "senha");
             conf.addAnnotatedClass(CPF.class);
             conf.addAnnotatedClass(Curso.class);
             conf.addAnnotatedClass(Matricula.class);
