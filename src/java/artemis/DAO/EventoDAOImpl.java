@@ -139,7 +139,7 @@ public class EventoDAOImpl implements EventoDAO {
     @Override
     public List<Evento> getPrimeirosEventos(int n){
         Session session = this.sessionFactory.openSession();
-        Criteria crit = session.createCriteria(Evento.class).createAlias("periodos","p");
+        Criteria crit = session.createCriteria(Evento.class).createAlias("nome","p");
         crit.addOrder(Order.asc("p.nome"));
         crit.setFirstResult(0);
         crit.setMaxResults(n);

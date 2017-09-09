@@ -212,7 +212,7 @@
 						<a href="mobileapp.html"><img src="../../static/plugins/index/images/app.png" alt=""></a>
 					</div>
 					<div class="col-md-7 w3-app-right">
-						<h3>Baixe o app <span>Facilmente</span> e gerencie seus eventos.</h3>
+						<h3>Baixe o app <span>Facilmente</span> para registrar a presença dos participantes no seu evento.</h3>
 						<p>De forma fácil e rápida.</p>
 						<div class="agileits-dwld-app">
 							<h6>Baixe o App : 

@@ -59,7 +59,7 @@
 		<div id="agileits-sign-in-page" class="sign-in-wrapper">
 			<div class="agileinfo_signin">
 			<h3>Login</h3>
-                            <p class="login-box-msg" style="color: red;"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "FaÃ§a o login e inicie uma sessÃ£o"%></p>
+                            <p class="login-box-msg" style="color: red;"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Faça o login e inicie uma sessão"%></p>
 				<form action="#" method="post">
 					<input type="email" name="email" placeholder="E-mail" required=""> 
 					<input type="password" name="senha" placeholder="Senha" required=""> 
@@ -67,27 +67,9 @@
 					<div class="forgot-grid">
                                             <label class="checkbox"><input type="checkbox" name="checkbox">Lembrar de mim</label>
                                             <div class="forgot">
-                                                <a href="#" data-toggle="modal" data-target="#myModal2">Esqueceu a senha?</a>
+                                                <a href="recuperaSenha.jsp">Esqueceu a senha?</a>
                                             </div>
-                                            <!-- Modal -->
-                                            <div class="modal fade collapse" id="myModal2" role="dialog">
-                                                <div class="modal-dialog">
-                                                    <!-- Modal content-->
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                                <h3 class="w3ls-password">Recuperar Senha</h3>		
-                                                                <p class="get-pw">Entre com o <b>CPF</b> que vocÃª usou no cadastro. NÃ³s enviaremos um email para vocÃª recuperar sua senha.</p>
-                                                                <form action="#" method="post">
-                                                                    <input type="text" class="user" name="email" placeholder="E-mail" required="">
-                                                                    <input type="submit" value="Recuperar">
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                             <div class="clearfix"> </div>
 					</div>
 				</form>
@@ -106,11 +88,11 @@
                 <script type="text/javascript" src="../../static/plugins/index/js/classie.js"></script>
 		<!-- //Navigation-Js-->
 		<!-- js -->
-		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="../../static/plugins/index/js/jquery.min.js"></script>
 		<!-- js -->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="js/bootstrap.js"></script>
-		<script src="js/bootstrap-select.js"></script>
+		<script src="../../static/plugins/index/js/bootstrap.js"></script>
+		<script src="../../static/plugins/index/js/bootstrap-select.js"></script>
 		<script>
 		  $(document).ready(function () {
 			var mySelect = $('#first-disabled2');

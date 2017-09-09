@@ -61,7 +61,7 @@
                 <div class="agileinfo_signin">
                 <h3>Cadastro</h3>
                     <p class="login-box-msg"><%=(request.getAttribute("msg")!= null) ? request.getAttribute("msg") : "Registro de novo membro" %></p>
-                    <form action="#" method="post">
+                    <form action="" method="post">
                         <input type="text" name="nome" placeholder="Nome completo"  value="<%= (request.getParameter("nome")!= null) ? request.getParameter("nome") : "" %>"> 
                         <input type="email" name="email" placeholder="E-mail" value="<%= (request.getParameter("email")!= null) ? request.getParameter("email") : "" %>"> 
                         <input type="text" name="numerocpf" placeholder="CPF ex.: 809.908.090-40" name="numerocpf" value="<%= (request.getParameter("numerocpf")!= null) ? request.getParameter("numerocpf") : "" %>" > 

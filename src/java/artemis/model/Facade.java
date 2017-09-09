@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.scene.control.Alert;
 import org.apache.commons.mail.EmailException;
 
 /**
@@ -311,13 +312,14 @@ public class Facade {
             Usuario u = usuarios.get(i);
             if(u.getCpf().getFormatedCpf().equals(cpf.getFormatedCpf())){
                 usuario = u;
+              
             }
         }
         if(usuario != null){
             Sign sign = new Sign(usuario);
             sign.recuperaSenha();
         }else
-            throw new NullPointerException("Não exite usuário cadastrado com esse e-mail!");
+            throw new NullPointerException("Não existe usuário cadastrado com esse CPF!");
     }
     
     public String getAtividadesEventosJSON(EventoBeans evento){

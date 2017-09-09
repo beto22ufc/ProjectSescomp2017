@@ -11,37 +11,17 @@
 <% if(session.getAttribute("usuario") == null){%>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Artemis | Reenviar E-mail</title>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.6 -->
-  <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.min.css">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="../../static/css/AdminLTE.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="../..static/plugins/iCheck/square/blue.css">
-
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
+     <title>Artemis | Reenviar E-mail</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Artemis | Recuperar Senha</title>
+    <jsp:include page="parts/css.jsp"></jsp:include>
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <a href="/ArtemisTCC/"><b>Artemis</b></a>
-  </div>
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-      <%
+<body>
+    <jsp:include page="header.jsp"></jsp:include>
+        
+        
+    <!--aqui -->
+    <%
         if(request.getParameter("reenviar") != null){
             try{
                 String email = request.getParameter("email");
@@ -56,35 +36,24 @@
             }
         }
     %>
-      <p class="login-box-msg"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Reenvie o e-mail de validação de sua conta"%></p>
-    
-    <form action="" method="post">
-      <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="E-mail" name="email">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-      </div>
-      <div class="row">
-        <!-- /.col -->
-        <div class="col-xs-4" style="float: right;">
-            <button type="submit" class="btn btn-primary btn-block btn-flat" name="reenviar" value="email">Reenviar</button>
-        </div>
-        <!-- /.col -->
-      </div>
-    </form>
-    <!-- /.social-auth-links -->
-    <a href="/ArtemisTCC/login" class="text-center">Eu recebi o e-mail</a>
-
-  </div>
-  <!-- /.login-box-body -->
-</div>
-<!-- /.login-box -->
-
-<!-- jQuery 2.2.3 -->
-<script src="../../static/plugins/jQuery/jquery-2.2.3.min.js"></script>
-<!-- Bootstrap 3.3.6 -->
-<script src="../../static/bootstrap/js/bootstrap.min.js"></script>
-<!-- iCheck -->
-<script src="../../static/plugins/iCheck/icheck.min.js"></script>
+    <section>
+		<div id="agileits-sign-in-page" class="sign-in-wrapper">
+			<div class="agileinfo_signin">
+			<h3>Recuperar Senha</h3>
+                        <p class="get-pw" style="text-align: center">Entre com o <b>CPF</b> que você usou no cadastro. Nós enviaremos um email para você recuperar sua senha.</p>
+                            <p class="login-box-msg" style="color: red;"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Reenvie o e-mail de validação de sua conta"%></p>
+				<form action="" method="post">
+					<input type="text" class="user" name="email" placeholder="E-mail" required="">
+                                        <input type="submit"  name="reenviar" value="Reenviar">
+				</form>
+                                <h6><a href="loginPag.jsp">Eu recebi o e-mail</a> </h6>
+			</div>
+		</div>
+	</section>
+<!--aqui -->
+        <footer>
+            <jsp:include page="footer-bottom.jsp"></jsp:include>
+        </footer>
 <script>
   $(function () {
     $('input').iCheck({
@@ -97,8 +66,8 @@
 </body>
 </html>
 <% }else{
-        RequestDispatcher rd = request.getRequestDispatcher("/ArtemisTCC/");
-        rd.forward(request, response);
-        
-        }%>
+    RequestDispatcher rd = request.getRequestDispatcher("/ArtemisTCC/");
+    rd.forward(request, response);
+
+}%>
 
