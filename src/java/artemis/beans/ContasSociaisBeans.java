@@ -6,18 +6,19 @@
 package artemis.beans;
 
 import artemis.model.ContasSociais;
+import java.io.Serializable;
 
 /**
  *
  * @author Wallison
  */
-public class ContasSociaisBeans implements Beans{
+public class ContasSociaisBeans implements Beans, Serializable{
     private long codContasSociais;
-    private String nookdear = "https://nookdear.com/";
-    private String facebook = "https://facebook.com/";
-    private String gplus = "https://plus.google.com/";
-    private String twitter = "https://twitter.com/";
-    private String linkedin = "https://linkedin.com/";
+    private String nookdear;
+    private String facebook;
+    private String gplus;
+    private String twitter;
+    private String linkedin;
 
     public long getCodContasSociais() {
         return codContasSociais;

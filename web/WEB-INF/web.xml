@@ -20,7 +20,7 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
-
+    
     <servlet>
         <servlet-name>login</servlet-name>
         <jsp-file>/theme/sistema/login.jsp</jsp-file>
@@ -39,7 +39,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>recuperarSenha</servlet-name>
-        <jsp-file>/theme/sistema/recuperarSenha.jsp</jsp-file>
+        <jsp-file>/theme/sistema/recuperaSenha.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>recuperarSenha</servlet-name>
@@ -54,6 +54,22 @@
         <url-pattern>/404</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>perfil</servlet-name>
+        <jsp-file>/theme/sistema/perfil/index.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>perfil</servlet-name>
+        <url-pattern>/perfil/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>perfilContato</servlet-name>
+        <jsp-file>/theme/sistema/perfil/index.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>perfilContato</servlet-name>
+        <url-pattern>/perfil/contato/</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>cadastro</servlet-name>
         <jsp-file>/theme/sistema/cadastro.jsp</jsp-file>
     </servlet>
@@ -63,7 +79,7 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>evento</servlet-name>
-        <jsp-file>/theme/evento/default/index.jsp</jsp-file>
+        <jsp-file>/theme/evento/index.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
         <servlet-name>evento</servlet-name>
@@ -85,6 +101,22 @@
     <servlet-mapping>
         <servlet-name>criarEvento</servlet-name>
         <url-pattern>/painelUsuario/criarEvento</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarEvento</servlet-name>
+        <jsp-file>/admin/editarEvento.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarEvento</servlet-name>
+        <url-pattern>/painelUsuario/editarEvento/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>temasEvento</servlet-name>
+        <jsp-file>/admin/temasEvento.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>temasEvento</servlet-name>
+        <url-pattern>/painelUsuario/temasEvento/</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>adicionarNivelUsuario</servlet-name>
@@ -134,6 +166,178 @@
         <servlet-name>listarAtividades</servlet-name>
         <url-pattern>/painelUsuario/listarAtividades</url-pattern>
     </servlet-mapping>
+    
+    
+    <servlet>
+        <servlet-name>listarCursosInstituicao</servlet-name>
+        <jsp-file>/admin/listarCursosInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarCursosInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/cursos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarAtividadesInstituicao</servlet-name>
+        <jsp-file>/admin/listarAtividadesInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarAtividadesInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/atividades/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarEventosInstituicao</servlet-name>
+        <jsp-file>/admin/listarEventosInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarEventosInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/eventos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarAssociadosInstituicao</servlet-name>
+        <jsp-file>/admin/listarAssociadosInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarAssociadosInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/associados/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarAtividadesMinistrador</servlet-name>
+        <jsp-file>/admin/listarAtividadesMinistrador.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarAtividadesMinistrador</servlet-name>
+        <url-pattern>/painelUsuario/ministrante/atividades/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>solicitarRecursoAtividade</servlet-name>
+        <jsp-file>/admin/solicitarRecursoAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>solicitarRecursoAtividade</servlet-name>
+        <url-pattern>/painelUsuario/ministrante/atividade/solicitarRecurso/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarPeriodosAtividadeVisualizar</servlet-name>
+        <jsp-file>/admin/listarPeriodosAtividadeVisualizar.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarPeriodosAtividadeVisualizar</servlet-name>
+        <url-pattern>/painelUsuario/atividade/periodosVisualizar/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>marcarPresencaQRCodeAtividade</servlet-name>
+        <jsp-file>/admin/marcarPresencaQRCodeAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>marcarPresencaQRCodeAtividade</servlet-name>
+        <url-pattern>/painelUsuario/atividade/inscricoes/presencaQRCode/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>marcarPresencaQRCodeEvento</servlet-name>
+        <jsp-file>/admin/marcarPresencaQRCodeEvento.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>marcarPresencaQRCodeEvento</servlet-name>
+        <url-pattern>/painelUsuario/evento/inscricoes/presencaQRCode/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarPeriodosEventoVisualizar</servlet-name>
+        <jsp-file>/admin/listarPeriodosEventoVisualizar.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarPeriodosEventoVisualizar</servlet-name>
+        <url-pattern>/painelUsuario/evento/periodosVisualizar/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>gerarQRCodeParticipantes</servlet-name>
+        <jsp-file>/admin/gerarQRCodeParticipantes.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>gerarQRCodeParticipantes</servlet-name>
+        <url-pattern>/painelUsuario/evento/geraQRCodeParticipante/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarImagem</servlet-name>
+        <jsp-file>/admin/editarImagem.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarImagem</servlet-name>
+        <url-pattern>/painelUsuario/evento/editarImagem/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInscricoesAtividadeOrganizador</servlet-name>
+        <jsp-file>/admin/listarInscricoesAtividadeOrganizador.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInscricoesAtividadeOrganizador</servlet-name>
+        <url-pattern>/painelUsuario/organizador/atividade/inscricoes/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInscricoesEventoOrganizador</servlet-name>
+        <jsp-file>/admin/listarInscricoesEventoOrganizador.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInscricoesEventoOrganizador</servlet-name>
+        <url-pattern>/painelUsuario/organizador/evento/inscricoes/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInscricoesEventoParticipante</servlet-name>
+        <jsp-file>/admin/listarInscricoesEventoParticipante.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInscricoesEventoParticipante</servlet-name>
+        <url-pattern>/painelUsuario/participante/eventos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInscricoesAtividadeParticipante</servlet-name>
+        <jsp-file>/admin/listarInscricoesAtividadeParticipante.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInscricoesAtividadeParticipante</servlet-name>
+        <url-pattern>/painelUsuario/participante/atividades/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarAtividadesOrganizador</servlet-name>
+        <jsp-file>/admin/listarAtividadesOrganizador.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarAtividadesOrganizador</servlet-name>
+        <url-pattern>/painelUsuario/organizador/atividades/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarEventosOrganizador</servlet-name>
+        <jsp-file>/admin/listarEventosOrganizador.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarEventosOrganizador</servlet-name>
+        <url-pattern>/painelUsuario/organizador/eventos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>adicionarCurso</servlet-name>
+        <jsp-file>/admin/adicionarCurso.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>adicionarCurso</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/novoCurso/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarInstituicao</servlet-name>
+        <jsp-file>/admin/editarInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/editar/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarCurso</servlet-name>
+        <jsp-file>/admin/editarCurso.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarCurso</servlet-name>
+        <url-pattern>/painelUsuario/instituicao/curso/editar/</url-pattern>
+    </servlet-mapping>
+    
+    
     <servlet>
         <servlet-name>listarPeriodosEvento</servlet-name>
         <jsp-file>/admin/listarPeriodosEvento.jsp</jsp-file>
@@ -141,6 +345,46 @@
     <servlet-mapping>
         <servlet-name>listarPeriodosEvento</servlet-name>
         <url-pattern>/painelUsuario/evento/periodos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarPeriodosAtividade</servlet-name>
+        <jsp-file>/admin/listarPeriodosAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarPeriodosAtividade</servlet-name>
+        <url-pattern>/painelUsuario/atividade/periodos/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInscricoesAtividade</servlet-name>
+        <jsp-file>/admin/listarInscricoesAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInscricoesAtividade</servlet-name>
+        <url-pattern>/painelUsuario/atividade/inscricoes/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>adicionarPeriodoAtividade</servlet-name>
+        <jsp-file>/admin/adicionarPeriodoAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>adicionarPeriodoAtividade</servlet-name>
+        <url-pattern>/painelUsuario/atividade/adicionarPeriodo/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarPeriodoAtividade</servlet-name>
+        <jsp-file>/admin/editarPeriodoAtividade.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarPeriodoAtividade</servlet-name>
+        <url-pattern>/painelUsuario/atividade/editarPeriodo/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>editarPeriodoEvento</servlet-name>
+        <jsp-file>/admin/editarPeriodoEvento.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>editarPeriodoEvento</servlet-name>
+        <url-pattern>/painelUsuario/evento/editarPeriodo/</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>listarAtividadesEvento</servlet-name>
@@ -171,7 +415,7 @@
         <jsp-file>/admin/listarOrganizadoresEvento.jsp</jsp-file>
     </servlet>
     <servlet-mapping>
-        <servlet-name>listarAdministradoresEvento</servlet-name>
+        <servlet-name>listarOrganizadoresEvento</servlet-name>
         <url-pattern>/painelUsuario/evento/organizadores/</url-pattern>
     </servlet-mapping>
     <servlet>
@@ -280,6 +524,22 @@
         <url-pattern>/painelUsuario/atividade/adicionarMinistrante/</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>adicionarInstituicao</servlet-name>
+        <jsp-file>/admin/adicionarInstituicao.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>adicionarInstituicao</servlet-name>
+        <url-pattern>/painelUsuario/adicionarInstituicao/</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>listarInstituicoes</servlet-name>
+        <jsp-file>/admin/listarInstituicoes.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>listarInstituicoes</servlet-name>
+        <url-pattern>/painelUsuario/listarInstituicoes/</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>editarAtividade</servlet-name>
         <jsp-file>/admin/editarAtividade.jsp</jsp-file>
     </servlet>
@@ -319,8 +579,17 @@
         <servlet-name>reenviarEmailValidacao</servlet-name>
         <url-pattern>/reenviarEmailValidacao</url-pattern>
     </servlet-mapping>
-    
-    
+   
+   <filter>  
+        <filter-name>HibernateFilter</filter-name>  
+        <filter-class>artemis.controller.HibernateSessionRequestFilter</filter-class>  
+    </filter>  
+  
+    <filter-mapping>  
+        <filter-name>HibernateFilter</filter-name>  
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping> 
+   
     <error-page>
         <error-code>404</error-code>
         <location>/theme/sistema/404.jsp</location>
@@ -331,7 +600,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.jsf</welcome-file>
+        <welcome-file>/theme/sistema/index.jsp</welcome-file>
         <welcome-file>redirect.jsp</welcome-file>
     </welcome-file-list>
 </web-app>

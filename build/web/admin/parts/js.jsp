@@ -3,9 +3,6 @@
     Created on : 02/08/2017, 15:48:16
     Author     : Wallison
 --%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
 <%
    String dir = config.getServletContext().getInitParameter("dir");
 %>
@@ -67,7 +64,7 @@
 <!-- DataTables -->
 <script src="/<%=dir%>/static/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="/<%=dir%>/static/plugins/datatables/dataTables.bootstrap.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_2suS3mPl37IYtNtbiL45JWG08ECIVtU"></script>
     <script src="/<%=dir%>/static/plugins/jquery.geocomplete.js"></script>
 <script>
   $(function () {
@@ -151,7 +148,7 @@
       showInputs: false
     });
 
-    $('#example2').DataTable({
+    $('#example1').DataTable({
       "paging": true,
       "lengthChange": false,
       "searching": false,

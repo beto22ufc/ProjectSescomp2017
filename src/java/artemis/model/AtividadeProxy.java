@@ -55,4 +55,12 @@ public class AtividadeProxy extends Atividade{
             super.removeInscricao(usuario);
         }
     }
+    
+    public void removePeriodo(Atividade atividade, Periodo periodo) throws IllegalAccessException{
+        if(this.getUsuario().getTipo()!=null && this.getUsuario().getTipo().contains("adminEvento") && atividade.getAdministradores().contains(this.getUsuario())){
+            atividade.removePeriodo(periodo);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
 }

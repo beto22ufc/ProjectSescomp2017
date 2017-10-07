@@ -6,6 +6,7 @@
 package artemis.controller;
 
 import artemis.beans.UsuarioBeans;
+import artemis.model.Constantes;
 import artemis.model.Facade;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,7 +84,7 @@ public class PerfilImagemUpload extends HttpServlet {
                 facade.atualizaUsuarioGeral(usuario);
                 System.err.println("Obriado Deus!");
                 request.setAttribute("msgFoto", "Foto atualizada com sucesso!");
-                response.sendRedirect("/ArtemisTCC/painelUsuario/conta");
+                response.sendRedirect("/"+Constantes.DIR+"/painelUsuario/conta");
             }catch(FileUploadException e){
                 e.printStackTrace();
             }catch(Exception e){

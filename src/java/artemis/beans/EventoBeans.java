@@ -37,6 +37,10 @@ public class EventoBeans implements Beans, InscrevivelBeans{
     private String email;
     private LocalizacaoBeans localizacao;
     private ContasSociaisBeans contasSociais;
+    private String tema = "default";
+    private boolean temCertificado = true;
+    private boolean temInscricao = true;
+    private float porcentagemMinimaGerarCertifciado;
     
     public EventoBeans(){
     
@@ -172,6 +176,38 @@ public class EventoBeans implements Beans, InscrevivelBeans{
     public void setOrganizadores(List<UsuarioBeans> organizadores) {
         this.organizadores = organizadores;
     }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        this.tema = tema;
+    }
+
+    public boolean isTemCertificado() {
+        return temCertificado;
+    }
+
+    public void setTemCertificado(boolean temCertificado) {
+        this.temCertificado = temCertificado;
+    }
+
+    public boolean isTemInscricao() {
+        return temInscricao;
+    }
+
+    public void setTemInscricao(boolean temInscricao) {
+        this.temInscricao = temInscricao;
+    }
+
+    public float getPorcentagemMinimaGerarCertifciado() {
+        return porcentagemMinimaGerarCertifciado;
+    }
+
+    public void setPorcentagemMinimaGerarCertifciado(float porcentagemMinimaGerarCertifciado) {
+        this.porcentagemMinimaGerarCertifciado = porcentagemMinimaGerarCertifciado;
+    }
     
     
     
@@ -184,6 +220,10 @@ public class EventoBeans implements Beans, InscrevivelBeans{
                 this.setNome(e.getNome());
                 this.setDescricao(e.getDescricao());
                 this.setCategoria(e.getCategoria());
+                this.setPorcentagemMinimaGerarCertifciado(e.getPorcentagemMinimaGerarCertifciado());
+                this.setTemCertificado(e.isTemCertificado());
+                this.setTemInscricao(e.isTemInscricao());
+                this.setTema(e.getTema());
                 List<InscricaoBeans> inscricoes = Collections.synchronizedList(new ArrayList<InscricaoBeans>());
                 List<PeriodoBeans> periodos = Collections.synchronizedList(new ArrayList<PeriodoBeans>());
                 List<AtividadeBeans> atividades = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
@@ -330,6 +370,10 @@ public class EventoBeans implements Beans, InscrevivelBeans{
         e.setEventos(eventos);
         e.setGaleria(galeria);
         e.setSlideshow(slideshow);
+        e.setPorcentagemMinimaGerarCertifciado(this.getPorcentagemMinimaGerarCertifciado());
+        e.setTemCertificado(this.isTemCertificado());
+        e.setTemInscricao(this.isTemInscricao());
+        e.setTema(this.getTema());
         if(this.getCodEvento()>0){
             e.setCodEvento(this.getCodEvento());
         };
@@ -347,6 +391,17 @@ public class EventoBeans implements Beans, InscrevivelBeans{
         }
         return e;
     }
-    
+   
+    @Override
+    public boolean equals(Object o){
+        return (this.getCodEvento()==((EventoBeans) o).getCodEvento());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (int) (this.codEvento ^ (this.codEvento >>> 32));
+        return hash;
+    }
 }
 

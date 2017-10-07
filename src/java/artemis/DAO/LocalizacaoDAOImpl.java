@@ -29,82 +29,51 @@ public class LocalizacaoDAOImpl implements LocalizacaoDAO{
     }
     
     @Override
-    public void adicionarLocalizacao(Localizacao localizacao) {
+    public Localizacao adicionarLocalizacao(Localizacao localizacao) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(localizacao != null){
-                session.persist(localizacao);
-            }else{
-                throw new NullPointerException("Localização nula não pode ser salvo!");
-            }
+        if(localizacao != null){
+            session.persist(localizacao);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Localização nula não pode ser salvo!");
         }
+        session.close();
+        return localizacao;
     }
 
     @Override
     public void atualizarLocalizacao(Localizacao localizacao) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            if(localizacao != null){
-                session.update(localizacao);
-            }else{
-                throw new NullPointerException("Localização nula não pode ser atualizada!");
-            }
-            t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        Session session = this.sessionFactory.getCurrentSession();
+        if(localizacao != null){
+            session.update(localizacao);
+        }else{
+            throw new NullPointerException("Localização nula não pode ser atualizada!");
         }
     }
 
     @Override
     public List<Localizacao> listaLocalizacoes() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<Localizacao> localizacaos = Collections.synchronizedList(session.createCriteria(Localizacao.class).list());
-            t.commit();
-            return localizacaos;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Localizacao> localizacaos = Collections.synchronizedList(session.createCriteria(Localizacao.class).list());
+        return localizacaos;
     }
 
     @Override
     public void removerLocalizacao(Localizacao localizacao) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            if(localizacao != null){
-                session.delete(localizacao);
-            }else{
-                throw new NullPointerException("Localização nula não pode ser removida!");
-            }
-            t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        Session session = this.sessionFactory.getCurrentSession();
+        if(localizacao != null){
+            session.delete(localizacao);
+        }else{
+            throw new NullPointerException("Localização nula não pode ser removida!");
         }
     }
 
     @Override
     public Localizacao getLocalizacao(long codLocalizacao) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            Localizacao localizacao = (Localizacao) session.get(Localizacao.class, codLocalizacao);
-            t.commit();
-            return localizacao;        
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        Localizacao localizacao = (Localizacao) session.get(Localizacao.class, codLocalizacao);
+        return localizacao;        
     }
     
 }

@@ -8,6 +8,8 @@ package artemis.controller;
 import artemis.beans.EventoBeans;
 import artemis.beans.InscricaoBeans;
 import artemis.beans.UsuarioBeans;
+import artemis.model.Atividade;
+import artemis.model.Constantes;
 
 import artemis.model.Evento;
 import artemis.model.Facade;
@@ -15,6 +17,7 @@ import artemis.model.Inscricao;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,6 +46,7 @@ public class InscreveEvento extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         String alert = "<script>alert(\'%data%\');</script>";
+        String alertHref = "<script>alert(\'%data%\');location.href=\"%data2%\";</script>";
         String button = "";
         long codEvento = 0;
         try{
@@ -57,24 +61,32 @@ public class InscreveEvento extends HttpServlet {
                 inscricao.setValida(true);
                 Inscricao ins = new Inscricao();
                 List<List> choques = ins.verificaChoque((Evento) evento.toBusiness());
-                int chocadas = choques.get(0).size(),chocados = choques.get(0).size();
-                if(chocadas == 0 && chocados == 0){
-                    inscricao = facade.fazerInscricaoEvento(evento, inscricao);
-                    facade.adicionaNivelUsuario(usuario, "participante");
-                    alert = alert.replace("%data%", "Inscrição realizada com sucesso!");
-                    button = "<a href=\"javascript:void(0);\" onclick=\"desfazInscricaoEvento("+codEvento+","+inscricao.getCodInscricao()+");\">Desfazer inscrição</a>";
-                    out.println(alert);
-                    out.println(button);
-                }else{                    
-                    alert = alert.replace("%data%", "Os horários desse evento colidiram com o das outras atividades e eventos do evento no qual este está vinculado!");
-                    button = "<a href=\"javascript:void(0);\" onclick=\"inscreveEvento("+codEvento+");\">Inscrever-se</a>";
-                    out.println(alert);
-                    out.println(button);
+                int chocadas = choques.get(0).size(),chocados = choques.get(1).size();
+                if(facade.getMenorPeriodo(evento).getInicio().isAfter(LocalDateTime.now())){
+                    if(chocadas == 0 && chocados == 0){
+                        inscricao = facade.fazerInscricaoEvento(evento, inscricao);
+                        facade.adicionaNivelUsuario(usuario, "participante");
+                        alert = alert.replace("%data%", "Inscrição realizada com sucesso!");
+                        button = "<a href=\"javascript:void(0);\" onclick=\"desfazInscricaoEvento("+codEvento+","+inscricao.getCodInscricao()+");\">Desfazer inscrição</a>";
+                        out.println(alert);
+                        out.println(button);
+                    }else{
+                        alert = alert.replace("%data%", "Os horários desse evento colidiram com o das outras atividades e eventos do evento no qual este está vinculado!");
+                        button = "<a href=\"javascript:void(0);\" onclick=\"inscreveEvento("+codEvento+");\">Inscrever-se</a>";
+                        out.println(alert);
+                        out.println(button);
+                    }
+                }else{
+                    alert = alert.replace("%data%", "Esse evento já foi iniciado, não sendo possível realizar mais inscrição!");
+                        button = "<a href=\"javascript:void(0);\" onclick=\"inscreveEvento("+codEvento+");\">Inscrever-se</a>";
+                        out.println(alert);
+                        out.println(button);
                 }
             }else{                
-                alert = alert.replace("%data%", "Usuário não está autenticado!");
+                alertHref = alertHref.replace("%data%", "Usuário não autenticado, realize o login!");
+                alertHref = alertHref.replace("%data2%", Constantes.URL+"/"+Constantes.DIR+"/login");
                 button = "<a href=\"javascript:void(0);\" onclick=\"inscreveEvento("+codEvento+");\">Inscrever-se</a>";
-                out.println(alert);
+                out.println(alertHref);
                 out.println(button);
             }
         }catch(NumberFormatException e){

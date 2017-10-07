@@ -7,6 +7,15 @@ package artemis.model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 /**
  *
@@ -76,11 +85,9 @@ public class Tema {
         return diretorio;
     }
 
-    public void setDiretorio(File diretorio) throws FileNotFoundException {
+    public void setDiretorio(File diretorio) {
         if(diretorio == null)
             throw new NullPointerException("Direitório não pode ser nulo!");
-        else if(!diretorio.exists())
-            throw new FileNotFoundException("Diretório de tema não exite!");
         else
             this.diretorio = diretorio;
     }
@@ -93,5 +100,39 @@ public class Tema {
         this.seccao = seccao;
     }
     
+    public static Tema getTema(String nome) throws IOException, JDOMException{
+        File fileInfo = FileManipulation.getFileStream(FileManipulation.getStreamFromURL(Constantes.URL+"/"+Constantes.DIR+"/theme/evento/"+nome+"/info.xml"),".xml");
+        Tema tema = new Tema();
+        SAXBuilder builder = new SAXBuilder();
+        Document doc = builder.build(fileInfo);
+        Element root = (Element) doc.getRootElement();
+        List pessoas = root.getChildren();
+        Iterator i = pessoas.iterator();
+        while( i.hasNext() ){
+            Element pessoa = (Element) i.next();
+            if(pessoa.getChildText("nome").equals(nome)){
+                tema.setNome(pessoa.getChildText("nome"));
+                tema.setVersao(pessoa.getChildText("versao"));
+                tema.setSeccao(pessoa.getChildText("seccao").equals("true"));
+                tema.setDiretorio(FileManipulation.getFileStream(FileManipulation.getStreamFromURL(Constantes.URL+"/"+Constantes.DIR+"/theme/evento/"+nome+"/"), "dir"));
+                break;
+            }
+        }
+        return tema;
+    }
     
+    public static List<String> getTemas() throws IOException, JDOMException{
+        List<String> temas = Collections.synchronizedList(new ArrayList<String>());
+        File fileInfo = FileManipulation.getFileStream(FileManipulation.getStreamFromURL(Constantes.URL+"/"+Constantes.DIR+"/theme/evento/temas.xml"),".xml");
+        SAXBuilder builder = new SAXBuilder();
+        Document doc = builder.build(fileInfo);
+        Element root = (Element) doc.getRootElement();
+        List pessoas = root.getChildren();
+        Iterator i = pessoas.iterator();
+        while( i.hasNext() ){
+            Element pessoa = (Element) i.next();
+            temas.add(pessoa.getChildText("nome"));              
+        }
+        return temas;
+    }
 }

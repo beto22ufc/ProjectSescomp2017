@@ -9,5 +9,5 @@
 <%
     String dir = config.getServletContext().getInitParameter("dir");
     session.removeAttribute("usuario");
-    response.sendRedirect("/"+dir+"/");
+    response.sendRedirect("/"+dir+"/login");
 %>

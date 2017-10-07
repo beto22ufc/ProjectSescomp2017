@@ -27,7 +27,6 @@
     <table id="example1" class="table table-bordered table-striped">
       <thead>
       <tr>
-        <th>Código</th>
         <th>Nome</th>
         <th>Matricula</th>
         <th>E-mail</th>
@@ -37,7 +36,6 @@
         <th>Nascimento</th>
         <th>Lattes</th>
         <th>Cadastro</th>
-        <th>Remover</th>
       </tr>
       </thead>
       <tbody>
@@ -47,8 +45,7 @@
               //if(evento.getAdministradores().contains(u)){
       %>    
                 <tr>
-                  <td><%=usuario.getCodUsuario() %></td>
-                  <td><%=usuario.getNome()%></td>
+                  <td><a href="/<%=dir%>/perfil/?u=<%=usuario.getNome().toLowerCase().replace(" ", "_")+"_"+usuario.getCodUsuario()%>"><%=usuario.getNome()%></a></td>
                   <td><%=(usuario.getMatricula()!=null) ? usuario.getMatricula().getNumero() : "Sem matrícula" %></td>
                   <td><%=usuario.getEmail()%></td>
                   <td><%=usuario.getCpf().getSecretCpf() %></td>
@@ -57,14 +54,12 @@
                   <td><%=usuario.getNascimento()%></td>
                   <td><a href="<%=usuario.getLattes() %>">Lattes</a></td>
                   <td><%=usuario.getCadastro()%></td>
-                  <td><a href="#">Remover</a></td>
                 </tr>
       <%    //}
          } %>
       </tbody>
       <tfoot>
       <tr>
-        <th>Código</th>
         <th>Nome</th>
         <th>Matricula</th>
         <th>E-mail</th>
@@ -74,7 +69,6 @@
         <th>Nascimento</th>
         <th>Lattes</th>
         <th>Cadastro</th>
-        <th>Remover</th>
       </tr>
       </tfoot>
     </table>

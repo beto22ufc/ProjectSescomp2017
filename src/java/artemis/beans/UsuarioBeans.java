@@ -10,6 +10,7 @@ import artemis.model.ContasSociais;
 import artemis.model.Matricula;
 import artemis.model.Usuario;
 import java.io.File;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ import java.util.Objects;
  *
  * @author Wallison
  */
-public class UsuarioBeans implements Beans{
+public class UsuarioBeans implements Beans, Serializable{
     private long codUsuario;
     private MatriculaBeans matricula;
     private String nome;
@@ -33,6 +34,7 @@ public class UsuarioBeans implements Beans{
     private String tipo;
     private LocalDate nascimento;
     private ContasSociaisBeans contasSociais;
+    
     public UsuarioBeans(){
     
     }

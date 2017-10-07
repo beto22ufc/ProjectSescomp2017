@@ -13,7 +13,7 @@ import java.util.List;
  * @author Wallison
  */
 public interface LocalizacaoDAO {
-    public void adicionarLocalizacao(Localizacao localizacao);
+    public Localizacao adicionarLocalizacao(Localizacao localizacao);
     public void atualizarLocalizacao(Localizacao localizacao);
     public List<Localizacao> listaLocalizacoes();
     public void removerLocalizacao(Localizacao localizacao);

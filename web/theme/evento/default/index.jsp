@@ -1,4 +1,6 @@
 
+<%@page import="java.time.format.DateTimeFormatter"%>
+<%@page import="org.apache.commons.mail.EmailException"%>
 <%@page import="artemis.beans.InscricaoBeans"%>
 <%@page import="artemis.beans.PeriodoBeans"%>
 <%@page import="artemis.beans.ImagemBeans"%>
@@ -68,11 +70,11 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 <!--// css -->
 <link rel="stylesheet" href="/<%=dir %>/theme/evento/default/css/lightbox.css"> 
 <!-- fullCalendar 2.2.5-->
-<link rel="stylesheet" href="../../ArtemisTCC/static/plugins/fullcalendar/fullcalendar.min.css">
-<link rel="stylesheet" href="../../ArtemisTCC/static/plugins/fullcalendar/fullcalendar.print.css" media="print">
+<link rel="stylesheet" href="../../<%=dir %>/static/plugins/fullcalendar/fullcalendar.min.css">
+<link rel="stylesheet" href="../../<%=dir %>/static/plugins/fullcalendar/fullcalendar.print.css" media="print">
 <!-- font-awesome icons -->
 <link href="/<%=dir %>/theme/evento/default/css/font-awesome.css" rel="stylesheet"> 
-
+<jsp:include page="/${dir}/theme/sistema/style-header-top.jsp"></jsp:include>
 <!-- //font-awesome icons -->
 
 <!-- font -->
@@ -100,7 +102,7 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
         <% if(slideshow.size() == 0){%>
 	background: url(/<%=dir %>/theme/evento/default/images/1.jpg) no-repeat 0px 0px;
         <% }else{%>
-        background: url(<%= ImageManipulation.encodeImage(slideshow.get(0).getArquivo()) %>) no-repeat 0px 0px;
+        background: url(<%= ImageManipulation.encodeImage(slideshow.get(slideshow.size()-1).getArquivo()) %>) no-repeat 0px 0px;
         <% }%>
         background-size: cover;
         -webkit-background-size: cover;
@@ -112,7 +114,7 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 	<% if(slideshow.size() == 0){%>
 	background: url(/<%=dir %>/theme/evento/default/images/1.jpg) no-repeat 0px 0px;
         <% }else{%>
-        background: url(<%= ImageManipulation.encodeImage(slideshow.get(0).getArquivo()) %>) no-repeat 0px 0px;
+        background: url(<%= ImageManipulation.encodeImage(slideshow.get(slideshow.size()-1).getArquivo()) %>) no-repeat 0px 0px;
         <% }%>
         background-size: cover;
         -webkit-background-size: cover;
@@ -124,10 +126,29 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 	<% if(slideshow.size() == 0){%>
 	background: url(/<%=dir %>/theme/evento/default/images/1.jpg) no-repeat 0px 0px;
         <% }else{%>
-        background: url(<%= ImageManipulation.encodeImage(slideshow.get(0).getArquivo()) %>) no-repeat 0px 0px;
+        background: url(<%= ImageManipulation.encodeImage(slideshow.get(slideshow.size()-1).getArquivo()) %>) no-repeat 0px 0px;
         <% }%>
         background-size: cover;
         min-height: 360px;
+    }
+    .header-top-artemis{
+        background:#000;
+        height:50px;
+        width: 100%;
+    }
+    .header-top-artemis .menu-right{
+        float:right;
+    }
+    .header-top-artemis .menu-right ul{
+        list-style:none;
+    }
+    .header-top-artemis .menu-right ul li{
+        float:left;
+        margin-right:10px;
+    }
+    .header-top-artemis .menu-right ul li a{
+        color:white;
+        line-height:50px;
     }
 </style>
 <!--[if lt IE 9]>
@@ -135,6 +156,32 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 <![endif]-->
 </head>
 <body>
+    <header>
+        <div class="header-top-artemis">
+            <div class="menu-right">
+                <ul>
+                    <%
+                        if(session.getAttribute("usuario") !=null){
+                    %>
+                    <li class="dropdown head-dpdn">
+                        <a href="/<%=dir%>/painelUsuario" aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i> <%=((UsuarioBeans) session.getAttribute("usuario")).getNome() %></a>
+                    </li>
+                    <li class="dropdown head-dpdn">
+                        <a href="/<%=dir%>/sair" aria-expanded="false"><i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a>
+                    </li>
+                    <%  }else{%>
+                    <li class="dropdown head-dpdn">
+                        <a href="/<%=dir%>/login" aria-expanded="false"><i class="fa fa-user" aria-hidden="true"></i> Login</a>
+                    </li>
+
+                    <li class="dropdown head-dpdn">
+                            <a href="/<%=dir%>/cadastro"><i class="fa fa-user-plus" aria-hidden="true"></i> Cadastro</a>
+                    </li>
+                    <%  }%>
+                </ul>
+            </div>
+        </div>
+    </header>
 	<!-- banner -->
 	<div class="banner">
 			<div class="address-info">
@@ -148,32 +195,34 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 				<div class="banner-info-text">
 					<div class="container">
 						<div class="agileits-logo">
-							<h1><a href="./"><% if(evento.getNome().length()>=4){ %><%=evento.getNome().substring(0, evento.getNome().length()-2) %><span><%=evento.getNome().substring(evento.getNome().length()-2, evento.getNome().length()) %><%}else{%><%=evento.getNome() %><%}%></span></a></h1>
+                                                    <h1><a href="/<%=dir %>/evento/?e=<%=evento.getNome().toLowerCase().replace(" ", "_")+"_"+evento.getCodEvento() %>"><% if(evento.getNome().length()>=4){ %><%=evento.getNome().substring(0, evento.getNome().length()-2) %><span><%=evento.getNome().substring(evento.getNome().length()-2, evento.getNome().length()) %><%}else{%><%=evento.getNome() %><%}%></span></a></h1>
 						</div>
 						<div class="w3-border"> </div>
 						<div class="w3layouts-banner-info">
                                                     <h2></h2>
 							<div class="w3ls-button btn-inscricao-evento">
                                                             <%
-                                                                boolean inscritoEvento = false;
-                                                                InscricaoBeans inscricao = null;
-                                                                if(usuario != null){
-                                                                    List<InscricaoBeans> inscricoes = evento.getInscricoes();
-                                                                    for(int i=0;i<inscricoes.size();i++){
-                                                                        inscricao = inscricoes.get(i);
-                                                                        inscritoEvento = (inscricao.getParticipante().equals(usuario));
-                                                                        if(inscritoEvento){
-                                                                            break;
+                                                                if(evento.isTemInscricao()){
+                                                                    boolean inscritoEvento = false;
+                                                                    InscricaoBeans inscricao = null;
+                                                                    if(usuario != null){
+                                                                        List<InscricaoBeans> inscricoes = evento.getInscricoes();
+                                                                        for(int i=0;i<inscricoes.size();i++){
+                                                                            inscricao = inscricoes.get(i);
+                                                                            inscritoEvento = (inscricao.getParticipante().equals(usuario));
+                                                                            if(inscritoEvento){
+                                                                                break;
+                                                                            }
                                                                         }
                                                                     }
-                                                                }
-                                                                if(!inscritoEvento){
+                                                                    if(!inscritoEvento){
                                                             %>
                                                             <a href="javascript:void(0);" onclick="inscreveEvento(<%=evento.getCodEvento() %>);">Inscrever-se</a>
                                                         
-                                                            <%  }else{%>
+                                                            <%      }else{%>
                                                             <a href="javascript:void(0);" onclick="desfazInscricaoEvento(<%=evento.getCodEvento()+", "+inscricao.getCodInscricao() %>);">Desfazer inscrição</a>
-                                                            <%  }%>
+                                                            <%      }
+                                                                }%>
                                                         </div>
                                                 </div>
 					</div>
@@ -200,6 +249,7 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 											<li><a href="#about" class="scroll">Sobre</a></li>
 											<li><a href="#services" class="scroll">Atividades e Eventos</a></li>
 											<li><a href="#gallery" class="scroll">Galeria</a></li>
+											<li><a href="#ads" class="scroll">Patrocinadores</a></li>
 											<li><a href="#team" class="scroll">Ministrantes</a></li>
 											<li><a href="#news" class="scroll">Cronograma</a></li>
 											<li><a href="#mail" class="scroll">Contato</a></li>
@@ -252,7 +302,6 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 						<div class="icon-right">
 							<h5><%=evento.getNome() %></h5>
 							<p><%=evento.getDescricao() %>
-                                                            <%=facade.getAtividadesEventosJSON(evento) %>
                                                         </p>
 						</div>
 						<div class="clearfix"> </div>
@@ -269,52 +318,130 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 			<div class="agileits-heading">
 				<h3>Atividades e Eventos</h3>
 			</div>
-			<div class="wthree-services-grids">
-                            <%
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Atividade</th>
+                                <th>Descrição</th>
+                                <th>Palestrante</th>
+                                <th>Vagas internas</th>
+                                <th>Vagas externas</th>
+                                <th>Período(s)</th>
+                                <th>Inscrição</th>
+                            </tr>
+                        </thead>
+                        <%
                                 List<AtividadeBeans> atividades = evento.getAtividades();
                                 List<EventoBeans> eventos = evento.getEventos();
-                                for(int i=0;i<atividades.size();i++){
-                                    AtividadeBeans atividade = atividades.get(i);                                
-                            %>
-				<div class="col-sm-3 wthree-services">
-					<div class="wthree-services-grid">
-						<div class="wthree-services-info">
-							<i class="fa fa-puzzle-piece" aria-hidden="true"></i>
-							<h4><%=atividade.getNome() %></h4>
-							<div class="w3ls-border"> </div>
-						</div>
-						<div class="wthree-services-captn">
-							<h4><%=atividade.getNome() %></h4>
-							<p><%=atividade.getDescricao()%></p>
-						</div>
-					</div>
-				</div>
-				<%}%>
-				<div class="clearfix"> </div>
-			</div>
-			<div class="wthree-services-grids services-grids1">
-                                <%
-                                    for(int i=0;i<eventos.size();i++){
-                                        EventoBeans e = eventos.get(i);
-                                %>
-				<div class="col-sm-3 wthree-services">
-					<div class="wthree-services-grid">
-						<div class="wthree-services-info">
-							<i class="fa fa-calendar" aria-hidden="true"></i>
-							<h4><%=e.getNome() %></h4>
-							<div class="w3ls-border"> </div>
-						</div>
-						<div class="wthree-services-captn">
-							<h4><%=e.getNome() %></h4>
-                                                        <p><%=(e.getDescricao().length()>64) ? e.getDescricao().substring(0, 64) : e.getDescricao() %></p>
-						</div>
-					</div>
-				</div>
-                                <%
-                                    }
-                                %>
-				<div class="clearfix"> </div>
+                                if(atividades.size()>0){
+                                for(AtividadeBeans atividade : atividades){
+                        %>
+                        <%
+                            int inscritosInternos = facade.inscritosInternos(atividade),
+                                inscritosExternos = facade.inscritosExternos(atividade);
+                        %>
+                        <div class="modal about-modal fade" id="atividade_modal_<%=atividade.getCodAtividade() %>" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                                <div class="modal-header"> 
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>						
+                                                        <h4 class="modal-title"><%=atividade.getNome() %></h4>
+                                                </div> 
+                                                <div class="modal-body">
+                                                        <div class="agileits-w3layouts-info">
+                                                                <p><%=atividade.getDescricao() %></p>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
                         </div>
+                        <tr>
+                            <td><%=atividade.getNome() %></td>
+                            <td><a href="javascript:void(0);" data-toggle="modal" data-target="#atividade_modal_<%=atividade.getCodAtividade() %>">Ver</a></td>
+                            <td><%=(atividade.getMinistrante() !=null) ? atividade.getMinistrante().getNome() : "Não definido" %></td>
+                            <td><%
+                                if(atividade.getVagasInternas()>0){
+                                %>
+                                 <%=inscritosInternos+"/"+atividade.getVagasInternas() %>
+                                <%}else{out.println("Sem vagas destinadas");}%>
+                            </td>
+                            <td><%
+                                if(atividade.getVagasPublicas()>0){
+                                %>
+                                <%=inscritosExternos+"/"+atividade.getVagasPublicas()%>
+                                <%}else{out.println("Sem vagas destinadas");}%>
+                            </td>
+                            <td><% 
+                                for(PeriodoBeans periodo : atividade.getPeriodoBeanses()){
+                                        out.print("|"+periodo.toString());    
+                                }
+                                out.print("|"); 
+                            %></td>
+                            <td>
+                                <p class="btn-inscricao-atividade-<%=atividade.getCodAtividade() %>">
+                                    <%
+                                        List<InscricaoBeans> inscricoesAtividade = atividade.getInscricoes();
+                                        boolean inscritoAtividade = false;
+                                        InscricaoBeans ins = null;
+                                        if(usuario !=null){
+                                            for(int j=0;j<inscricoesAtividade.size();j++){
+                                                InscricaoBeans inscricao = inscricoesAtividade.get(j);
+                                                inscritoAtividade = (inscricao.getParticipante().equals(usuario));
+                                                if(inscritoAtividade){
+                                                    ins = inscricao;
+                                                    break;            
+                                                }
+                                            }
+                                        }
+                                        if(!inscritoAtividade){
+                                            if((atividade.getVagasInternas()-inscritosInternos)>0 || (atividade.getVagasPublicas()-inscritosExternos)>0){
+
+                                    %>
+                                    <a href="javascript:void(0);" onclick="inscreveAtividade(<%=atividade.getCodAtividade() %>);">Inscrever-se</a>
+                                    <%  }else{if(usuario !=null){out.println("Sem vagas");}else{
+                                         %>
+                                         <a href="javascript:void(0);" onclick="inscreveAtividade(<%=atividade.getCodAtividade() %>);">Inscrever-se</a>
+                                    <%                   
+                                        }}
+
+                                      }else{%>
+                                    <a href="javascript:void(0);" onclick="desfazInscricaoAtividade(<%=atividade.getCodAtividade()+", "+ins.getCodInscricao() %>);">Desafazer inscrição</a>
+                                    <%  }%>
+                                </p>
+                            </td>
+                        </tr>
+                        <%}%>
+                    </table>
+                    <%}%>
+                    <br />
+                    <%if(eventos.size()>0){%>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Evento</th>
+                                <th>Período(s)</th>
+                                <th>Visitar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                            
+                            for(EventoBeans e : eventos){
+                        %>    
+                        <tr>
+                            <td><%=e.getNome() %></td>
+                            <td><% 
+                                for(PeriodoBeans periodo : e.getPeriodos()){
+                                        out.print("|"+periodo.toString());    
+                            } 
+                            out.print("|");    
+                            %></td>
+                            <td><a href="/<%=dir%>/evento/?e=<%=e.getNome().toLowerCase().replace(" ", "_")+"_"+e.getCodEvento() %>">Visitar</a></td>
+                        </tr>
+                        <% } %>
+                        </tbody>
+                    </table>
+                    <%}%>    
 		</div>
 	</div>
 	<!-- //services -->
@@ -329,31 +456,23 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
                                 List<ImagemBeans> galeria = evento.getGaleria();
                                 if(galeria.size() == 0){
                             %>
-				<div class="col-sm-3 col-xs-4 gallery-grids">
-                                    <div class="w3ls-hover">
-                                        <a href="/<%=dir %>/theme/evento/default/images/1.jpg" data-lightbox="example-set" data-title="Nenhuma legenda">
-                                            <img src="/<%=dir %>/theme/evento/default/images/g1.jpg" class="img-responsive zoom-img" alt=""/>
-                                            <div class="view-caption">
-                                                <h5>Sem imagens para mostrar</h5>
-                                                <i class="fa fa-search-plus" aria-hidden="true"></i>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
+                                <p class="text-center FontBig">Sem imagens para mostrar</p>
                             <%
                                 }else{
                                     for(int i=0;i<galeria.size();i++){
                                         ImagemBeans imagem = galeria.get(i);
                             %>
-                                <div class="w3ls-hover">
+                            <span class="text-center">    
+                            <div class="w3ls-hover">
                                     <a href="<%=ImageManipulation.encodeImage(imagem.getArquivo()) %>" data-lightbox="example-set" data-title="<%=imagem.getDescricao() %>">
                                         <img src="<%=ImageManipulation.encodeImage(imagem.getArquivo()) %>" class="img-responsive zoom-img" alt="" style="width: 426px; height: 640px; float: left"/>
                                         <div class="view-caption">
-                                            <h5>Imagem <%=i %></h5>
+                                            <h5>Imagem <%=i+1 %></h5>
                                             <i class="fa fa-search-plus" aria-hidden="true"></i>
                                         </div>
                                     </a>
                                 </div>
+                            </span>
                             <%      }
                                 }%>
 				<div class="clearfix"> </div> 
@@ -364,36 +483,57 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 		</div> 
 	</div>
 	<!-- //gallery -->
+        <!-- Ads -->
+	<div id="ads">
+		<div class="container"> 
+			<div class="agileits-heading">
+				<h3>Patrocinadores</h3>
+			</div>
+			<div class="gallery-w3lsrow">
+                            <%
+                                List<ImagemBeans> ads = evento.getSlideshow();
+                                if(ads.size() < 1){
+                            %>
+                                <p class="text-center FontBig">Sem patrocinadores para mostrar</p>
+                            <%
+                                }else{
+                                    for(int i=ads.size()-2;i>=0;i--){
+                                        ImagemBeans imagem =ads.get(i);
+                            %>
+                            <span class="text-center">    
+                            
+                                <img src="<%=ImageManipulation.encodeImage(imagem.getArquivo()) %>" alt="" style="width:200px;float: left"/>
+                            
+                            </span>
+                            <%      }
+                                }%>
+				<div class="clearfix"> </div> 
+			</div>
+			<!--  light box js -->
+				<!-- //light box js--> 
+		</div> 
+	</div>
+                                <br />
+                                <br />
+                                <br />
+	<!-- //ads -->
+        
 	<!-- stats -->
 	<div class="stats jarallax">
 		<div class="container">
 			<div class="col-md-3 w3_counter_grid">
 				<div class="w3_agileits_counter_grid">
-					<i class="fa fa-umbrella" aria-hidden="true"></i>
+					<i class="fa fa-users" aria-hidden="true"></i>
 				</div>
-				<p class="counter">1,965</p>
-				<h3>Orders Completed</h3>
+				<p class="counter"><%=evento.getInscricoes().size() %></p>
+				<h3>Inscritos no Evento</h3>
 			</div>
 			<div class="col-md-3 w3_counter_grid">
 				<div class="w3_agileits_counter_grid">
 					<i class="fa fa-users" aria-hidden="true"></i>
 				</div>
-				<p class="counter">432</p>
-				<h3>Crew Members</h3>
-			</div>
-			<div class="col-md-3 w3_counter_grid">
-				<div class="w3_agileits_counter_grid">
-					<i class="fa fa-comments" aria-hidden="true"></i>
-				</div>
-				<p class="counter">690</p>
-				<h3>Million Man-hours</h3>
-			</div>
-			<div class="col-md-3 w3_counter_grid">
-				<div class="w3_agileits_counter_grid">
-					<i class="fa fa-book" aria-hidden="true"></i>
-				</div>
-				<p class="counter">124</p>
-				<h3>Counties Covered</h3>
+                            <p class="counter"><%=facade.getInscritosAtividadeEvento(evento) %></p>
+				<h3>Inscritos nas Atividades</h3>
 			</div>
 			<div class="clearfix"> </div>
 		</div>
@@ -423,13 +563,19 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
                                             %>
                                             <img src="<%=ImageManipulation.encodeImage(ub.getImagemPerfil())%>" alt="User <%=ub.getNome() %> Image" />
                                             <%  }%>
+                                                <%
+                                                    if(ub.getContasSociais()!=null){
+                                                %>
 						<div class="w3social-icons captn-icon"> 
 							<ul>
-								<li><a href="#"><i class="fa fa-facebook"></i></a></li>
-								<li><a href="#"><i class="fa fa-google-plus"></i></a></li> 
-								<li><a href="#"><i class="fa fa-twitter"></i></a></li> 
+                                                            <li><a href="<%=ub.getContasSociais().getNookdear()%>"><i class="fa fa-smile-o"></i></a></li>
+                                                            <li><a href="<%=ub.getContasSociais().getFacebook() %>"><i class="fa fa-facebook"></i></a></li>
+								<li><a href="<%=ub.getContasSociais().getGplus()%>"><i class="fa fa-google-plus"></i></a></li> 
+								<li><a href="<%=ub.getContasSociais().getTwitter()%>"><i class="fa fa-twitter"></i></a></li> 
+								<li><a href="<%=ub.getContasSociais().getLinkedin()%>"><i class="fa fa-linkedin"></i></a></li> 
 							</ul>
 						</div>
+                                                <%}%>
 						<div class="captn">
 							<h4><%=ub.getNome() %></h4>	
 						</div>
@@ -458,27 +604,47 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 	<div class="contact" id="mail">
 		<div class="container"> 
 			<div class="agileits-heading">
-				<h3>Contact Us</h3>
+				<h3>Localização</h3>
 			</div>
 			<div class="contact-w3ls-row">
 				<div class="w3agile-map">
-					<iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d86258.20905457705!2d-82.56985214706441!3d36.53988771087049!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1463030942772" allowfullscreen=""></iframe>
-				</div>
+                                    <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyCvAX35qL3nxYVOL-_ooW4BMmed5fUlDcc&q=<%=evento.getLocalizacao().getNome() %>" allowfullscreen></iframe>
+                                </div>
+                                <!--
 				<div class="wthree-contact-form">
-					<form action="#" method="post">
+                                        <%
+                                            if(request.getParameter("sendMail") !=null){
+                                                try{
+                                                    String mail[] = new String[5];
+                                                    mail[0] = request.getParameter("nome");
+                                                    mail[1] = request.getParameter("sobrenome");
+                                                    mail[2] = request.getParameter("menssagem");
+                                                    mail[3] = request.getParameter("telefone");
+                                                    mail[4] = request.getParameter("email");
+                                                    facade.enviaEmailContatoEvento(evento, mail);
+                                                    request.setAttribute("msg", "E-mail enviado com sucesso!");
+                                                    out.println("<script>alert(\"E-mail enviado com sucesso!\")</script>");
+                                                }catch(EmailException exc){
+                                                    request.setAttribute("msg", "Não foi possível enviar o e-mail no momento, tente mais tarde!");
+                                                    out.println("<script>alert(\"Não foi possível enviar o e-mail no momento, tente mais tarde!\")</script>");
+                                                }
+                                            }
+                                        %>
+					<form action="" method="post">
+                                            <p><%=(request.getParameter("msg") != null) ? request.getParameter("msg") : "" %></p>
 						<div class="col-md-5 col-sm-5 agileits-contact-right">
-							<textarea name="Message" placeholder="Message" required=""></textarea>
+							<textarea name="menssage" placeholder="Message" required=""></textarea>
 						</div>
 						<div class="col-md-7 col-sm-7 agileits-contact-left">
-							<input type="text" name="First Name" placeholder="First Name" required="">
-							<input type="text" class="email" name="Last Name" placeholder="Last Name" required="">
-							<input type="text" name="Number" placeholder="Mobile Number" required="">
-							<input type="email"  class="email" name="Email" placeholder="Email" required="">
-							<input type="submit" value="SUBMIT">
+							<input type="text" name="nome" placeholder="Nome" required="">
+							<input type="text" class="email" name="sobrenome" placeholder="Sobrenome" required="">
+							<input type="text" name="telefone" placeholder="Número de telefone" required="">
+							<input type="email"  class="email" name="email" placeholder="Email" required="">
+							<input type="submit" name="sendMail" value="ENVIAR">
 						</div> 
 						<div class="clearfix"> </div> 
 					</form>
-				</div>
+				</div>-->
 			</div>  
 		</div> 
 	</div>
@@ -505,9 +671,10 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#about" class="scroll">Sobre</a></li>
 							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#services" class="scroll">Atividades</a></li>
 							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#gallery" class="scroll">Galeria</a></li>
+							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#ads" class="scroll">Patrocinadoes</a></li>
 							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#team" class="scroll">Ministrantes</a></li>
 							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#news" class="scroll">Cronograma</a></li>
-							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#mail" class="scroll">Contato</a></li>
+							<li><i class="fa fa-angle-right" aria-hidden="true"></i> <a href="#mail"  class="scroll clickMail">Contato</a></li>
 						</ul>
 					</div>
 					<div class="clearfix"> </div>
@@ -558,7 +725,7 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 	<script src="/<%=dir %>/theme/evento/default/js/jquery.countup.js"></script>
         <!-- fullCalendar 2.2.5 -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
-        <script src="../../ArtemisTCC/static/plugins/fullcalendar/fullcalendar.min.js"></script>
+        <script src="../../<%=dir %>/static/plugins/fullcalendar/fullcalendar.min.js"></script>
 		<script>
 			$('.counter').countUp();
 		</script>
@@ -600,7 +767,7 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
         PeriodoBeans inicial = facade.getMenorPeriodo(evento);
         if(inicial != null){
     %>
-        var date = date = new Date(<%=inicial.getInicio().getYear()%>, <%=inicial.getInicio().getMonthValue()%>, <%=inicial.getInicio().getDayOfMonth()%>);
+        var date = new Date(<%=inicial.getInicio().getYear()%>, <%=inicial.getInicio().getMonthValue()%>, <%=inicial.getInicio().getDayOfMonth()%>);
     <%  }%>
     $('#calendar').fullCalendar({
       header: {
@@ -646,8 +813,11 @@ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); func
 
       }
     });
-
+    
   });
+  function clickMail(){
+        $('.clickMail').click();
+  }
 </script>
 </body>	
 </html>

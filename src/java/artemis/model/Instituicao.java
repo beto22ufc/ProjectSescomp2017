@@ -5,6 +5,8 @@
  */
 package artemis.model;
 
+import artemis.DAO.CursoDAOImpl;
+import artemis.DAO.InstituicaoDAOImpl;
 import java.util.List;
 import javax.persistence.*;
 
@@ -24,10 +26,18 @@ public class Instituicao {
     @JoinTable(name= "instituicao_curso", joinColumns = {@JoinColumn(name="instituicao", referencedColumnName = "codInstituicao")}
        , inverseJoinColumns = {@JoinColumn(name="curso", referencedColumnName = "codCurso")})
     private List<Curso> cursos;
-    @ManyToMany(targetEntity = Usuario.class, cascade = CascadeType.ALL)
+    @ManyToMany(targetEntity = Usuario.class)
     @JoinTable(name= "instituicao_associados", joinColumns = {@JoinColumn(name="instituicao", referencedColumnName = "codInstituicao")}
        , inverseJoinColumns = {@JoinColumn(name="usuario", referencedColumnName = "codUsuario")})
     private List<Usuario> associados;
+    @ManyToMany(targetEntity = Evento.class)
+    @JoinTable(name= "instituicao_eventos", joinColumns = {@JoinColumn(name="instituicao", referencedColumnName = "codInstituicao")}
+       , inverseJoinColumns = {@JoinColumn(name="evento", referencedColumnName = "codEvento")})
+    private List<Evento> eventos;
+    @ManyToMany(targetEntity = Atividade.class)
+    @JoinTable(name= "instituicao_atividades", joinColumns = {@JoinColumn(name="instituicao", referencedColumnName = "codInstituicao")}
+       , inverseJoinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")})
+    private List<Atividade> atividades;
 
     public Instituicao(){
     
@@ -87,7 +97,44 @@ public class Instituicao {
         else
             throw new NullPointerException("Lista de associados não pode ser nula!");
     }
+
+    public List<Evento> getEventos() {
+        return eventos;
+    }
+
+    public void setEventos(List<Evento> eventos) {
+        if(eventos != null)
+            this.eventos = eventos;
+        else
+            throw new NullPointerException("Lista de eventos não pode ser nula!");
+    }
+
+    public List<Atividade> getAtividades() {
+        return atividades;
+    }
+
+    public void setAtividades(List<Atividade> atividades) {
+        if(atividades != null)
+            this.atividades = atividades;
+        else
+            throw new NullPointerException("Lista de atividades não pode ser nula!");
+    }
     
-    
+    public void removeCurso(Curso curso){
+        CursoDAOImpl cdao = new CursoDAOImpl();
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();    
+        for(int i=0;i<this.getCursos().size();i++){
+            Curso c = this.getCursos().get(i);
+            if(c.getCodCurso() == curso.getCodCurso()){
+                this.getCursos().remove(i);
+                idao.atualizarInstituicao(this);
+                if(!curso.alunoAssociado()){
+                    cdao.removerCurso(curso);
+                }else{
+                    throw new IllegalArgumentException("Curso "+curso.getNome()+" possuí aluno associado!");
+                }
+            }
+        }
+    }
     
 }

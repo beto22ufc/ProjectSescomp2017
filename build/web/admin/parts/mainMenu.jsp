@@ -26,32 +26,24 @@
         </div>
       </div>
       <!-- search form -->
-      <form action="#" method="get" class="sidebar-form">
-        <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-        </div>
-      </form>
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
-        <li class="header">Negação principal</li>
+        <li class="header">Navegação principal</li>
         <li class="treeview">
             <a href="/<%=dir2%>/painelUsuario">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+            <i class="fa fa-dashboard"></i> <span>Inicio</span>
             
           </a>
         </li>
-        <li>
-          <a href="/<%=dir2%>/painelUsuario/usuarios">
-            <i class="fa fa-users"></i> <span>Usuários</span>
+        <li class="treeview">
+            <a href="/<%=dir2%>/">
+            <i class="fa fa-compass"></i> <span>Voltar ao site</span>
+            
           </a>
         </li>
         
-        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null){ %>
+        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null && ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("adminSite")){ %>
         <li class="treeview">
           <a href="#">
             <i class="fa fa-users"></i>
@@ -99,6 +91,65 @@
           <ul class="treeview-menu">
               <li><a href="/<%=dir2%>/painelUsuario/novaAtividade"><i class="fa fa-plus"></i> Criar Atividade</a></li>
             <li><a href="/<%=dir2%>/painelUsuario/listarAtividades"><i class="fa fa-bars"></i> Listar Atividades</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null && ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("adminSite")){ %>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-university"></i>
+            <span>Instituição</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+              <li><a href="/<%=dir2%>/painelUsuario/adicionarInstituicao/"><i class="fa fa-plus"></i> Criar Instituição</a></li>
+            <li><a href="/<%=dir2%>/painelUsuario/listarInstituicoes/"><i class="fa fa-bars"></i> Listar Instituições</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null && ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("ministrante")){ %>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-id-badge"></i>
+            <span>Ministrante</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+              <li><a href="/<%=dir2%>/painelUsuario/ministrante/atividades/"><i class="fa fa-bars"></i> Listar atividades</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null && (((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("organizador") || ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("adminEvento"))){ %>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-vcard-o"></i>
+            <span>Organizador</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+              <li><a href="/<%=dir2%>/painelUsuario/organizador/eventos/"><i class="fa fa-bars"></i> Listar eventos</a></li>
+              <li><a href="/<%=dir2%>/painelUsuario/organizador/atividades/"><i class="fa fa-bars"></i> Listar atividades</a></li>
+          </ul>
+        </li>
+        <% } %>
+        <% if(((UsuarioBeans) session.getAttribute("usuario")).getTipo() != null && ((UsuarioBeans) session.getAttribute("usuario")).getTipo().contains("participante")){ %>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-vcard"></i>
+            <span>Participante</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+              <li><a href="/<%=dir2%>/painelUsuario/participante/eventos/"><i class="fa fa-bars"></i> Listar eventos</a></li>
+              <li><a href="/<%=dir2%>/painelUsuario/participante/atividades/"><i class="fa fa-bars"></i> Listar atividades</a></li>
           </ul>
         </li>
         <% } %>

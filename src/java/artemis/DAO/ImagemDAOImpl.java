@@ -31,90 +31,47 @@ public class ImagemDAOImpl implements ImagemDAO{
 
     @Override
     public void adicionarImagem(Imagem imagem) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(imagem != null){
-                session.persist(imagem);
-            }else{
-                throw new NullPointerException("Imagem não pode ser nula!");
-            }
-            t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        Session session = this.sessionFactory.getCurrentSession();
+        if(imagem != null){
+            session.persist(imagem);
+        }else{
+            throw new NullPointerException("Imagem não pode ser nula!");
         }
     }
 
     @Override
     public void atualizarImagem(Imagem imagem) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(imagem != null){
-                session.update(imagem);
-            }else{
-                throw new NullPointerException("Imagem não pode ser nula!");
-            }
-            t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        Session session = this.sessionFactory.getCurrentSession();
+        if(imagem != null){
+            session.update(imagem);
+        }else{
+            throw new NullPointerException("Imagem não pode ser nula!");
         }
+
     }
 
     @Override
     public List<Imagem> listaImagens() {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            List<Imagem> imagens = Collections.synchronizedList(session.createCriteria(Imagem.class).list());
-            t.commit();
-            return imagens;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        List<Imagem> imagens = Collections.synchronizedList(session.createCriteria(Imagem.class).list());
+        return imagens;
     }
 
     @Override
     public void removerImagem(Imagem imagem) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(imagem != null){
-                session.delete(imagem);
-            }else{
-                throw new NullPointerException("Imagem não pode ser nula!");
-            }
-            t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        if(imagem != null){
+            session.delete(imagem);
+        }else{
+            throw new NullPointerException("Imagem não pode ser nula!");
         }
     }
 
     @Override
     public Imagem getImagem(long codImagem) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            Imagem imagem = (Imagem) session.get(Imagem.class, codImagem);
-            t.commit();
-            return imagem;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Imagem imagem = (Imagem) session.get(Imagem.class, codImagem);
+        return imagem;
     }
     
 }

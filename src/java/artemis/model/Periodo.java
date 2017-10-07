@@ -8,9 +8,11 @@ package artemis.model;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Column;
 import javax.persistence.Converter;
@@ -131,6 +133,7 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
         List<Periodo> PeriodosEmchoque = Collections.synchronizedList(new ArrayList<>());
         for (Periodo lista1 : lista) {
             if(this.detectaColisao(lista1)){
+                System.out.println("Periodo 1: "+this.toString()+" Periodo 2: "+lista1.toString());
                 PeriodosEmchoque.add(lista1);
             }
         }
@@ -138,30 +141,46 @@ public class Periodo implements AttributeConverter<LocalDateTime, Timestamp>{
     }
     
     public boolean contido(Periodo p){
-        return ((this.getInicio().isAfter(p.getInicio()) || this.getInicio().equals(p.getInicio())) && (this.getTermino().isBefore(p.getTermino()) || this.getTermino().equals(p.getTermino())));
+        return this.getInicio().isAfter(p.getInicio()) && this.getTermino().isBefore(p.getTermino());
     }
 
     public boolean detectaColisao(Periodo outroPeriodo){
         //começa depois do inicio e termina antes do fim        
-        if((outroPeriodo.getInicio().isAfter(this.getInicio()) || outroPeriodo.getInicio().isEqual(this.getInicio())) && (outroPeriodo.getInicio().isBefore(this.getTermino()) || outroPeriodo.getInicio().isEqual(this.getTermino()))){
+        if((outroPeriodo.getInicio().isAfter(this.getInicio())) && (outroPeriodo.getTermino().isBefore(this.getTermino()))){
             return true;
         }
         //começa antes do inicio e termina depois do inicio
-        if((outroPeriodo.getTermino().isAfter(this.getInicio()) || outroPeriodo.getTermino().isEqual(this.getInicio())) && (outroPeriodo.getTermino().isBefore(this.getTermino()) || outroPeriodo.getTermino().isEqual(this.getTermino()))){
+        if((outroPeriodo.getTermino().isAfter(this.getInicio())) && (outroPeriodo.getTermino().isBefore(this.getTermino()))){
             return true;
         }
         //começa antes do fim e termina depois
-        if((outroPeriodo.getInicio().isBefore(this.getTermino()) || outroPeriodo.getInicio().isEqual(this.getTermino())) && (outroPeriodo.getTermino().isAfter(this.getTermino()) || outroPeriodo.getTermino().isEqual(this.getTermino()))){
+        if((outroPeriodo.getInicio().isBefore(this.getTermino())) && (outroPeriodo.getTermino().isAfter(this.getTermino()))){
             return true;
         }
         //começa antes do inicio e termina depois do fim
-        if((outroPeriodo.getInicio().isBefore(this.getInicio()) || outroPeriodo.getInicio().isEqual(this.getInicio())) && (outroPeriodo.getTermino().isAfter(this.getTermino()) || outroPeriodo.getTermino().isEqual(this.getTermino()))){
-            return true;
-        }
-        return false;
+        return (outroPeriodo.getInicio().isBefore(this.getInicio())) && (outroPeriodo.getTermino().isAfter(this.getTermino()));
     }
     
     //------------------------------ FINAL - GILBERTO -------------------------------------------------//
     
+    @Override
+    public String toString(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy hh:mm");
+        return "Código: "+getCodPeriodo()+" inicio: "+getInicio().format(formatter)+" termino: "+getTermino().format(formatter);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + (int) (this.codPeriodo ^ (this.codPeriodo >>> 32));
+        hash = 47 * hash + Objects.hashCode(this.inicio);
+        hash = 47 * hash + Objects.hashCode(this.termino);
+        return hash;
+    }
     
+    @Override
+    public boolean equals(Object o){
+        Periodo p = (Periodo) o;
+        return (this.getCodPeriodo() == p.getCodPeriodo() && this.getInicio().equals(p.getInicio()) && this.getTermino().equals(p.getTermino()));
+    }
 }

@@ -17,7 +17,6 @@
 %>
 <html>
 <head>
-  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Artemis | Painel do usuário</title>
   <jsp:include page="/${dir}/admin/parts/head.jsp"></jsp:include>
@@ -45,7 +44,66 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-<jsp:include page="/${dir}/admin/parts/js.jsp"></jsp:include>
+<script src="/<%=dir%>/static/plugins/jQuery/jquery-2.2.3.min.js"></script>
+
+<!-- Bootstrap 3.3.6 -->
+<script src="/<%=dir%>/static/bootstrap/js/bootstrap.min.js"></script>
+
+<!-- Bootstrap WYSIHTML5 -->
+<script src="/<%=dir%>/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- Slimscroll -->
+<script src="/<%=dir%>/static/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="/<%=dir%>/static/plugins/fastclick/fastclick.js"></script>
+<!-- Select2 -->
+<script src="/<%=dir%>/static/plugins/select2/select2.full.min.js"></script>
+<!-- InputMask -->
+<!-- AdminLTE App -->
+<script src="/<%=dir%>/static/js/app.min.js"></script>
+
+<script src="/<%=dir%>/static/js/demo.js"></script>
+<script src="/<%=dir%>/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_2suS3mPl37IYtNtbiL45JWG08ECIVtU"></script>
+<script src="/<%=dir%>/static/plugins/jquery.geocomplete.js"></script>
+<!-- DataTables -->
+
+<script>
+  $(function () {
+    //bootstrap WYSIHTML5 - text editor
+    $(".textarea").wysihtml5();
+    //Initialize Select2 Elements
+    $(".select2").select2();
+    $("#localizacao").geocomplete({
+        details: "form",
+        types: ["geocode", "establishment"],
+    });
+
+    $("#find").click(function(){
+        $("#localizacao").trigger("geocode");
+    });
+  });
+  function addPeriodo(){
+         $('.periodos').append('<div class="form-group"><label for="dataInicio">Inicio</label>'+
+         '<input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]"  maxlength="10" onkeypress="formatar(\'##/##/####\',this)">'+
+                    '<br /><input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]" maxlength="5" onkeypress="formatar(\'##:##\',this)">'+
+                  '</div><div class="form-group"><label for="dataInicio">Termino</label>'+
+                    '<input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]" maxlength="10" onkeypress="formatar(\'##/##/####\',this)">'+
+                    '<br /><input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]" maxlength="5" onkeypress="formatar(\'##:##\',this)">'+
+                  '</div>');
+
+        return false;       
+  }
+</script>
+<script>
+    function formatar(mascara, documento){
+        var i = documento.value.length;
+        var saida = mascara.substring(0,1);
+        var texto = mascara.substring(i)
+        if (texto.substring(0,1) !== saida){
+                documento.value += texto.substring(0,1);
+        }
+    }
+</script>
 </body>
 </html>
 <% }else{

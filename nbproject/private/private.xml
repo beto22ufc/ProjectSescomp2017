@@ -3,20 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/admin/listarAtividades.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/admin/pags/criarEvento.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/index.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/loginPag.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/hibernate/hibernate.cfg.xml</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/cadastro.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/model/Facade.java</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/model/Evento.java</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/login.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/cadastroPag.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/DAO/EventoDAOImpl.java</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/admin/pags/listarAtividades.jsp</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/src/java/artemis/controller/DesfazerInscricaoAtividade.java</file>
-            <file>file:/C:/Users/Usuario/Desktop/ProjectSescomp2017/web/theme/sistema/header.jsp</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/META-INF/context.xml</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/theme/evento/default/index.jsp</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/DAO/ContaAtivacaoDAOImpl.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/ContaAtivacao.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/hibernate/hibernate.cfg.xml</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/hibernate/HibernateUtil.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/Constantes.java</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Wallison/Dropbox/UFC/2017.1/ArtemisTCC/src/java/artemis/model/Facade.java</file>
         </group>
     </open-files>
 </project-private>

@@ -32,82 +32,57 @@ public class ContaAtivacaoDAOImpl implements ContaAtivacaoDAO{
     public void adicionarContaAtivacao(ContaAtivacao ca) {
         Session session = sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(ca != null){
-                session.persist(ca);
-            }else{
-                throw new NullPointerException("Conta ativação não pode ser nula!");
-            }
+        if(ca != null){
+            session.persist(ca);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Conta ativação não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public void atualizarContaAtivacao(ContaAtivacao ca) {
         Session session = sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(ca != null){
-                session.update(ca);
-            }else{
-                throw new NullPointerException("Conta ativação não pode ser nula!");
-            }
+        if(ca != null){
+            session.update(ca);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Conta ativação não pode ser nula!");
         }
+        session.close();
+
     }
 
     @Override
     public List<ContaAtivacao> listaContasAtivacao() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<ContaAtivacao> contas = (session.createCriteria(ContaAtivacao.class).list());
-            t.commit();
-            if(contas != null)
-                return contas;
-            else
-                return new ArrayList<>();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }    
+        Session session = this.sessionFactory.getCurrentSession();
+        List<ContaAtivacao> contas = (session.createCriteria(ContaAtivacao.class).list());
+        if(contas != null)
+            return contas;
+        else
+            return new ArrayList<>();    
     }
 
     @Override
     public void removerContaAtivacao(ContaAtivacao ca) {
         Session session = sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(ca != null){
-                session.delete(ca);
-            }else{
-                throw new NullPointerException("Conta ativação não pode ser nula!");
-            }
+        if(ca != null){
+            session.delete(ca);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Conta ativação não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public ContaAtivacao getContaAtivacao(long codContaAtivacao) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t  = session.beginTransaction();
-        try{
-            ContaAtivacao conta = (ContaAtivacao) session.get(ContaAtivacao.class, codContaAtivacao);
-            t.commit();
-            return conta;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        ContaAtivacao conta = (ContaAtivacao) session.get(ContaAtivacao.class, codContaAtivacao);
+        return conta;
     }
     
 }

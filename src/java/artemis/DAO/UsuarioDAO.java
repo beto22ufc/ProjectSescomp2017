@@ -24,6 +24,7 @@ public interface UsuarioDAO{
     public List<Usuario> listaUsuarios();
     public void removeUsuario(Usuario usuario);
     public Usuario getUsuario(long codUsuario);
+    public Usuario getUsuarioFromEmail(String email);
     public void adicionaCPF(CPF cpf);
     public void atualizaCPF(CPF cpf);
 }

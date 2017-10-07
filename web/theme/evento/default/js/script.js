@@ -10,35 +10,41 @@ function inscreveEvento(evento){
 }
 
 function desfazInscricaoEvento(evento, inscricao){
-    if(isNumeric(evento) && (evento>0) && isNumeric(inscricao) && (inscricao>0)){
-        $.get("/ArtemisTCC/desfazerInscricaoEvento", {evento: evento, inscricao: inscricao
-        }, function (data) {
-            $('.btn-inscricao-evento').html(data);
-        });
-    }else{
-        alert("Evento ou inscrição inválidos!");
+    var r = confirm("Deseja cancelar sua inscrição neste evento?");
+    if (r === true) {
+        if(isNumeric(evento) && (evento>0) && isNumeric(inscricao) && (inscricao>0)){
+            $.get("/ArtemisTCC/desfazerInscricaoEvento", {evento: evento, inscricao: inscricao
+            }, function (data) {
+                $('.btn-inscricao-evento').html(data);
+            });
+        }else{
+            alert("Evento e/ou inscrição inválidos!");
+        }
     }
 }
 
-function inscreveEvento(atividade){
+function inscreveAtividade(atividade){
     if(isNumeric(atividade) && atividade>0){
         $.get("/ArtemisTCC/inscreveAtividade", {atividade: atividade
         }, function (data) {
-            $('.btn-inscricao-evento').html(data);
+            $('.btn-inscricao-atividade-'+atividade+'').html(data);
         });
     }else{
-        alert("Evento inválido!");
+        alert("Atividade inválida!");
     }
 }
 
 function desfazInscricaoAtividade(atividade, inscricao){
-    if(isNumeric(atividade) && (atividade>0) && isNumeric(inscricao) && (inscricao>0)){
-        $.get("/ArtemisTCC/desfazerInscricaoAtividade", {atividade: atividade, inscricao: inscricao
-        }, function (data) {
-            $('.btn-inscricao-evento').html(data);
-        });
-    }else{
-        alert("Evento ou inscrição inválidos!");
+    var r = confirm("Deseja cancelar sua inscrição nesta atividade?");
+    if (r === true) {
+        if(isNumeric(atividade) && (atividade>0) && isNumeric(inscricao) && (inscricao>0)){
+            $.get("/ArtemisTCC/desfazerInscricaoAtividade", {atividade: atividade, inscricao: inscricao
+            }, function (data) {
+                $('.btn-inscricao-atividade-'+atividade+'').html(data);
+            });
+        }else{
+            alert("Atividade e/ou inscrição inválidos!");
+        }
     }
 }
 

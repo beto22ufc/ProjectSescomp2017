@@ -1,3 +1,4 @@
+<%@page import="java.time.format.DateTimeParseException"%>
 <%@page import="artemis.beans.LocalizacaoBeans"%>
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%@page import="artemis.model.Facade"%>
@@ -11,7 +12,17 @@
     String dir = config.getServletContext().getInitParameter("dir");
     UsuarioBeans u = ((UsuarioBeans) session.getAttribute("usuario"));
     Facade facade = new Facade(u);
-    EventoBeans evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+    EventoBeans evt = null;
+    try{
+        evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        if(!evt.getAdministradores().contains(u)){
+            response.sendRedirect("/"+dir+"/404");
+        }
+    }catch(NumberFormatException e){
+        response.sendRedirect("/"+dir+"/404");
+    }catch(NullPointerException e){
+        response.sendRedirect("/"+dir+"/404");            
+    }
 %>
 <section class="content-header">
       <h1>
@@ -31,10 +42,10 @@
                 inicioTempos = request.getParameterValues("tempoInicio[]"),
                 terminoDatas = request.getParameterValues("dataTermino[]"),
                 terminoTempos = request.getParameterValues("tempoTermino[]");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                 for(int i=0;i<inicioTempos.length;i++){
                     if(inicioDatas[i] != null && inicioTempos[i] != null && terminoDatas[i] != null && terminoTempos[i] != null)
-                        evt.getPeriodos().add(new PeriodoBeans(LocalDateTime.parse(inicioDatas[i]+" "+inicioTempos[i], formatter), LocalDateTime.parse(terminoDatas[i]+" "+terminoTempos[i], formatter)));
+                        evt.getPeriodos().add(new PeriodoBeans(LocalDateTime.parse(inicioDatas[i].replace(" ", "")+" "+inicioTempos[i].replace(" ", ""), formatter), LocalDateTime.parse(terminoDatas[i].replace(" ", "")+" "+terminoTempos[i].replace(" ", ""), formatter)));
                 }
                 facade.atualizaEvento(evt);
                 request.setAttribute("msg", "Períodos adicionados com sucesso!");
@@ -46,6 +57,8 @@
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
                 request.setAttribute("msg", e.getMessage());
+            }catch(DateTimeParseException e){
+                request.setAttribute("msg","Formato de data inválido");
             }
         }
     %>
@@ -64,19 +77,19 @@
             <form action="" method="post">
               <div class="box-body">
                 <div class="form-group periodos">
-                    <label>Periodos: <a href="javascript:void(0);" title="Adicionar novo periodo" class="adicionarNovoPeriodo" onclick="addPeriodo();"><i class="fa fa-plus"></i></a></label>
+                    <label>Periodos: </label>
 
                   <div class="form-group">
                     <label for="dataInicio">Inicio</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <div class="form-group">
                     <label for="dataInicio">Termino</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <!-- /.input group -->
                 </div>

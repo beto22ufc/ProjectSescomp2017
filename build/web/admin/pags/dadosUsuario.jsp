@@ -3,6 +3,9 @@
     Created on : 02/08/2017, 11:29:51
     Author     : Wallison
 --%>
+<%@page import="java.time.format.DateTimeParseException"%>
+<%@page import="artemis.beans.ContasSociaisBeans"%>
+<%@page import="artemis.beans.MatriculaBeans"%>
 <%@page import="artemis.model.ImageManipulation"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Collections"%>
@@ -20,7 +23,7 @@
 <%
     String dir = config.getServletContext().getInitParameter("dir");
     Facade facade = new Facade();
-
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     UsuarioBeans u = (UsuarioBeans) session.getAttribute("usuario");
     InstituicaoBeans atual = null;
     List<InstituicaoBeans> insts = facade.getInstituicoes();
@@ -28,7 +31,7 @@
     for (int i = 0; i < insts.size(); i++) {
         InstituicaoBeans ins = insts.get(i);
         for (int j = 0; j < ins.getAssociados().size(); j++) {
-            UsuarioBeans ub = ins.getAssociados().get(i);
+            UsuarioBeans ub = ins.getAssociados().get(j);
             if (ub.getEmail().equals(u.getEmail())) {
                 atual = ins;
                 parar = true;
@@ -48,7 +51,6 @@
                 u.setOcupacao(request.getParameter("ocupacao"));
                 u.setFormacao(request.getParameter("formacao"));
                 u.setLattes(request.getParameter("lattes"));
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 u.setNascimento(LocalDate.parse(request.getParameter("nascimento"), dtf));
                 facade.atualizaUsuarioGeral(u);
                 session.setAttribute("usuario", u);
@@ -57,6 +59,8 @@
                 request.setAttribute("msgGeral", e.getMessage());
             } catch (NullPointerException e) {
                 request.setAttribute("msgGeral", e.getMessage());
+            }catch(DateTimeParseException e){
+                request.setAttribute("msg","Formato de data inválido");
             }
         } else if (opc.equals("senha")) {
             try {
@@ -92,22 +96,76 @@
             }
         } else if (opc.equals("instituicao")) {
             try {
-                if (request.getParameter("nomeInstituicao") != null) {
-                    InstituicaoBeans instituicao = new InstituicaoBeans();
-                    instituicao.setNome(request.getParameter("nomeInstituicao"));
-                    instituicao.setAssociados(Collections.synchronizedList(new ArrayList<UsuarioBeans>()));
-                    instituicao.getAssociados().add(u);
-                } else {
-                    InstituicaoBeans instituicao = facade.getInstituicao(Long.parseLong(request.getParameter("instituicao")));
-                    facade.atualizaInstituicao(u, atual, instituicao);
-                }
-
+                InstituicaoBeans instituicao = facade.getInstituicao(Long.parseLong(request.getParameter("instituicao")));
+                facade.atualizaInstituicao(u, atual, instituicao);
+                request.setAttribute("msgInstituicao", "Instituição atualizada com sucesso!");
             } catch (IllegalArgumentException e) {
-                request.setAttribute("msgEmail", e.getMessage());
+                request.setAttribute("msgInstituicao", e.getMessage());
             } catch (NullPointerException e) {
-                request.setAttribute("msgEmail", e.getMessage());
+                request.setAttribute("msgInstituicao", e.getMessage()+"Tetse");
             } catch (Exception e) {
-                request.setAttribute("msgEmail", e.getMessage());
+                request.setAttribute("msgInstituicao", e.getMessage());
+            }
+        }else if (opc.equals("curso")) {
+            try {
+                if(request.getParameter("curso") != null){
+                    CursoBeans curso = null;
+                    try{
+                        curso = facade.getCurso(Long.parseLong(request.getParameter("curso")));
+                    }catch(NumberFormatException e){
+                        request.setAttribute("msgCurso", "Código do curso inválido!");
+                    }catch(NullPointerException e){
+                        request.setAttribute("msgCurso", "Código do curso inválido!");
+                    }
+                    if(u.getMatricula() != null){
+                        u.getMatricula().setNumero(Integer.parseInt(request.getParameter("numMatricula")));
+                        u.getMatricula().setCurso(curso);
+                        u.getMatricula().setPeriodo(Integer.parseInt(request.getParameter("periodoCurso")));
+                    }else{
+                        MatriculaBeans matricula = new MatriculaBeans();
+                        matricula.setNumero(Integer.parseInt(request.getParameter("numMatricula")));
+                        matricula.setCurso(curso);
+                        matricula.setPeriodo(Integer.parseInt(request.getParameter("periodoCurso")));
+                        u.setMatricula(facade.adicionaMatricula(matricula));
+                    }
+                    facade.atualizaUsuarioGeral(u);
+                }else{
+                    u.setMatricula(null);
+                }
+                request.setAttribute("msgCurso", "Curso atualizado com sucesso!");
+            } catch (IllegalArgumentException e) {
+                request.setAttribute("msgCurso", e.getMessage());
+            } catch (NullPointerException e) {
+                request.setAttribute("msgCurso", e.getMessage());
+            } catch (Exception e) {
+                request.setAttribute("msgCurso", e.getMessage());
+            }
+        }else if (opc.equals("contasSociais")) {
+            try {   
+                if(u.getContasSociais() != null){
+                    u.getContasSociais().setNookdear(request.getParameter("nookdear"));
+                    u.getContasSociais().setFacebook(request.getParameter("facebook"));
+                    u.getContasSociais().setTwitter(request.getParameter("twitter"));
+                    u.getContasSociais().setGplus(request.getParameter("gplus"));
+                    u.getContasSociais().setLinkedin(request.getParameter("linkedin"));
+                }else{
+                    ContasSociaisBeans contas = new ContasSociaisBeans();
+                    contas.setNookdear(request.getParameter("nookdear"));
+                    contas.setFacebook(request.getParameter("facebook"));
+                    contas.setTwitter(request.getParameter("twitter"));
+                    contas.setGplus(request.getParameter("gplus"));
+                    contas.setLinkedin(request.getParameter("linkedin"));
+                    u.setContasSociais(facade.adicionaContasSociais(contas));
+                }
+                facade.atualizaUsuarioGeral(u);
+                request.setAttribute("msgContasSociais", "Contas sociais atualizadas com sucesso!");
+            } catch (IllegalArgumentException e) {
+                request.setAttribute("msgContasSociais", e.getMessage());
+            } catch (NullPointerException e) {
+                request.setAttribute("msgContasSociais", e.getMessage()
+                );
+            } catch (Exception e) {
+                request.setAttribute("msgContasSociais", e.getMessage());
             }
         }
     }
@@ -149,7 +207,7 @@
                         </div> 
                         <div class="form-group">
                             <label for="nascimento">Nascimento</label>
-                            <input type="date" class="form-control" id="nascimento" placeholder="Data nascimento" name="nascimento" value="<%= (request.getParameter("nascimento") != null) ? request.getParameter("nascimento") : (u.getNascimento() != null) ? u.getNascimento().toString() : ""%>">
+                            <input type="text" class="form-control" id="nascimento" maxlength="10" onkeypress="formatar('##/##/####',this)" placeholder="Data nascimento" name="nascimento" value="<%= (request.getParameter("nascimento") != null) ? request.getParameter("nascimento") : (u.getNascimento() != null) ? u.getNascimento().format(dtf) : ""%>">
                         </div>   
                     </div>
                     <!-- /.box-body -->
@@ -171,8 +229,8 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label>Selecionar instituição</label>
-                            <select class="form-control select2"  name="categoria">
-                                <option selected="selected" value="">Selecione uma instituição</option>
+                            <select class="form-control select2"  name="instituicao">
+                                <option value="">Selecione uma instituição</option>
                                 <%
                                     List<InstituicaoBeans> instituicoes = facade.getInstituicoes();
                                     String selected = "";
@@ -195,19 +253,11 @@
                                 <% } %>
                             </select>
                         </div>
-                        <p><a href="javascript:void(0);" onclick="nis();" class="nis">Adicionar uma nova</a></p>
-                        <div class="novaInstituicao" style="display:none;">
-                            <fieldset>
-                                <div class="form-group">
-                                    <label for="nomeInstituicao">Instituição</label>
-                                    <input type="text" class="form-control" id="nomeInstituicao" placeholder="Nome da instituição" name="nomeInstituicao">
-                                </div>
-                            </fieldset>    
-                        </div>
+                        
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info pull-right" name="atualiza" value="instituicao">Atualizar</button>
+                        <button type="submit" class="btn btn-primary pull-right" name="atualiza" value="instituicao">Atualizar</button>
                     </div>
                     <!-- /.box-footer -->
                 </form>
@@ -219,14 +269,16 @@
             <!-- Input addon -->
             <div class="box box-info">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Instituição</h3>
+                    <h3 class="box-title">Curso</h3>
+                    <p><%= (request.getAttribute("msgCurso") != null) ? request.getAttribute("msgCurso") : ""%></p>
                 </div>
+                <form action="" method="post">
                 <div class="box-body">
                     <div class="selecionarCurso">
                         <div class="form-group">
                             <label>Selecionar curso</label>
-                            <select class="form-control select2" style="width: 100%;" name="categoria">
-                                <option selected="selected" value="">Selecione um curso</option>
+                            <select class="form-control select2" style="width: 100%;" name="curso">
+                                <option value="">Selecione um curso</option>
                                 <%
                                     String selectedCurso = "";
                                     boolean achado = false;
@@ -234,8 +286,8 @@
                                         for (int i = 0; i < inst.getCursos().size(); i++) {
                                             CursoBeans c = inst.getCursos().get(i);
                                             if (u.getMatricula() != null) {
-                                                if (u.getMatricula().getCurso().getCodCurso() == c.getCodCurso()) {
-                                                    selectedCurso = "selected='selected'";
+                                                if (u.getMatricula().getCurso() !=null && u.getMatricula().getCurso().getCodCurso() == c.getCodCurso()) {
+                                                    selectedCurso = "selected=/'selected/'";
                                                     achado = true;
                                                 } else {
                                                     selectedCurso = "";
@@ -250,39 +302,65 @@
                                 <%}%>
                             </select>
                         </div>
-                        <p><a href="javascript:void(0);" onclick="ncss();" class="nis">Adicionar um novo curso</a></p>
-                        <div class="novoCursoS" style="display:none;">
-                            <div class="form-group">
-                                <label for="nomeCurso">Curso</label>
-                                <input type="text" class="form-control" id="nomeCurso" placeholder="Nome do curso" name="nomeCurso">
-                            </div>
-                            <div class="form-group">
-                                <label>Descrição</label>
-                                <textarea class="form-control" rows="3" placeholder="Descrição do curso" name="descricaoCurso"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="duracaoCurso">Duração</label>
-                                <input type="number" class="form-control" id="duracaoCurso" placeholder="Duração do curso" name="duracaoCurso">
-                            </div>
-                        </div>
                         <div class="form-group">
                             <label for="numMatricula">Matrícula</label>
-                            <input type="number" class="form-control" id="numMatricula" placeholder="Número da matrícula" name="numMatricula">
+                            <input type="number" class="form-control" id="numMatricula" placeholder="Número da matrícula" name="numMatricula" value="<%=(request.getParameter("numMatricula") != null) ? request.getParameter("numMatricula") : (u.getMatricula() != null) ? u.getMatricula().getNumero() : "" %>">
                         </div>
                         <div class="form-group">
                             <label for="periodoCurso">Período</label>
-                            <input type="number" class="form-control" id="periodoCurso" placeholder="Período que está cursando o curso" name="periodoCurso">
+                            <input type="number" class="form-control" id="periodoCurso" placeholder="Período que está cursando o curso" name="periodoCurso" value="<%=(request.getParameter("periodoCurso") != null) ? request.getParameter("periodoCurso") : (u.getMatricula() != null) ? u.getMatricula().getPeriodo(): "" %>">
                         </div>
                     </div>
                     <!-- /input-group -->
+                    
                 </div>
                 <!-- /.box-body -->
                 <div class="box-footer">
-                    <button type="submit" class="btn btn-primary" name="atualiza" value="instituicao">Atualizar</button>
+                    <button type="submit" class="btn btn-primary" name="atualiza" value="curso">Atualizar</button>
                 </div>
+                </form>
             </div>
             <!-- /.box -->
 
+            <!-- general form elements -->
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Contas sociais</h3>
+                    <p><%= (request.getAttribute("msgContasSociais") != null) ? request.getAttribute("msgContasSociais") : ""%></p>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" action="" method="post">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="nookdear">Nookdear</label>
+                            <input type="text" class="form-control" id="nookdear" placeholder="Nome de usuário da Nookdear" name="nookdear" value="<%= (request.getParameter("nookdear") != null) ? request.getParameter("nookdear") : (u.getContasSociais() != null && u.getContasSociais().getNookdear() != null) ? u.getContasSociais().getNookdear().substring(u.getContasSociais().getNookdear().lastIndexOf("/")+1) : ""%>">
+                        </div>
+                        <div class="form-group">
+                            <label for="facebook">Facebook</label>
+                            <input type="text" class="form-control" id="facebook" placeholder="Nome de usuário da Facebook" name="facebook" value="<%= (request.getParameter("facebook") != null) ? request.getParameter("facebook") : (u.getContasSociais() != null && u.getContasSociais().getFacebook()!= null) ? u.getContasSociais().getFacebook().substring(u.getContasSociais().getFacebook().lastIndexOf("/")+1) : ""%>">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitter">Twitter</label>
+                            <input type="text" class="form-control" id="twitter" placeholder="Nome de usuário da Twitter" name="twitter" value="<%= (request.getParameter("twitter") != null) ? request.getParameter("twitter") : (u.getContasSociais() != null && u.getContasSociais().getTwitter()!= null) ? u.getContasSociais().getTwitter().substring(u.getContasSociais().getTwitter().lastIndexOf("/")+1) : ""%>">
+                        </div>
+                        <div class="form-group">
+                            <label for="gplus">Google +</label>
+                            <input type="text" class="form-control" id="gplus" placeholder="Nome de usuário da Google +" name="gplus" value="<%= (request.getParameter("gplus") != null) ? request.getParameter("gplus") : (u.getContasSociais() != null && u.getContasSociais().getGplus()!= null) ? u.getContasSociais().getGplus().substring(u.getContasSociais().getGplus().lastIndexOf("/")+1) : ""%>">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedin">Linkedin</label>
+                            <input type="text" class="form-control" id="linkedin" placeholder="Nome de usuário da Linkedin" name="linkedin" value="<%= (request.getParameter("linkedin") != null) ? request.getParameter("linkedin") : (u.getContasSociais() != null && u.getContasSociais().getLinkedin()!= null) ? u.getContasSociais().getLinkedin().substring(u.getContasSociais().getLinkedin().lastIndexOf("/")+1) : ""%>">
+                        </div>
+                         </div>                   <!-- /.box-body -->
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary" name="atualiza" value="contasSociais">Atualizar</button>
+                    </div>
+                </form>
+            </div>
+            
+            
+            
         </div>
         <!--/.col (left) -->
         <!-- right column -->
@@ -319,7 +397,7 @@
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info pull-right" name="atualiza" value="fotoPerfil">Atualizar</button>
+                        <button type="submit" class="btn btn-primary pull-right" name="atualiza" value="fotoPerfil">Atualizar</button>
                     </div>
                     <!-- /.box-footer -->
                 </form>
@@ -361,7 +439,7 @@
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info pull-right" name="atualiza" value="senha">Atualizar</button>
+                        <button type="submit" class="btn btn-primary pull-right" name="atualiza" value="senha">Atualizar</button>
                     </div>
                     <!-- /.box-footer -->
                 </form>
@@ -401,7 +479,7 @@
                     </div>
                     <!-- /.box-body -->
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info pull-right" name="atualiza" value="email">Atualizar</button>
+                        <button type="submit" class="btn btn-primary pull-right" name="atualiza" value="email">Atualizar</button>
                     </div>
                     <!-- /.box-footer -->
                 </form>

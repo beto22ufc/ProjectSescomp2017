@@ -70,7 +70,7 @@ body{
 	<div class="wrap">
 		<div class="logo">
 			<h1>404</h1>
-			<p> Desulpe-me - Arquivo não existe!</p>
+			<p> Desculpe-me - Arquivo não existe!</p>
 			<div class="sub">
 			   <p><a href="/ArtemisTCC/"> Voltar ao inicio</a></p>
 			</div>

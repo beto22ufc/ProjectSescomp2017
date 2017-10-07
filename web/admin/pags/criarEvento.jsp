@@ -1,3 +1,5 @@
+<%@page import="java.time.format.DateTimeParseException"%>
+<%@page import="artemis.beans.InstituicaoBeans"%>
 <%@page import="artemis.beans.LocalizacaoBeans"%>
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%@page import="artemis.model.Facade"%>
@@ -7,10 +9,11 @@
 <%@page import="artemis.beans.PeriodoBeans"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="artemis.beans.EventoBeans"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <section class="content-header">
       <h1>
         CADASTRAR EVENTO
-        <small>formul·rio</small>
+        <small>formul√°rio</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="/Artemis/admin/"><i class="fa fa-dashboard"></i> Inicio</a></li>
@@ -18,40 +21,55 @@
       </ol>
     </section>
     <%
+        Facade facade = new Facade((UsuarioBeans) session.getAttribute("usuario"));
+        request.setCharacterEncoding("UTF-8");
         if(request.getParameter("cadastro") != null){
             try{
-                EventoBeans evento = new EventoBeans();
-                evento.setNome(request.getParameter("nome"));
-                evento.setDescricao(request.getParameter("descricao"));
-                evento.setCategoria(request.getParameter("categoria"));
-                evento.setEmail(request.getParameter("email"));
-                LocalizacaoBeans lb = new LocalizacaoBeans(request.getParameter("localizacao"), Float.parseFloat(request.getParameter("lat")), Float.parseFloat(request.getParameter("lng")));
-                evento.setLocalizacao(lb);
-                String[] inicioDatas = request.getParameterValues("dataInicio[]"),
-                inicioTempos = request.getParameterValues("tempoInicio[]"),
-                terminoDatas = request.getParameterValues("dataTermino[]"),
-                terminoTempos = request.getParameterValues("tempoTermino[]");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                List<PeriodoBeans> periodos = new ArrayList<>();
-                for(int i=0;i<inicioTempos.length;i++){
-                    if(inicioDatas[i] != null && inicioTempos[i] != null && terminoDatas[i] != null && terminoTempos[i] != null)
-                        periodos.add(new PeriodoBeans(LocalDateTime.parse(inicioDatas[i]+" "+inicioTempos[i], formatter), LocalDateTime.parse(terminoDatas[i]+" "+terminoTempos[i], formatter)));
+                if(request.getParameter("instituicao") != null && !request.getParameter("instituicao").isEmpty()){
+                    EventoBeans evento = new EventoBeans();
+                    evento.setNome(request.getParameter("nome"));
+                    evento.setDescricao(request.getParameter("descricao"));
+                    evento.setCategoria(request.getParameter("categoria"));
+                    evento.setEmail(request.getParameter("email"));
+                    evento.setTemCertificado((request.getParameter("temCertificado") != null && request.getParameter("temCertificado").equals("1")));
+                    evento.setTemInscricao((request.getParameter("temInscricao") != null && request.getParameter("temInscricao").equals("1")));
+                    evento.setPorcentagemMinimaGerarCertifciado(Float.parseFloat(request.getParameter("porcentagem")));
+                    LocalizacaoBeans lb = new LocalizacaoBeans(request.getParameter("localizacao"), Float.parseFloat(request.getParameter("lat")), Float.parseFloat(request.getParameter("lng")));
+                    evento.setLocalizacao(lb);
+                    String[] inicioDatas = request.getParameterValues("dataInicio[]"),
+                    inicioTempos = request.getParameterValues("tempoInicio[]"),
+                    terminoDatas = request.getParameterValues("dataTermino[]"),
+                    terminoTempos = request.getParameterValues("tempoTermino[]");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                    List<PeriodoBeans> periodos = new ArrayList<>();
+                    for(int i=0;i<inicioTempos.length;i++){
+                        if(inicioDatas[i] != null && inicioTempos[i] != null && terminoDatas[i] != null && terminoTempos[i] != null)
+                            periodos.add(new PeriodoBeans(LocalDateTime.parse(inicioDatas[i]+" "+inicioTempos[i], formatter), LocalDateTime.parse(terminoDatas[i]+" "+terminoTempos[i], formatter)));
+                    }
+                    evento.setPeriodos(periodos);
+                    evento =  facade.cadastraEvento(evento);
+                    evento.setAdministradores(new ArrayList<UsuarioBeans>());
+                    InstituicaoBeans instituicao = facade.getInstituicao(Long.parseLong(request.getParameter("instituicao")));
+                    instituicao.getEventos().add(evento);
+                    evento.getAdministradores().add((UsuarioBeans)session.getAttribute("usuario"));
+                    facade.atualizaEvento(evento);
+                    facade.atualizaInstituicao(instituicao);
+                    request.setAttribute("msg", "Evento cadastrado com sucesso!");
+                }else{
+                    request.setAttribute("msg", "Deve ser selecionado uma institui√ß√£o! "
+                            + "(Caso n√£o haja uma institui√ß√£o para selecionar, contactar"
+                            + " o administrador do sistema para ele adicionar uma institui√ß√£o)");
                 }
-                evento.setPeriodos(periodos);
-                Facade facade = new Facade((UsuarioBeans) session.getAttribute("usuario"));
-                evento =  facade.cadastraEvento(evento);
-                evento.setAdministradores(new ArrayList<UsuarioBeans>());
-                evento.getAdministradores().add((UsuarioBeans)session.getAttribute("usuario"));
-                facade.atualizaEvento(evento);
-                request.setAttribute("msg", "Evento cadastrado com sucesso!");
             }catch(IllegalAccessException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NumberFormatException e){
-                request.setAttribute("msg", e.getMessage());
+                request.setAttribute("msg", "Deve ser digitado um n√∫mero onde se pede!");
             }catch(IllegalArgumentException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
                 request.setAttribute("msg", e.getMessage());
+            }catch(DateTimeParseException e){
+                request.setAttribute("msg","Formato de data inv√°lido");
             }
         }
     %>
@@ -74,8 +92,8 @@
                   <input type="text" class="form-control" id="nome" placeholder="Nome do evento" name="nome" value="<%=(request.getParameter("nome") != null) ? request.getParameter("nome") : ""%>">
                 </div>
                 <div class="box-body pad form-group">
-                    <label>DescriÁ„o</label>
-                    <textarea class="textarea" name="descricao" placeholder="DescriÁ„o para o evento" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" value="<%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%>"><%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%></textarea>
+                    <label>Descri√ß√£o</label>
+                    <textarea class="textarea" name="descricao" placeholder="Descri√ß√£o para o evento" style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" value="<%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%>"><%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : ""%></textarea>
                 </div>
                 <div class="form-group">
                   <label for="nome">E-mail</label>
@@ -83,13 +101,13 @@
                 </div>
                 <div class="form-group">
                 <label>Categoria</label>
-                    <select class="form-control select2" style="width: 100%;" name="categoria">
-                        <option selected="selected" value="">Selecione uma categoria</option>
+                        <select class="form-control select2" style="width: 100%;" name="categoria">
+                        <option  value="">Selecione uma categoria</option>
                         <optgroup label="EVENTOS SOCIAIS">
-                            <option value="AlmoÁo banquete">AlmoÁo banquete</option>
+                            <option value="Almo√ßo banquete">Almo√ßo banquete</option>
                             <option value="Brunch">Brunch</option>
-                            <option value="CafÈ da manh„">CafÈ da manh„</option>
-                            <option value="Ch·s">Ch·s</option>
+                            <option value="Caf√© da manh√£">Caf√© da manh√£</option>
+                            <option value="Ch√°s">Ch√°s</option>
                             <option value="Coquetel">Coquetel</option>
                             <option value="Festas ao ar livre">Festas ao ar livre</option>
                             <option value="Festas beneficentes">Festas beneficentes</option>
@@ -100,35 +118,35 @@
                         </optgroup>
                         <optgroup label="EVENTOS PROFISSIONAIS">
                             <option value="Coffe break">Coffe break</option>
-                            <option value="ColÛquio">ColÛquio</option>
-                            <option value="CondecoraÁıes">CondecoraÁıes</option>
+                            <option value="Col√≥quio">Col√≥quio</option>
+                            <option value="Condecora√ß√µes">Condecora√ß√µes</option>
                             <option value="Desfiles">Desfiles</option>
-                            <option value="Leilıes">Leilıes</option>
+                            <option value="Leil√µes">Leil√µes</option>
                             <option value="Visitas institucionais">Visitas institucionais</option>
                         </optgroup>
                         <optgroup label="EVENTOS OFICIAIS">
                             <option value="Assinaturas">Assinaturas</option>
-                            <option value="Homenagens e premiaÁıes">Homenagens e premiaÁıes</option>
-                            <option value="InauguraÁıes">InauguraÁıes</option>
+                            <option value="Homenagens e premia√ß√µes">Homenagens e premia√ß√µes</option>
+                            <option value="Inaugura√ß√µes">Inaugura√ß√µes</option>
                             <option value="Posses">Posses</option>
                         </optgroup>
-                        <optgroup label="EVENTOS T…CNICO-CIENTÕFICOS">
+                        <optgroup label="EVENTOS T√âCNICO-CIENT√çFICOS">
                             <option value="Ciclo de palestras">Ciclo de palestras</option>
-                            <option value="ConferÍncias">ConferÍncias</option>
+                            <option value="Confer√™ncias">Confer√™ncias</option>
                             <option value="Congressos">Congressos</option>
-                            <option value="ConvenÁ„o">ConvenÁ„o</option>
+                            <option value="Conven√ß√£o">Conven√ß√£o</option>
                             <option value="Feira">Feira</option>
-                            <option value="FÛrum">FÛrum</option>
+                            <option value="F√≥rum">F√≥rum</option>
                             <option value="Mesa redonda">Mesa redonda</option>
                             <option value="Painel">Painel</option>
-                            <option value="Reuni„o">Reuni„o</option>
+                            <option value="Reuni√£o">Reuni√£o</option>
                             <option value="Semana">Semana</option>
-                            <option value="Semin·rio">Semin·rio</option>
-                            <option value="SimpÛsio">SimpÛsio</option>
+                            <option value="Semin√°rio">Semin√°rio</option>
+                            <option value="Simp√≥sio">Simp√≥sio</option>
                             <option value="Workshop">Workshop</option>
                         </optgroup>
-                        <optgroup label=" EVENTOS ARTÕSTICOS">
-                            <option value="ExposiÁ„o">ExposiÁ„o</option>
+                        <optgroup label=" EVENTOS ART√çSTICOS">
+                            <option value="Exposi√ß√£o">Exposi√ß√£o</option>
                             <option value="Mostra">Mostra</option>
                             <option value="Vernissages">Vernissages</option>
                         </optgroup>
@@ -136,40 +154,73 @@
                             <option value="Concursos">Concursos</option>
                             <option value="Entrevista coletiva">Entrevista coletiva</option>
                             <option value="Formaturas">Formaturas</option>
-                            <option value="Tarde de autÛgrafos">Tarde de autÛgrafos</option>
+                            <option value="Tarde de aut√≥grafos">Tarde de aut√≥grafos</option>
                             <option value="Torneio">Torneio</option>
                         </optgroup>
                         <optgroup label="EVENTOS RELIGIOSOS">
                             <option value="Bar e bat-mitzva">Bar e bat-mitzva</option>
                             <option value="Batizados">Batizados</option>
-                            <option value="Brit-mil·h">Brit-mil·h</option>
+                            <option value="Brit-mil√°h">Brit-mil√°h</option>
                             <option value="Casamentos">Casamentos</option>
                             <option value="Conclaves">Conclaves</option>
-                            <option value="Primeira comunh„o">Primeira comunh„o</option>
+                            <option value="Primeira comunh√£o">Primeira comunh√£o</option>
                         </optgroup>
                     </select>
                 </div> 
                 <div class="form-group">
-                  <label for="localizacao">LocalizaÁ„o</label>
-                  <input type="text" class="form-control" id="localizacao" placeholder="LocalizaÁ„o do evento"  name="localizacao" value="Russas - CE, Brasil">
-                  <input type="hidden" class="form-control" id="lat" placeholder="Nome do evento" name="lat" value="-4.9271161">
-                  <input type="hidden" class="form-control" id="lng" placeholder="Nome do evento" name="lng" value="-37.97242589999996">
-                </div>  
+                  <label for="localizacao">Localiza√ß√£o</label>
+                  <input type="text" class="form-control" id="localizacao" placeholder="Localiza√ß√£o do evento"  name="localizacao" value="UFC - Campus Russas - Vila Matoso, Russas - CE">
+                  <input type="hidden" class="form-control" id="lat" placeholder="Nome do evento" name="lat" value="-4.9450007">
+                  <input type="hidden" class="form-control" id="lng" placeholder="Nome do evento" name="lng" value="-37.9772579">
+                </div>
+                <div class="form-group">
+                <label>Institui√ß√£o</label>
+                    <select class="form-control select2" style="width: 100%;" name="instituicao">
+                        <option value="" >Selecione uma institui√ß√£o</option>
+                        <%
+                            List<InstituicaoBeans> instituicoes = facade.getInstituicoes();
+                            for(int i=0;i<instituicoes.size();i++){
+                               InstituicaoBeans instituicao = instituicoes.get(i);
+                            
+                        %>
+                        <option  value="<%=instituicao.getCodInstituicao() %>" <%=(request.getParameter("instituicao") !=null && request.getParameter("instituicao").equals(instituicao.getCodInstituicao()+"")) ? "selected=/'selected/'" :  ""%>><%=instituicao.getNome() %></option>
+                        <%  }%>
+                    </select>
+                </div>
+                <div class="form-group">
+                  <label for="porcentagem">Por centagem m√≠nima para gerar certificados</label>
+                  <input type="number" class="form-control" id="porcentagem" placeholder="Por centagem m√≠nima para gerar certificados"  name="porcentagem" value="<%=(request.getParameter("porcentagem") !=null) ? request.getParameter("porcentagem") : ""%>" max="100" min="0">
+                </div>
+                <div class="form-group">
+                <label>Tem certificado?</label>
+                    <select class="form-control select2" style="width: 100%;" name="temCertificado">
+                        <option  value="1" <%=(request.getParameter("temCertificado") !=null && request.getParameter("temCertificado").equals("1")) ? "selected=/'selected/'" :  ""%>>Sim</option>
+                        <option  value="0" <%=(request.getParameter("temCertificado") !=null && request.getParameter("temCertificado").equals("0")) ? "selected=/'selected/'" :  ""%>>N√£o</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                <label>Tem inscri√ß√£o?</label>
+                <p><small>*Se √© poss√≠vel se inscrever no evento como um todo, n√£o somente em suas atividades</small></p>
+                    <select class="form-control select2" style="width: 100%;" name="temInscricao">
+                        <option value="1" <%=(request.getParameter("temInscricao") !=null && request.getParameter("temInscricao").equals("1")) ? "selected=/'selected/'" : ""%>>Sim</option>
+                        <option value="0" <%=(request.getParameter("temInscricao") !=null && request.getParameter("temInscricao").equals("0")) ? "selected=/'selected/'" : ""%>>N√£o</option>
+                    </select>
+                </div>
                 <!-- Date and time range -->
                 <div class="form-group periodos">
                     <label>Periodos: <a href="javascript:void(0);" title="Adicionar novo periodo" class="adicionarNovoPeriodo" onclick="addPeriodo();"><i class="fa fa-plus"></i></a></label>
 
-                  <div class="form-group">
+                 <div class="form-group">
                     <label for="dataInicio">Inicio</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <div class="form-group">
                     <label for="dataInicio">Termino</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <!-- /.input group -->
                 </div>

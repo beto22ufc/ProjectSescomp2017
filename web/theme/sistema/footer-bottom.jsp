@@ -1,7 +1,10 @@
+<%
+    String dir = config.getServletContext().getInitParameter("dir");
+%>
 <div class="agileits-footer-bottom text-center">
     <div class="container">
             <div class="w3-footer-logo">
-                    <h1><a href="index.jsp"><span>Ar</span>temis</a></h1>
+                <h1><a href="/<%=dir%>/"><span>Ar</span>temis</a></h1>
             </div>
             <div class="w3-footer-social-icons">
                 <ul>

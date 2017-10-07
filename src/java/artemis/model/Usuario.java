@@ -5,13 +5,23 @@
  */
 package artemis.model;
 
+import artemis.DAO.AtividadeDAOImpl;
+import artemis.DAO.EventoDAOImpl;
+import artemis.DAO.InscricaoDAOImpl;
+import artemis.DAO.InstituicaoDAOImpl;
 import artemis.DAO.UsuarioDAOImpl;
 import artemis.beans.ContaUsuario;
 import hibernate.HibernateUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.AttributeConverter;
@@ -25,6 +35,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import org.apache.commons.mail.EmailException;
 
 
 
@@ -204,8 +215,6 @@ public class Usuario implements AttributeConverter<LocalDate, Date>, Serializabl
             throw new NullPointerException("Link de curriculum plataforma Lattes não pode ser vazio!");
         else if(lattes.isEmpty())
             throw new NullPointerException("Link de curriculum plataforma Lattes não pode ser vazio!");
-        else if(!Pattern.matches("^(?:http?://)?(?:[\\w]+\\.)(?:\\.?[\\w]{2,})+$", lattes))
-            throw new IllegalArgumentException("Link informado inválido!");
         else
             this.lattes = lattes;
     }
@@ -363,21 +372,103 @@ public class Usuario implements AttributeConverter<LocalDate, Date>, Serializabl
 
     public Usuario adicionaNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
         UsuarioDAOImpl udaoi = new UsuarioDAOImpl();
-        if(!u.getTipo().contains(nivel)){
-            u.setTipo(u.getTipo()+","+nivel);
+        if(u.getTipo() != null){
+            if(!u.getTipo().contains(nivel)){
+                u.setTipo(u.getTipo()+","+nivel);
+            }
+        }else{
+            u.setTipo(nivel);
         }
-        udaoi.adicionarUsuario(u);
+        udaoi.atualizarUsuario(u);
         return u;
     }
     
     public Usuario removeNivelUsuario(Usuario u, String nivel) throws IllegalAccessException{
         UsuarioDAOImpl udaoi = new UsuarioDAOImpl();
-        if(u.getTipo().contains(nivel)){
-            u.setTipo(u.getTipo().replace(","+nivel, ""));
+        if(u.getTipo()!=null){
+            if(u.getTipo().contains(nivel)){
+                u.setTipo(u.getTipo().replace(","+nivel, ""));
+                udaoi.atualizarUsuario(u);        
+            }
         }
-        udaoi.adicionarUsuario(u);
         return u;
     }
     
+    public void removeUsuario(Usuario usuario) throws EmailException, IllegalAccessException{
+        EventoDAOImpl edao = new EventoDAOImpl();
+        AtividadeDAOImpl adao = new AtividadeDAOImpl();
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        InstituicaoDAOImpl idaoi = new InstituicaoDAOImpl();
+        List<Evento> eventos = edao.listaEventos();
+        List<Atividade> atividades = adao.listaAtividades();
+        List<Inscricao> inscricoes = idao.listaInscricoes();
+        List<Instituicao> instituicoes = idaoi.listaInstituicoes();
+        Evento e = new Evento();
+        for(Atividade atividade : atividades){
+            atividade.getAdministradores().contains(usuario);
+            atividade.getOrganizadores().contains(usuario);
+            if(atividade.getAdministradores().size()==0){
+                atividade.getOrganizadores().clear();
+                e.removeAtividade(atividade);
+            }
+        }
+        for(Evento evento : eventos){
+            evento.getAdministradores().contains(usuario);
+            evento.getOrganizadores().contains(usuario);
+            if(evento.getAdministradores().size()==0){
+                evento.getOrganizadores().clear();
+                //Falta fazer o remove evento
+            }
+        }
+    }
     
+    public void removeInstituicao(Instituicao instituicao) throws IllegalAccessException{
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        if(instituicao.getAssociados().size() ==0 && instituicao.getEventos().size() == 0 && instituicao.getAtividades().size() ==0){
+            for(Curso curso : instituicao.getCursos()){
+                instituicao.removeCurso(curso);
+            }
+            idao.removerInstituicao(instituicao);
+        }else{
+            throw new IllegalArgumentException("Instituição não pode ser exluída, pois existe(m) associado(s), atividade(s) e/ou evento(s) associados a ela!");
+        }
+    }
+    
+    public void marcaPresencaInscricao(Inscricao inscricao) throws IllegalAccessException{
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        inscricao.setPresente(true);
+        idao.atualizarInscricao(inscricao);
+    }
+    
+    public void validaInscricao(Inscricao inscricao) throws IllegalAccessException{
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        inscricao.setValidada(true);
+        idao.atualizarInscricao(inscricao);
+    }
+    
+    public static byte[] serialize(Object obj) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(obj);
+        return out.toByteArray();
+}
+    public static Object deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+        return is.readObject();
+    }
+    
+    public static byte[] stringToByte(String value){
+        String[] byteValues = value.substring(1, value.length() - 1).split(",");
+        byte[] bytes = new byte[byteValues.length];
+
+        for (int i=0, len=bytes.length; i<len; i++) {
+           bytes[i] = Byte.parseByte(byteValues[i].trim());     
+        }
+        return bytes;
+    }
+    
+    public static String byteToString(byte[] bytes){
+        return new String(bytes);
+    }
 }

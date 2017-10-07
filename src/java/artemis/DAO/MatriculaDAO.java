@@ -13,7 +13,7 @@ import java.util.List;
  * @author Wallison
  */
 public interface MatriculaDAO {
-    public void adicionarMatricula(Matricula matricula);
+    public Matricula adicionarMatricula(Matricula matricula);
     public void atualizarMatricula(Matricula matricula);
     public List<Matricula> listaMatriculas();
     public void removeMatricula(Matricula matricula);

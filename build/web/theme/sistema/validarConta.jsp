@@ -8,7 +8,8 @@
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<% if(session.getAttribute("usuario") == null){%>
+<%  String dir = config.getServletContext().getInitParameter("dir");
+    if(session.getAttribute("usuario") == null){%>
 <html>
 <head>
   <meta charset="utf-8">
@@ -16,16 +17,7 @@
   <title>Artemis | Validar conta</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.6 -->
-  <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.min.css">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="../../static/css/AdminLTE.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="../../static/plugins/iCheck/square/blue.css">
+  <jsp:include page="/${dir}/theme/sistema/parts/css.jsp"></jsp:include>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -35,10 +27,9 @@
   <![endif]-->
 </head>
 <body class="hold-transition login-page">
+    <jsp:include page="/${dir}/theme/sistema/header.jsp"></jsp:include>
 <div class="login-box">
-  <div class="login-logo">
-    <a href="/ArtemisTCC/"><b>Artemis</b></a>
-  </div>
+ 
   <!-- /.login-logo -->
   <div class="login-box-body">
 
@@ -49,7 +40,7 @@
                     String cod = request.getParameter("cv");
                     Facade facade = new Facade();
                     facade.validarConta(cod);
-                    out.print("Sua conta foi validada com sucesso! <a href='/ArtemisTCC/login'>Faça o login!</a>");
+                    out.print("Sua conta foi validada com sucesso! Volte a tela de login para entrar no sistema.");
                   }catch(NullPointerException e){
                       out.println(e.getMessage());
                   }catch(IllegalArgumentException e){
@@ -62,14 +53,13 @@
       </p>
     <!-- /.social-auth-links -->
 
-    <a href="/ArtemisTCC/cadastro" class="text-center">Realize o cadastro</a>
-    <a href="/ArtemisTCC/login" class="text-center">Realize o login</a>
-
   </div>
   <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->
-
+        <footer>
+            <jsp:include page="/${dir}/theme/sistema/footer-bottom.jsp"></jsp:include>
+        </footer>
 <!-- jQuery 2.2.3 -->
 <script src="../../static/plugins/jQuery/jquery-2.2.3.min.js"></script>
 <!-- Bootstrap 3.3.6 -->

@@ -30,9 +30,17 @@
         if(request.getParameter("vincular") != null){
             try{
                 EventoBeans event = facade.getEvento(Long.parseLong(request.getParameter("evento")));
-                evt.getEventos().add(event);
-                facade.atualizaEvento(evt);
-                request.setAttribute("msg", "Evento vinculado com sucesso!");
+                EventoBeans vinculado = facade.getEventoVinculado(event);
+                EventoBeans vinculado2 = facade.getEventoVinculado(evt);
+                if(vinculado2 != null && event.getCodEvento() == vinculado2.getCodEvento()){
+                    request.setAttribute("msg", "Evento no qual está tentando vincular este já evento vinculado do mesmo!");
+                }if(vinculado != null){
+                    request.setAttribute("msg", "Esse evento já está vinculado!");
+                }else{
+                    evt.getEventos().add(event);
+                    facade.atualizaEvento(evt);
+                    request.setAttribute("msg", "Evento vinculado com sucesso!");
+                }
             }catch(IllegalAccessException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NumberFormatException e){

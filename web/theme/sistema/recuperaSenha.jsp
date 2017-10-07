@@ -10,15 +10,17 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <% if(session.getAttribute("usuario") == null){%>
-
+<%
+    String dir = config.getServletContext().getInitParameter("dir");
+%>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Artemis | Recuperar Senha</title>
-         <jsp:include page="parts/css.jsp"></jsp:include>
+         <jsp:include page="/${dir}/theme/sistema/parts/css.jsp"></jsp:include>
     </head>
     <body>
-        <jsp:include page="header.jsp"></jsp:include>
+        <jsp:include page="/${dir}/theme/sistema/header.jsp"></jsp:include>
         
         
         <!--aqui -->
@@ -49,14 +51,14 @@
 					<input type="text" class="user" name="cpf" placeholder="Digite seu CPF" required="">
                                         <input type="submit"  name="recuperar" value="Recuperar">
 				</form>
-                                <h6> Ainda não é membro? <a href="cadastroPag.jsp">Cadastre-se agora</a> </h6>
+                                <h6> Ainda não é membro? <a href="/<%=dir%>/cadastro">Cadastre-se agora</a> </h6>
 			</div>
 		</div>
 	</section>
         
         <!--aqui -->
         <footer>
-            <jsp:include page="footer-bottom.jsp"></jsp:include>
+            <jsp:include page="/${dir}/theme/sistema/footer-bottom.jsp"></jsp:include>
         </footer>
 
 

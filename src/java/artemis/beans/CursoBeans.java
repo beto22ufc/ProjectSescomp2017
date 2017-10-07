@@ -7,6 +7,7 @@ package artemis.beans;
 
 import artemis.model.Curso;
 import artemis.model.Usuario;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,36 +16,36 @@ import java.util.List;
  *
  * @author Wallison
  */
-public class CursoBeans implements Beans{
+public class CursoBeans implements Beans, Serializable{
     private long codCurso;
     private String nome;
     private String descricao;
     //Anos
-    private byte duracao;
+    private int duracao;
 
     public CursoBeans(){
     
     }
     
-    public CursoBeans(long codCurso, String nome, String descricao, byte duracao){
+    public CursoBeans(long codCurso, String nome, String descricao, int duracao){
         setCodCurso(codCurso);
         setNome(nome);
         setDescricao(descricao);
         setDuracao(duracao);
     }
     
-    public CursoBeans(long codCurso, String nome, byte duracao){
+    public CursoBeans(long codCurso, String nome, int duracao){
         setCodCurso(codCurso);
         setNome(nome);
         setDuracao(duracao);
     }
     
-    public CursoBeans(String nome, String descricao, byte duracao){
+    public CursoBeans(String nome, String descricao, int duracao){
         setNome(nome);
         setDescricao(descricao);
         setDuracao(duracao);
     }
-    public CursoBeans(String nome, byte duracao){
+    public CursoBeans(String nome, int duracao){
         setNome(nome);
         setDuracao(duracao);
     }
@@ -73,11 +74,11 @@ public class CursoBeans implements Beans{
         this.descricao = descricao;
     }
 
-    public byte getDuracao() {
+    public int getDuracao() {
         return duracao;
     }
 
-    public void setDuracao(byte duracao) {
+    public void setDuracao(int duracao) {
         this.duracao = duracao;
     }
 

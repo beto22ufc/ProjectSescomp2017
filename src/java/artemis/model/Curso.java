@@ -5,6 +5,8 @@
  */
 package artemis.model;
 
+import artemis.DAO.CursoDAOImpl;
+import artemis.DAO.UsuarioDAOImpl;
 import java.util.List;
 import javax.persistence.*;
 
@@ -22,32 +24,32 @@ public class Curso {
     private String nome;
     private String descricao;
     //Anos
-    private byte duracao;
+    private int duracao;
    
     public Curso(){
     
     }
     
-    public Curso(long codCurso, String nome, String descricao, byte duracao){
+    public Curso(long codCurso, String nome, String descricao, int duracao){
         setCodCurso(codCurso);
         setNome(nome);
         setDescricao(descricao);
         setDuracao(duracao);
     }
     
-    public Curso(long codCurso, String nome, byte duracao){
+    public Curso(long codCurso, String nome, int duracao){
         setCodCurso(codCurso);
         setNome(nome);
         setDuracao(duracao);
     }
     
-    public Curso(String nome, String descricao, byte duracao){
+    public Curso(String nome, String descricao, int duracao){
         setNome(nome);
         setDescricao(descricao);
         setDuracao(duracao);
     }
     
-    public Curso(String nome, byte duracao){
+    public Curso(String nome, int duracao){
         setNome(nome);
         setDuracao(duracao);
     }
@@ -85,15 +87,32 @@ public class Curso {
             throw new NullPointerException("Descrição de curso não pode ser vazia!");
     }
 
-    public byte getDuracao() {
+    public int getDuracao() {
         return duracao;
     }
 
-    public void setDuracao(byte duracao) {
+    public void setDuracao(int duracao) {
         if(duracao>0)
             this.duracao = duracao;
         else
             throw new NullPointerException("Curso deve durar pelo menos 1 ano!");
     }    
+ 
+    public boolean alunoAssociado(){
+        UsuarioDAOImpl udao = new UsuarioDAOImpl();
+        List<Usuario> usuarios = udao.listaUsuarios();
+        for(Usuario usuario : usuarios){
+            if(usuario.getMatricula() !=null){
+                if(usuario.getMatricula().getCurso().getCodCurso() == this.getCodCurso()){
+                    return true;
+                }
+            }                
+        }
+        return false;    
+    }
     
+    public void atualizaCurso(Curso curso) throws IllegalAccessException{
+        CursoDAOImpl cdao = new CursoDAOImpl();
+        cdao.atualizarCurso(curso);
+    }
 }

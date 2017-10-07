@@ -48,4 +48,44 @@ public class UsuarioProxy extends Usuario{
         }
     }
     
+    @Override
+    public void removeInstituicao(Instituicao instituicao)throws IllegalAccessException{
+        if(this.usuario.getTipo() !=null && this.usuario.getTipo().contains("adminSite")){
+            super.removeInstituicao(instituicao);
+        }else{
+            throw new IllegalArgumentException("Acesso negado!");
+        }
+    }
+    
+    public void marcaPresencaInscricao(Atividade atividade, Inscricao inscricao) throws IllegalAccessException{
+        if(this.usuario.getTipo()!=null && (this.usuario.getTipo().contains("organizador") || this.usuario.getTipo().contains("adminEvento")) && (atividade.getAdministradores().contains(usuario) || atividade.getOrganizadores().contains(usuario)) && atividade.getInscricaoAtividades().contains(inscricao)){
+            super.marcaPresencaInscricao(inscricao);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
+    
+    public void marcaPresencaInscricao(Evento evento, Inscricao inscricao) throws IllegalAccessException{
+        if(this.usuario.getTipo()!=null && (this.usuario.getTipo().contains("organizador") || this.usuario.getTipo().contains("adminEvento")) && (evento.getAdministradores().contains(usuario) || evento.getOrganizadores().contains(usuario)) && evento.getInscricoes().contains(inscricao)){
+            super.marcaPresencaInscricao(inscricao);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
+    
+    public void validaInscricao(Atividade atividade, Inscricao inscricao) throws IllegalAccessException{
+        if(this.usuario.getTipo()!=null && (this.usuario.getTipo().contains("organizador") || this.usuario.getTipo().contains("adminEvento")) && (atividade.getAdministradores().contains(usuario) || atividade.getOrganizadores().contains(usuario)) && atividade.getInscricaoAtividades().contains(inscricao)){
+            super.validaInscricao(inscricao);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
+    
+    public void validaInscricao(Evento evento, Inscricao inscricao) throws IllegalAccessException{
+        if(this.usuario.getTipo()!=null && (this.usuario.getTipo().contains("organizador") || this.usuario.getTipo().contains("adminEvento")) && (evento.getAdministradores().contains(usuario) || evento.getOrganizadores().contains(usuario)) && evento.getInscricoes().contains(inscricao)){
+            super.validaInscricao(inscricao);
+        }else{
+            throw new IllegalAccessException("Acesso negado!");
+        }
+    }
 }

@@ -8,6 +8,8 @@ package artemis.beans;
 import artemis.model.Periodo;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  *
@@ -93,5 +95,24 @@ public class PeriodoBeans implements Beans{
         return p;
     }
     
+    @Override
+    public boolean equals(Object o){
+        PeriodoBeans p = (PeriodoBeans) o;
+        return (this.getCodPeriodo() == p.getCodPeriodo() && this.getInicio().equals(p.getInicio()) && this.getTermino().equals(p.getTermino()));
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + (int) (this.codPeriodo ^ (this.codPeriodo >>> 32));
+        hash = 67 * hash + Objects.hashCode(this.inicio);
+        hash = 67 * hash + Objects.hashCode(this.termino);
+        return hash;
+    }
     
+    @Override
+    public String toString(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm");
+        return getInicio().format(formatter)+" às "+getTermino().format(formatter);
+    }
 }

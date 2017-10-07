@@ -15,7 +15,40 @@
     String dir = config.getServletContext().getInitParameter("dir");
     UsuarioBeans u = ((UsuarioBeans) session.getAttribute("usuario"));
     Facade facade = new Facade();
-    EventoBeans e = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+    EventoBeans e = null;
+    try{
+        e = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        if(!e.getAdministradores().contains(u)){
+            response.sendRedirect("/"+dir+"/404");
+        }
+    }catch(NumberFormatException ex){
+        response.sendRedirect("/"+dir+"/404");
+    }catch(NullPointerException ex){
+        response.sendRedirect("/"+dir+"/404");            
+    }
+    if(request.getParameter("ri") != null){
+        ImagemBeans imagem = null;
+        try{
+            try{
+                imagem = facade.getImagem(Long.parseLong(request.getParameter("ri")));
+            }catch(NumberFormatException ex){
+                response.sendRedirect("/"+dir+"/404");
+            }catch(NullPointerException ex){
+                response.sendRedirect("/"+dir+"/404");            
+            }
+            facade.removeImagemSlideshow(e, imagem);
+            e = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+            request.setAttribute("msg", "Imagem removida com sucesso!");
+        }catch(NumberFormatException ex){
+            request.setAttribute("msg", "Isso não é um número!");
+        }catch(NullPointerException ex){
+            request.setAttribute("msg", ex.getMessage());            
+        }catch(IllegalArgumentException ex){
+            request.setAttribute("msg", ex.getMessage());            
+        }catch(Exception ex){
+            request.setAttribute("msg", ex.getMessage());            
+        }
+    }
     List<ImagemBeans> imagens = e.getSlideshow();
 %>
 <div class="col-xs-12">
@@ -23,13 +56,13 @@
   <div class="box-header">
     <h3 class="box-title">Imagens slideshow do evento <%=e.getNome().toUpperCase() %></h3>
     <p><a href="/<%=dir%>/painelUsuario/evento/adicionaImagemSlideshow/?e=<%=e.getNome().toLowerCase().replace(" ", "_")+"_"+e.getCodEvento()%>">Adicionar nova</a></p>
+    <p><%=(request.getParameter("msg") !=null) ? request.getParameter("msg") : "" %></p>
   </div>
   <!-- /.box-header -->
   <div class="box-body">
     <table id="example1" class="table table-bordered table-striped">
       <thead>
       <tr>
-        <th>Código</th>
         <th>Arquivo</th>
         <th>Descrição</th>
         <th>Editar/Excluir</th>
@@ -37,23 +70,20 @@
       </thead>
       <tbody>
       <%
-          for(int i=0;i<imagens.size();i++){
-              ImagemBeans imagem = imagens.get(i);
+          for(ImagemBeans imagem : imagens){
       %>    
                 <tr>
-                  <td><%=imagem.getCodImagem() %></td>
                   <td><% if(imagem.getArquivo() != null){%>
                       <img src="<%=ImageManipulation.encodeImage(imagem.getArquivo()) %>" style="width: 200px; height: 200px;"/></td>
                   <%}else{out.print("Sem imagem");}%>
                   <td><%=imagem.getDescricao()%></td>
-                  <td><a href="#">Editar</a>/<a href="#">Excluir</a></td>
+                  <td><a href="/<%=dir %>/painelUsuario/evento/editarImagem/?e=<%=e.getNome().toLowerCase().replace(" ", "_")+"_"+e.getCodEvento()%>&i=<%=imagem.getCodImagem() %>">Editar</a>/<a href="?e=<%=e.getNome().toLowerCase().replace(" ", "_")+"_"+e.getCodEvento()%>&ri=<%=imagem.getCodImagem() %>">Excluir</a></td>
                 </tr>
       <%    
          } %>
       </tbody>
       <tfoot>
       <tr>
-        <th>Código</th>
         <th>Arquivo</th>
         <th>Descrição</th>
         <th>Editar/Excluir</th>

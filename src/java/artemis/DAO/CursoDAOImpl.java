@@ -6,6 +6,7 @@
 package artemis.DAO;
 
 import artemis.model.Curso;
+import hibernate.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
@@ -18,7 +19,7 @@ import org.hibernate.Transaction;
  */
 public class CursoDAOImpl implements CursoDAO{
     
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
     
             
     public void setSessionFactory(SessionFactory sessionFactory){
@@ -30,82 +31,58 @@ public class CursoDAOImpl implements CursoDAO{
     public void adicionarCurso(Curso curso) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(curso != null){
-                session.persist(curso);
-            }else{
-                throw new NullPointerException("Curso não pode ser nulo!");
-            }
+        if(curso != null){
+            session.persist(curso);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Curso não pode ser nulo!");
         }
+        session.close();
+
     }
 
     @Override
     public void atualizarCurso(Curso curso) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(curso != null){
-                session.update(curso);
-            }else{
-                throw new NullPointerException("Curso não pode ser nulo!");
-            }
+        if(curso != null){
+            session.update(curso);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Curso não pode ser nulo!");
         }
+        session.close();
     }
 
     @Override
     public List<Curso> listaCursos() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<Curso> cursos = session.createCriteria(Curso.class).list();
-            t.commit();
-            if(cursos != null)
-                return cursos;
-            else
-                return new ArrayList<>();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Curso> cursos = session.createCriteria(Curso.class).list();
+        if(cursos != null)
+            return cursos;
+        else
+            return new ArrayList<>();
+        
     }
 
     @Override
     public void removerCurso(Curso curso) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(curso != null){
-                session.delete(curso);
-            }else{
-                throw new NullPointerException("Curso não pode ser nulo!");
-            }
+        if(curso != null){
+            session.delete(curso);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Curso não pode ser nulo!");
         }
+        session.close();
     }
 
     @Override
     public Curso getCurso(long codCurso) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            Curso curso = (Curso) session.load(Curso.class, codCurso);
-            t.commit();
-            return curso;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        Curso curso = (Curso) session.get(Curso.class, codCurso);
+        return curso;
     }
     
 }

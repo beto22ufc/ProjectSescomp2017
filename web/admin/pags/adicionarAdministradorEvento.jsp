@@ -11,7 +11,18 @@
     String dir = config.getServletContext().getInitParameter("dir");
     UsuarioBeans u = ((UsuarioBeans) session.getAttribute("usuario"));
     Facade facade = new Facade(u);
-    EventoBeans evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+    EventoBeans evt = null;
+    try{
+        evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        if(!evt.getAdministradores().contains(u)){
+            response.sendRedirect("/"+dir+"/404");
+        }
+    }catch(NumberFormatException e){
+        response.sendRedirect("/"+dir+"/404");
+    }catch(NullPointerException e){
+        response.sendRedirect("/"+dir+"/404");            
+    }
     List<UsuarioBeans> usuarios = facade.getUsuarios();
     List<UsuarioBeans> administradores = evt.getAdministradores();
 %>

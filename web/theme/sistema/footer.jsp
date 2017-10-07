@@ -4,6 +4,9 @@
     Author     : Usuario
 --%>
 <section>
+    <%
+        String dir = config.getServletContext().getInitParameter("dir");
+    %>
     <footer>
                     <div class="w3-agileits-footer-top">
                         <div class="container">
@@ -15,12 +18,13 @@
                                     <p></p>
                                 </div>
                                 <div class="col-md-3 wthree-footer-grid">
+                                    <!--
                                     <h4 class="footer-head">Ajuda</h4>
                                     <ul>
                                         <li><a href="feedback.html"><i class="fa fa-long-arrow-right" aria-hidden="true"></i>Feedback</a></li>
                                         <li><a href="contact.html"><i class="fa fa-long-arrow-right" aria-hidden="true"></i>Contact</a></li>
                                         <li><a href="icons.html"><i class="fa fa-long-arrow-right" aria-hidden="true"></i>Icons Page</a></li>
-                                    </ul>
+                                    </ul>-->
                                 </div>
                                 <div class="col-md-3 wthree-footer-grid">
                                     <h4 class="footer-head">Informações</h4>
@@ -34,18 +38,26 @@
                                     <address>
                                         <ul class="location">
                                                 <li><span class="glyphicon glyphicon-map-marker"></span></li>
-                                                <li>Russas</li>
+                                                <li>Russas, CE</li>
                                         </ul>	
                                         <div class="clearfix"> </div>
                                         <ul class="location">
                                                 <li><span class="glyphicon glyphicon-earphone"></span></li>
-                                                <li>(88)9 9785-7822</li>
+                                                <li>(88) 9 9785-7822</li>
+                                        </ul>
+                                        <ul class="location">
+                                                <li><span class="glyphicon glyphicon-earphone"></span></li>
+                                                <li>(88) 9 9730-3677</li>
                                         </ul>	
                                         <div class="clearfix"> </div>
                                         <ul class="location">
                                                 <li><span class="glyphicon glyphicon-envelope"></span></li>
-                                                <li><a href="mailto:info@example.com">onstart_inc@gmail.com</a></li>
-                                        </ul>						
+                                                <li><a href="mailto:wallison.rocha@outlook.com">wallison.rocha@outlook.com</a></li>
+                                        </ul>
+                                        <ul class="location">
+                                                <li><span class="glyphicon glyphicon-envelope"></span></li>
+                                                <li><a href="mailto:betinlimma@gmail.com">betinlimma@gmail.com</a></li>
+                                        </ul>
                                     </address>
                                 </div>
                                 <div class="clearfix"></div>
@@ -55,8 +67,8 @@
                     <div class="agileits-footer-bottom text-center">
 			<div class="container">
 				<div class="w3-footer-logo">
-					<h1><a href="index.jsp"><span>Ar</span>temis</a></h1>
-				</div>
+					<h1><a href="/<%=dir%>/"><span>Ar</span>temis</a></h1>
+				</div><!--
 				<div class="w3-footer-social-icons">
                                     <ul>
                                         <li><a class="facebook" href="#"><i class="fa fa-facebook" aria-hidden="true"></i><span>Facebook</span></a></li>
@@ -65,7 +77,7 @@
                                         <li><a class="googleplus" href="#"><i class="fa fa-google-plus" aria-hidden="true"></i><span>Google+</span></a></li>
                                         <li><a class="dribbble" href="#"><i class="fa fa-dribbble" aria-hidden="true"></i><span>Dribbble</span></a></li>
                                     </ul>
-				</div>
+				</div>-->
 				<div class="copyrights">
 					<p> © 2017 Artemis. Todos os direitos reservados | Design by  <a href="http://w3layouts.com/"> W3layouts</a> </p>
 				</div>

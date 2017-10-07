@@ -37,7 +37,11 @@
                     <div class="clearfix"> </div>
                     <ul class="location">
                             <li><span class="glyphicon glyphicon-envelope"></span></li>
-                            <li><a href="mailto:info@example.com">onstart_inc@gmail.com</a></li>
+                            <li><a href="mailto:betinlimma@gmail.com">betinlimma@gmail.com</a></li>
+                    </ul>						
+                    <ul class="location">
+                            <li><span class="glyphicon glyphicon-envelope"></span></li>
+                            <li><a href="mailto:wallison.rocha@outlook.com">wallison.rocha@outlook.com</a></li>
                     </ul>						
                 </address>
             </div>

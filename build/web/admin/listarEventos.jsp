@@ -45,7 +45,7 @@
   <div class="control-sidebar-bg"></div>
 </div>
 <!-- ./wrapper -->
-<jsp:include page="/${dir}/admin/parts/js.jsp"></jsp:include>
+ <jsp:include page="/${dir}/admin/parts/jsListar.jsp"></jsp:include>
 </body>
 </html>
 <% }else{

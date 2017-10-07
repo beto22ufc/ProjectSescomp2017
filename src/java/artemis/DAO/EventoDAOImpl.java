@@ -5,7 +5,6 @@
  */
 package artemis.DAO;
 
-import artemis.model.Atividade;
 import artemis.model.Evento;
 import hibernate.HibernateUtil;
 import java.util.Collections;
@@ -14,9 +13,6 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -36,131 +32,62 @@ public class EventoDAOImpl implements EventoDAO {
     public Evento adicionarEvento(Evento evento) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(evento != null){
-                session.persist(evento);
-            }else{
-                throw new NullPointerException("Evento nulo não pode ser salvo!");
-            }
+        if(evento != null){
+            session.persist(evento);
             t.commit();
-            return evento;
-        }catch(RuntimeException e){
-            t.rollback();
-            session.close();
-            throw e;
+        }else{
+            throw new NullPointerException("Evento nulo não pode ser salvo!");
         }
+        session.close();
+        return evento;
     }
 
     @Override
     public void atualizarEvento(Evento evento) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(evento != null){
-                session.update(evento);
-            }else{
-                throw new NullPointerException("Evento nulo não pode ser atualizado!");
-            }
+        if(evento != null){
+            session.update(evento);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
-        }    
+        }else{
+            throw new NullPointerException("Evento nulo não pode ser atualizado!");
+        }
+        session.close();
     }
+
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Evento> listaEventos() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<Evento> eventos = Collections.synchronizedList(session.createCriteria(Evento.class).list());
-            t.commit();
-            return eventos;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Evento> eventos = Collections.synchronizedList(session.createCriteria(Evento.class).list());
+        return eventos;
     }
 
     @Override
     public void removerEvento(Evento evento) {
         Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            if(evento != null){
-                session.delete(evento);
-            }else{
-                throw new NullPointerException("Evento não pode ser nulo!");
-            }
-            t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        if(evento != null){
+            session.delete(evento);
+        }else{
+            throw new NullPointerException("Evento não pode ser nulo!");
         }
     }
 
     @Override
     public Evento getEvento(long codEvento) {
         Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            Evento evento = (Evento) session.get(Evento.class, codEvento);
-            t.commit();
-            return evento;        
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Evento evento = (Evento) session.get(Evento.class, codEvento);
+        return evento;        
     }
-   
-    
-    public void remevoInstanceSession(Evento evento){
-        Session session = this.sessionFactory.openSession();
         
-    }
-    public List<Evento>  buscaEvento(String texto){
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-        Criteria crit = session.createCriteria(Evento.class)
-                .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
-        crit.add(Restrictions.conjunction(Restrictions.ilike("categoria", texto, MatchMode.ANYWHERE)));
-        List results = crit.list();
-        return results;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw  e;
-        }
-    }
-    
     @Override
     public List<Evento> getPrimeirosEventos(int n){
         Session session = this.sessionFactory.openSession();
-        Criteria crit = session.createCriteria(Evento.class).createAlias("nome","p");
-        crit.addOrder(Order.asc("p.nome"));
+        Criteria crit = session.createCriteria(Evento.class, "evento");
         crit.setFirstResult(0);
         crit.setMaxResults(n);
         return crit.list();
-    }
-
-    //-------------adicionar--------------------//
-    
-    public List<Evento> buscaEvento(String busca, String categoria) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-        Criteria crit = session.createCriteria(Evento.class)
-                .add(Restrictions.ilike("nome",busca, MatchMode.ANYWHERE));
-        crit.add(Restrictions.ilike("categoria", categoria, MatchMode.ANYWHERE));
-        List results = crit.list();
-        return results;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw  e;
-        }
     }
     
 }

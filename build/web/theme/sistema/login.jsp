@@ -1,9 +1,8 @@
 <%-- 
-    Document   : cadastro
-    Created on : 28/07/2017, 09:13:29
-    Author     : Wallison
+    Document   : loginPag
+    Created on : 03/09/2017, 11:35:56
+    Author     : Usuario
 --%>
-
 <%@page import="artemis.model.Facade"%>
 <%@page import="artemis.beans.UsuarioBeans"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,38 +13,17 @@
     
 %>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Artemis | Login</title>
-  <!-- Tell the browser to be responsive to screen width -->
-  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.6 -->
-  <link rel="stylesheet" href="../../static/bootstrap/css/bootstrap.min.css">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="../../static/css/AdminLTE.min.css">
-  <!-- iCheck -->
-  <link rel="stylesheet" href="../../static/plugins/iCheck/square/blue.css">
-
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
-</head>
-<body class="hold-transition login-page" >
-<div class="login-box">
-  <div class="login-logo">
-      <a href="/<%=dir %>/"><b>Artemis</b></a>
-  </div>
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-      <%
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Artemis | login</title>
+         <jsp:include page="/${dir}/theme/sistema/parts/css.jsp"></jsp:include>
+    </head>
+    <body style="overflow-x: hidden">
+        <jsp:include page="/${dir}/theme/sistema/header.jsp"></jsp:include>
+        
+        
+        <!--aqui -->
+        <%
         if(request.getParameter("login") != null){
             try{
                 UsuarioBeans ub = new UsuarioBeans(request.getParameter("email"), request.getParameter("senha"));
@@ -54,7 +32,7 @@
                 if(ub != null){
                     if(ub.getStatus() == 0){
                         request.setAttribute("msg", "Sua conta não foi validada ainda! Acesse seu e-mail e a valide!<br />"
-                                + "Não recebeu o e-mail de ativação? <a href='/"+dir+"/reenviarEmailValidacao'>Não, reenviar e-mail!</a>");
+                                + "Não recebeu o e-mail de ativação? <a href='/"+dir+"/reenviarEmailValidacao'> Reenviar e-mail!</a>");
                     }else{
                         session.setAttribute("usuario", ub);
                         request.setAttribute("msg", "Login realizado com sucesso!");
@@ -68,63 +46,84 @@
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
                 request.setAttribute("msg", e.getMessage());
+            }catch(Exception e){
+                request.setAttribute("msg", e.getMessage());
             }
         }
     %>
-    <p class="login-box-msg" style="color: red;"><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Faça o login e inicie uma sessão"%></p>
-    
-    <form action="" method="post">
-      <div class="form-group has-feedback">
-        <input type="email" class="form-control" placeholder="E-mail" name="email">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-      </div>
-      <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Password" name="senha">
-        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-      </div>
-      <div class="row">
-        <!-- /.col -->
-        <div class="col-xs-4" style="float: right;">
-            <button type="submit" class="btn btn-primary btn-block btn-flat" name="login" value="usuario">Entrar</button>
-        </div>
-        <!-- /.col -->
-      </div>
-    </form>
-    <!-- /.social-auth-links -->
+        
+        
+        
+        
+        
+        <!-- sign in form -->
+	 <section>
+		<div id="agileits-sign-in-page" class="sign-in-wrapper">
+			<div class="agileinfo_signin">
+			<h3>Login</h3>
+                            <p class="login-box-msg" ><%= (request.getAttribute("msg") != null) ? request.getAttribute("msg") : "Faça o login e inicie uma sessão"%></p>
+				<form action="" method="post">
+					<input type="email" name="email" placeholder="E-mail" required=""> 
+					<input type="password" name="senha" placeholder="Senha" required=""> 
+					<input type="submit" name="login" value="Entrar">
+					<div class="forgot-grid">
+                                            
+                                            <div class="forgot">
+                                                <a href="/<%=dir%>/recuperarConta">Esqueceu a senha?</a>
+                                            </div>
+                                            
+                                            <div class="clearfix"> </div>
+					</div>
+				</form>
+                                <h6> Ainda não é membro? <a href="/<%=dir%>/cadastro">Cadastre-se agora</a> </h6>
+			</div>
+		</div>
+	</section>
+	<!-- //sign in form -->
+        <!--aqui -->
+        <footer>
+            <jsp:include page="/${dir}/theme/sistema/footer-bottom.jsp"></jsp:include>
+        </footer>
+      
+        <!-- Navigation-Js-->
+        <script type="text/javascript" src="../../static/plugins/index/js/main.js"></script>
+                <script type="text/javascript" src="../../static/plugins/index/js/classie.js"></script>
+		<!-- //Navigation-Js-->
+		<!-- js -->
+		<script type="text/javascript" src="../../static/plugins/index/js/jquery.min.js"></script>
+		<!-- js -->
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="../../static/plugins/index/js/bootstrap.js"></script>
+		<script src="../../static/plugins/index/js/bootstrap-select.js"></script>
+		<script>
+		  $(document).ready(function () {
+			var mySelect = $('#first-disabled2');
 
-<<<<<<< HEAD
-    <a href="#">Esqueci minha senha</a><br>
-    <a href="/<%=dir %>/cadastro" class="text-center">Registar novo menbro</a>
-=======
-    <a href="/<%=dir %>/recuperarConta">Eu esqueci minha senha</a><br>
-    <a href="/<%=dir %>/cadastro" class="text-center">Register a new membership</a>
->>>>>>> c680968682f9f1d0ad1829ffc1372c28c41403d1
+			$('#special').on('click', function () {
+			  mySelect.find('option:selected').prop('disabled', true);
+			  mySelect.selectpicker('refresh');
+			});
 
-  </div>
-  <!-- /.login-box-body -->
-</div>
-<!-- /.login-box -->
+			$('#special2').on('click', function () {
+			  mySelect.find('option:disabled').prop('disabled', false);
+			  mySelect.selectpicker('refresh');
+			});
 
-<!-- jQuery 2.2.3 -->
-<script src="../../static/plugins/jQuery/jquery-2.2.3.min.js"></script>
-<!-- Bootstrap 3.3.6 -->
-<script src="../../static/bootstrap/js/bootstrap.min.js"></script>
-<!-- iCheck -->
-<script src="../../static/plugins/iCheck/icheck.min.js"></script>
-<script>
-  $(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' // optional
-    });
-  });
-</script>
-</body>
+			$('#basic2').selectpicker({
+			  liveSearch: true,
+			  maxOptions: 1
+			});
+		  });
+		</script>
+
+        
+        
+        
+        <jsp:include page="/${dir}/theme/sistema/parts/js.jsp"></jsp:include>
+    </body>
 </html>
 <% }else{
-        RequestDispatcher rd = request.getRequestDispatcher("/");
-        rd.forward(request, response);
+        response.sendRedirect("/"+dir+"/painelUsuario");
         
         }%>
 

@@ -37,6 +37,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
     private List<UsuarioBeans> administradores;
     private List<UsuarioBeans> organizadores;
     private String recursosSolicitados;
+    private boolean temCertificado;
 	
     public AtividadeBeans(){}
     public AtividadeBeans(long codAtividade, String nome, String descricao, List<PeriodoBeans> periodoBeanses, UsuarioBeans ministrante, 
@@ -201,6 +202,14 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
     public void setRecursosSolicitados(String recursosSolicitados) {
         this.recursosSolicitados = recursosSolicitados;
     }
+
+    public boolean isTemCertificado() {
+        return temCertificado;
+    }
+
+    public void setTemCertificado(boolean temCertificado) {
+        this.temCertificado = temCertificado;
+    }
         
     
     
@@ -219,6 +228,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
                 this.setVagasPublicas(a.getVagasPublicas());
                 this.setTipoPagamento(a.getTipoPagamento());
                 this.setCategoria(a.getCategoria());
+                this.setTemCertificado(a.isTemCertificado());
                 UsuarioBeans ub = null;
                 if(a.getMinistrante()!=null){
                    ub = (UsuarioBeans) (new UsuarioBeans().toBeans(a.getMinistrante()));
@@ -364,6 +374,7 @@ public class AtividadeBeans implements Beans, InscrevivelBeans{
         if(this.getRecursosSolicitados() != null){
             a.setRecursosSolicitados(this.getRecursosSolicitados());
         }
+        a.setTemCertificado(this.isTemCertificado());
         a.setLocaisReservados(locaisReservados);
         a.setBensReservados(bensReservados);
         return a;

@@ -20,7 +20,7 @@
       </h1>
       <ol class="breadcrumb">
         <li><a href="/Artemis/admin/"><i class="fa fa-dashboard"></i> Inicio</a></li>
-        <li class="active">Adicionar nível</li>
+        <li class="active">Remover nível</li>
       </ol>
     </section>
     <%
@@ -29,7 +29,7 @@
             try{
                 UsuarioBeans usuario = facade.getUsuario(Long.parseLong(request.getParameter("usuario")));
                 facade.removeNivelUsuario(usuario, request.getParameter("nivel"));
-                request.setAttribute("msg", "Nível adicionado com sucesso!");
+                request.setAttribute("msg", "Nível removido com sucesso!");
             }catch(IllegalAccessException e){
                 request.setAttribute("msg", e.getMessage());
             }catch(NumberFormatException e){
@@ -83,7 +83,7 @@
               <!-- /.box-body -->
 
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary" name="cadastro" value="nivel">Adicionar nível</button>
+                <button type="submit" class="btn btn-primary" name="cadastro" value="nivel">Remover nível</button>
               </div>
             </form>
           </div>

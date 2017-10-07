@@ -7,28 +7,29 @@ package artemis.beans;
 
 import artemis.model.Curso;
 import artemis.model.Matricula;
+import java.io.Serializable;
 
 /**
  *
  * @author Wallison
  */
-public class MatriculaBeans implements Beans{
+public class MatriculaBeans implements Beans, Serializable{
     private long codMatricula;
     private int numero;
     private CursoBeans curso;
     //Semestre atual
-    private byte periodo;
+    private int periodo;
     
     public MatriculaBeans(){}
     
-    public MatriculaBeans(long codMatricula, int numero, CursoBeans curso, byte periodo){
+    public MatriculaBeans(long codMatricula, int numero, CursoBeans curso, int periodo){
         setCodMatricula(codMatricula);
         setNumero(numero);
         setCurso(curso);
         setPeriodo(periodo);
     }
     
-    public MatriculaBeans(int numero, CursoBeans curso, byte periodo){
+    public MatriculaBeans(int numero, CursoBeans curso, int periodo){
         setNumero(numero);
         setCurso(curso);
         setPeriodo(periodo);
@@ -58,11 +59,11 @@ public class MatriculaBeans implements Beans{
         this.curso = curso;
     }
 
-    public byte getPeriodo() {
+    public int getPeriodo() {
         return periodo;
     }
 
-    public void setPeriodo(byte periodo) {
+    public void setPeriodo(int periodo) {
         this.periodo = periodo;
     }
 
@@ -73,7 +74,7 @@ public class MatriculaBeans implements Beans{
                 Matricula m = (Matricula) o;
                 this.setCodMatricula(m.getCodMatricula());
                 this.setNumero(m.getNumero());
-                this.setPeriodo(this.getPeriodo());
+                this.setPeriodo(m.getPeriodo());
                 this.setCurso((CursoBeans)new CursoBeans().toBeans(m.getCurso()));
                 return this;
             }else{

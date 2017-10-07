@@ -5,7 +5,9 @@
  */
 package artemis.beans;
 
+import artemis.model.Atividade;
 import artemis.model.Curso;
+import artemis.model.Evento;
 import artemis.model.Instituicao;
 import artemis.model.Usuario;
 import java.util.ArrayList;
@@ -21,6 +23,9 @@ public class InstituicaoBeans implements Beans{
     private String nome;
     private List<CursoBeans> cursos;
     private List<UsuarioBeans> associados;
+    private List<EventoBeans> eventos;
+    private List<AtividadeBeans> atividades;
+    
     public InstituicaoBeans(){
     
     }
@@ -67,6 +72,22 @@ public class InstituicaoBeans implements Beans{
     public void setAssociados(List<UsuarioBeans> associados) {
         this.associados = associados;
     }
+
+    public List<EventoBeans> getEventos() {
+        return eventos;
+    }
+
+    public void setEventos(List<EventoBeans> eventos) {
+        this.eventos = eventos;
+    }
+
+    public List<AtividadeBeans> getAtividades() {
+        return atividades;
+    }
+
+    public void setAtividades(List<AtividadeBeans> atividades) {
+        this.atividades = atividades;
+    }
     
     
 
@@ -79,12 +100,26 @@ public class InstituicaoBeans implements Beans{
                 this.setNome(in.getNome());
                 List<CursoBeans> cursos = Collections.synchronizedList(new ArrayList<CursoBeans>());
                 List<UsuarioBeans> associados = Collections.synchronizedList(new ArrayList<UsuarioBeans>());
+                List<EventoBeans> eventos = Collections.synchronizedList(new ArrayList<EventoBeans>());
+                List<AtividadeBeans> atividades = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
                 CursoBeans cb = null;
                 for(int i=0;i<in.getCursos().size();i++){
                     cb = (CursoBeans) new CursoBeans().toBeans(in.getCursos().get(i));
                     cursos.add(cb);
                 }
                 this.setCursos(cursos);
+                AtividadeBeans ab = null;
+                for(int i=0;i<in.getAtividades().size();i++){
+                    ab = (AtividadeBeans) new AtividadeBeans().toBeans(in.getAtividades().get(i));
+                    atividades.add(ab);
+                }
+                this.setAtividades(atividades);
+                EventoBeans eb = null;
+                for(int i=0;i<in.getEventos().size();i++){
+                    eb = (EventoBeans) new EventoBeans().toBeans(in.getEventos().get(i));
+                    eventos.add(eb);
+                }
+                this.setEventos(eventos);
                 UsuarioBeans ub = null;
                 for(int i=0;i<in.getAssociados().size();i++){
                     ub = (UsuarioBeans) new UsuarioBeans().toBeans(in.getAssociados().get(i));
@@ -103,15 +138,33 @@ public class InstituicaoBeans implements Beans{
     @Override
     public Object toBusiness() {
         List<Curso> cursos = Collections.synchronizedList(new ArrayList<Curso>());
-        for(int i=0;i<this.getCursos().size();i++){
-            cursos.add((Curso) this.getCursos().get(i).toBusiness());
+        if(this.getCursos()!=null){
+            for(int i=0;i<this.getCursos().size();i++){
+                cursos.add((Curso) this.getCursos().get(i).toBusiness());
+            }
         }
         List<Usuario> associados = Collections.synchronizedList(new ArrayList<Usuario>());
-        for(int i=0;i<this.getAssociados().size();i++){
-            associados.add((Usuario) this.getAssociados().get(i).toBusiness());
+        if(this.getAssociados() != null){
+            for(int i=0;i<this.getAssociados().size();i++){
+                associados.add((Usuario) this.getAssociados().get(i).toBusiness());
+            }
+        }
+        List<Evento> eventos = Collections.synchronizedList(new ArrayList<Evento>());
+        if(this.getEventos()!=null){
+            for(int i=0;i<this.getEventos().size();i++){
+                eventos.add((Evento) this.getEventos().get(i).toBusiness());
+            }
+        }
+        List<Atividade> atividades = Collections.synchronizedList(new ArrayList<Atividade>());
+        if(this.getAtividades()!=null){
+            for(int i=0;i<this.getAtividades().size();i++){
+                atividades.add((Atividade) this.getAtividades().get(i).toBusiness());
+            }
         }
         Instituicao in = new Instituicao(this.getNome(), cursos);
         in.setAssociados(associados);
+        in.setEventos(eventos);
+        in.setAtividades(atividades);
         if(this.getCodInstituicao()>0){
             in.setCodInstituicao(this.getCodInstituicao());
         }

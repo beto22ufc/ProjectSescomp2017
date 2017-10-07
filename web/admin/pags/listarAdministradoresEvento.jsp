@@ -14,7 +14,40 @@
     String dir = config.getServletContext().getInitParameter("dir");
     UsuarioBeans u = ((UsuarioBeans) session.getAttribute("usuario"));
     Facade facade = new Facade(u);
-    EventoBeans evento = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+    EventoBeans evento = null;
+    try{
+        evento = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        if(!evento.getAdministradores().contains(u)){
+            response.sendRedirect("/"+dir+"/404");
+        }
+    }catch(NumberFormatException e){
+        response.sendRedirect("/"+dir+"/404");
+    }catch(NullPointerException e){
+        response.sendRedirect("/"+dir+"/404");            
+    }
+    if(request.getParameter("ua") != null){
+        UsuarioBeans administador = null;
+        try{
+            try{
+                administador = facade.getUsuario(Long.parseLong(request.getParameter("ua")));
+            }catch(NumberFormatException e){
+                response.sendRedirect("/"+dir+"/404");
+            }catch(NullPointerException e){
+                response.sendRedirect("/"+dir+"/404");            
+            }
+            evento.getAdministradores().remove(administador);
+            facade.atualizaEvento(evento);
+            request.setAttribute("msg", "Adminstrador removido com sucesso!");
+        }catch(NumberFormatException e){
+            request.setAttribute("msg", "Isso não é um número!");
+        }catch(NullPointerException e){
+            request.setAttribute("msg", e.getMessage());            
+        }catch(IllegalArgumentException e){
+            request.setAttribute("msg", e.getMessage());            
+        }catch(Exception e){
+            request.setAttribute("msg", e.getMessage());            
+        }
+    }
     List<UsuarioBeans> administradores = evento.getAdministradores();
 %>
 <div class="col-xs-12">
@@ -58,7 +91,7 @@
                   <td><%=usuario.getNascimento()%></td>
                   <td><a href="<%=usuario.getLattes() %>">Lattes</a></td>
                   <td><%=usuario.getCadastro()%></td>
-                  <td><a href="#">Remover</a></td>
+                  <td><a href="?e=<%=evento.getNome().toLowerCase().replace(" ", "_")+"_"+evento.getCodEvento()%>&ua=<%=usuario.getCodUsuario() %>">Remover</a></td>
                 </tr>
       <%    //}
          } %>

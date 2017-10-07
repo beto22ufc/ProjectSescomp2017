@@ -10,15 +10,10 @@ import artemis.model.Usuario;
 import hibernate.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -28,7 +23,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UsuarioDAOImpl implements UsuarioDAO{    
     private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-    private static final Logger logger = LoggerFactory.getLogger(UsuarioDAOImpl.class);
             
     public void setSessionFactory(SessionFactory sessionFactory){
         if(sessionFactory != null)
@@ -39,182 +33,99 @@ public class UsuarioDAOImpl implements UsuarioDAO{
     public void adicionarUsuario(Usuario usuario) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(usuario != null){
-                session.persist(usuario);
-            }else{
-                throw new NullPointerException("Usuário não pode ser nulo!");
-            }
+        if(usuario != null){
+            session.persist(usuario);
             t.commit();
-            session.close();
-        }catch(RuntimeException e){
-            t.rollback();
-            session.close();
+        }else{
+            throw new NullPointerException("Usuário não pode ser nulo!");
         }
-        logger.info("Usuário cadastrado com sucesso!");
+        session.close();
     }
 
     @Override
     public void atualizarUsuario(Usuario usuario) {
         Session session = this.sessionFactory.openSession();
         //atualizaCPF(usuario.getCpf());
-        Transaction t  = session.beginTransaction();
-        try{
-            if(usuario != null){
-                session.update(usuario);
-                logger.info("Usuario atualizado com sucesso!");
-            }else{
-                throw new NullPointerException("Usuário não pode ser nulo!");
-            }
+        Transaction t = session.beginTransaction();
+        if(usuario != null){
+            session.update(usuario);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Usuário não pode ser nulo!");
         }
+        session.close();
     }
     @SuppressWarnings("unchecked")
     @Override
     public List<Usuario> listaUsuarios() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<Usuario> usuarios = session.createCriteria(Usuario.class).list();
-            t.commit();
-            session.close();
-            if(usuarios != null)
-                return usuarios;
-            else
-                return new ArrayList<>();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Usuario> usuarios = session.createCriteria(Usuario.class).list();
+        if(usuarios != null)
+            return usuarios;
+        else
+            return new ArrayList<>();
     }
 
     @Override
     public void removeUsuario(Usuario usuario) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(usuario != null){
-                session.delete(usuario);
-            }else{
-                throw new NullPointerException("Usuário não pode ser nulo!");
-            }
+        if(usuario != null){
+            session.delete(usuario);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Usuário não pode ser nulo!");
         }
+        session.close();
     }
 
     @Override
     public Usuario getUsuario(long codUsuario) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
+        Session session = this.sessionFactory.getCurrentSession();
         try{
-            Usuario usuario = (Usuario) session.load(Usuario.class, codUsuario);
-            t.commit();
+            Usuario usuario = (Usuario) session.get(Usuario.class, codUsuario);
             return usuario;
         }catch(RuntimeException e){
-            t.rollback();
             throw e;
-        }    
+        }  
+        
     }
 
     @Override
     public void adicionaCPF(CPF cpf) {
-        Session session = this.sessionFactory.getCurrentSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(cpf != null){
-                session.persist(cpf);
-            }else{
-                throw new NullPointerException("CPF não pode ser nulo!");
-            }
+        if(cpf != null){
+            session.persist(cpf);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
+        }else{
+            throw new NullPointerException("CPF não pode ser nulo!");
         }
+        session.close();
     }
 
     @Override
     public void atualizaCPF(CPF cpf) {
-        Session session = this.sessionFactory.getCurrentSession();
-        Transaction t = session.beginTransaction();
-        try{
-            if(cpf != null){
-                session.update(cpf);
-            }else{
-                throw new NullPointerException("CPF não pode ser nulo!");
-            }
-            t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
-    }
-    
-    public List<Usuario>  buscaUsuarios(String texto){
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-        Criteria crit = session.createCriteria(Usuario.class)
-                .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
-        List<Usuario> results = crit.list();
-        return results;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw  e;
+        if(cpf != null){
+            session.update(cpf);
+            t.commit();
+        }else{
+            throw new NullPointerException("CPF não pode ser nulo!");
         }
+        session.close();
     }
-    
-    
-    
-     public List<Usuario> filtroPorLetra(String inicio){
-        Session session = this.sessionFactory.getCurrentSession();
-        Criteria crit = session.createCriteria(Usuario.class);
-        crit.add(Restrictions.ilike("nome",inicio, MatchMode.START));
-        List<Usuario> results = crit.list();
-        
-        return results;
-    }
-    public List<Usuario> filtroPorIntervaloDeLetras(String inicio, String fim){
-        Session session = this.sessionFactory.getCurrentSession();
-        Criteria crit = session.createCriteria(Usuario.class);
-        crit.add(Restrictions.between("nome", inicio, fim));
-        List<Usuario> results = crit.list();
-        
-        return results;
-    } 
-     
-    public List<Object[]> filtroPorCurso(String curso){
-        Session session = this.sessionFactory.getCurrentSession();
-        Criteria crit = session.createCriteria(Usuario.class)
-            .createAlias("curso", "c")
-            .createAlias("matricula", "m")
-            .add(Restrictions.eqProperty(curso, "c.nome"))
-            .add(Restrictions.eqProperty("c.codCurso", "m.curso"))
-            .add(Restrictions.eqProperty("m.codMatricula", "usuario.matricula"));
 
-        
-        List results = crit.list();
-        return results;
-    }
-    public List<Object[]> filtroPorInstituicao(String instituicao){
+    @Override
+    public Usuario getUsuarioFromEmail(String email) {
         Session session = this.sessionFactory.getCurrentSession();
-        Criteria crit = session.createCriteria(Usuario.class)
-            .createAlias("associados", "a")
-            .createAlias("instituicao_associados", "ia")
-            .createAlias("instituicao", "i")
-            .add(Restrictions.eqProperty(instituicao, "i.nome"))
-            .add(Restrictions.eqProperty("i.codInstituicao", "ia.instituicao"))
-            .add(Restrictions.eqProperty("ia.usuario", "usuario.codUsuario"));
-        
-        
-        List<Object[]> results = crit.list();  
-        return results;  
-
+        Usuario usuario = null;
+        if(email != null){
+            usuario = (Usuario) session.createCriteria(Usuario.class, "u").add(Restrictions.eq("u.email", email)).uniqueResult();
+        }else{
+            throw new NullPointerException("E-mail não pode ser nulo!");
+        }
+        return usuario;
     }
-    
 }

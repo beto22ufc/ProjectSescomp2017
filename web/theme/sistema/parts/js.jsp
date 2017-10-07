@@ -1,13 +1,16 @@
+<%
+    String dir = config.getServletContext().getInitParameter("dir");
+%>
 <!-- Navigation-Js-->
-                <script type="text/javascript" src="js/main.js"></script>
-                <script type="text/javascript" src="js/classie.js"></script>
+                <script type="text/javascript" src="/<%=dir%>/static/js/main.js"></script>
+                <script type="text/javascript" src="/<%=dir%>/static/js/classie.js"></script>
 		<!-- //Navigation-Js-->
 		<!-- js -->
-		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script type="text/javascript" src="/<%=dir%>/static/js/jquery.min.js"></script>
 		<!-- js -->
 		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="js/bootstrap.js"></script>
-		<script src="js/bootstrap-select.js"></script>
+		<script src="/<%=dir%>/static/js/bootstrap.js"></script>
+		<script src="/<%=dir%>/static/js/bootstrap-select.js"></script>
 		<script>
 		  $(document).ready(function () {
 			var mySelect = $('#first-disabled2');
@@ -30,16 +33,16 @@
 		</script>
 		<!-- language-select -->
 		<script type="text/javascript" src="js/jquery.leanModal.min.js"></script>
-		<link href="../../static/plugins/index/css/jquery.uls.css" rel="stylesheet"/>
-		<link href="../../static/plugins/index/css/jquery.uls.grid.css" rel="stylesheet"/>
-		<link href="../../static/plugins/index/css/jquery.uls.lcd.css" rel="stylesheet"/>
+                <link href="/<%=dir%>/static/plugins/index/css/jquery.uls.css" rel="stylesheet"/>
+		<link href="/<%=dir%>/static/plugins/index/css/jquery.uls.grid.css" rel="stylesheet"/>
+		<link href="/<%=dir%>/static/plugins/index/css/jquery.uls.lcd.css" rel="stylesheet"/>
 		<!-- Source -->
-		<script src="../../static/plugins/index/js/jquery.uls.data.js"></script>
-		<script src="../../static/plugins/index/js/jquery.uls.data.utils.js"></script>
-		<script src="../../static/plugins/index/js/jquery.uls.lcd.js"></script>
-		<script src="../../static/plugins/index/js/jquery.uls.languagefilter.js"></script>
-		<script src="../../static/plugins/index/js/jquery.uls.regionfilter.js"></script>
-		<script src="../../static/plugins/index/js/jquery.uls.core.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.data.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.data.utils.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.lcd.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.languagefilter.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.regionfilter.js"></script>
+		<script src="/<%=dir%>/static/plugins/index/js/jquery.uls.core.js"></script>
 		<script>
 					$( document ).ready( function() {
 						$( '.uls-trigger' ).uls( {
@@ -52,7 +55,7 @@
 					} );
 				</script>
 		<!-- //language-select -->
-		<script type="text/javascript" src="../../static/plugins/index/js/jquery.flexisel.js"></script><!-- flexisel-js -->	
+		<script type="text/javascript" src="/<%=dir%>/static/plugins/index/js/jquery.flexisel.js"></script><!-- flexisel-js -->	
 					<script type="text/javascript">
 						 $(window).load(function() {
 							$("#flexiselDemo3").flexisel({
@@ -81,7 +84,7 @@
 						});
 					   </script>
 		<!-- Slider-JavaScript -->
-			<script src="../../static/plugins/index/js/responsiveslides.min.js"></script>	
+			<script src="/<%=dir%>/static/plugins/index/js/responsiveslides.min.js"></script>	
 			 <script>
 			$(function () {	
 			  $("#slider").responsiveSlides({
@@ -113,8 +116,8 @@
 					});
 			</script>
 			<!-- start-smoth-scrolling -->
-			<script type="text/javascript" src="../../static/plugins/index/js/move-top.js"></script>
-			<script type="text/javascript" src="../../static/plugins/index/js/easing.js"></script>
+			<script type="text/javascript" src="/<%=dir%>/static/plugins/index/js/move-top.js"></script>
+			<script type="text/javascript" src="/<%=dir%>/static/plugins/index/js/easing.js"></script>
 			<script type="text/javascript">
 				jQuery(document).ready(function($) {
 					$(".scroll").click(function(event){		

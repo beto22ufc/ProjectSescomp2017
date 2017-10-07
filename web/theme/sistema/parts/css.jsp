@@ -1,9 +1,12 @@
-<link rel="stylesheet" href="../../static/plugins/index/css/bootstrap.min.css"><!-- bootstrap-CSS -->
-<link rel="stylesheet" href="../../static/plugins/index/css/bootstrap-select.css"><!-- bootstrap-select-CSS -->
-<link href="../../static/plugins/index/css/style.css" rel="stylesheet" /><!-- style.css -->
-<link rel="stylesheet" href="../../static/plugins/index/css/flexslider.css" type="text/css" media="screen" /><!-- flexslider-CSS -->
-<link rel="stylesheet" href="../../static/plugins/index/css/font-awesome.min.css" /><!-- fontawesome-CSS -->
-<link rel="stylesheet" href="../../static/plugins/index/css/menu_sideslide.css" type="text/css" ><!-- Navigation-CSS -->
+<% 
+    String dir = config.getServletContext().getInitParameter("dir");
+%>
+<link rel="stylesheet" href="/<%=dir%>/static/plugins/index/css/bootstrap.min.css"><!-- bootstrap-CSS -->
+<link rel="stylesheet" href="/<%=dir%>/static/plugins/index/css/bootstrap-select.css"><!-- bootstrap-select-CSS -->
+<link href="/<%=dir%>/static/plugins/index/css/style.css" rel="stylesheet" /><!-- style.css -->
+<link rel="stylesheet" href="/<%=dir%>/static/plugins/index/css/flexslider.css" type="text/css" media="screen" /><!-- flexslider-CSS -->
+<link rel="stylesheet" href="/<%=dir%>/static/plugins/index/css/font-awesome.min.css" /><!-- fontawesome-CSS -->
+<link rel="stylesheet" href="/<%=dir%>/static/plugins/index/css/menu_sideslide.css" type="text/css" ><!-- Navigation-CSS -->
 <!-- meta tags -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

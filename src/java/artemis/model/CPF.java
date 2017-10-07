@@ -5,6 +5,7 @@
  */
 package artemis.model;
 
+import java.io.Serializable;
 import java.util.InputMismatchException;
 import java.util.regex.Pattern;
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="cpf")
-public class CPF {
+public class CPF implements Serializable{
     @Id
     @Column(name="cpf", unique = true)
     private String CPF;
@@ -117,6 +118,7 @@ public class CPF {
                 return(true);
             else return(false);
         } catch (InputMismatchException erro) {
+            
             return(false);
         }
     }

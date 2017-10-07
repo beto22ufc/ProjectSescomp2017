@@ -23,7 +23,7 @@ import javax.persistence.*;
 @Table(name="inscricao")
 public class Inscricao implements AttributeConverter<LocalDate, Date>{
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="codInscricao")
     private long codInscricao;
     @ManyToOne
@@ -102,8 +102,14 @@ public class Inscricao implements AttributeConverter<LocalDate, Date>{
         Evento vinculado = null;
         for(int i=0;i<eventos.size();i++){
             Evento e = eventos.get(i);
-            if(e.getEventos().contains(evento)){
-                vinculado = e;
+            List<Evento> es = e.getEventos();
+            for(Evento evt : es){
+                if(evt.getCodEvento() == evento.getCodEvento()){
+                    vinculado = e;
+                    break;
+                }
+            }
+            if(vinculado != null){
                 break;
             }
         }
@@ -112,7 +118,7 @@ public class Inscricao implements AttributeConverter<LocalDate, Date>{
                 Atividade a = vinculado.getAtividades().get(i);
                 List<Periodo> periodos = a.getPeriodos();
                 for(int j=0;j<evento.getPeriodos().size();j++){
-                    Periodo p = evento.getPeriodos().get(i);
+                    Periodo p = evento.getPeriodos().get(j);
                     if(p.detectaColisao(periodos).size()>0){
                         chocadas.add(a);
                         break;
@@ -124,13 +130,66 @@ public class Inscricao implements AttributeConverter<LocalDate, Date>{
                 List<Periodo> periodos = e.getPeriodos();
                 if(e.getCodEvento() != evento.getCodEvento()){
                     for(int j=0;j<evento.getPeriodos().size();j++){
-                        Periodo p = evento.getPeriodos().get(i);
+                        Periodo p = evento.getPeriodos().get(j);
                         if(p.detectaColisao(periodos).size()>0){
                             chocados.add(e);
                             break;
                         }
                     }
                 }
+            }
+        }
+        choques.add(chocadas);
+        choques.add(chocados);
+        return choques;
+    }
+    
+    public List<List> verificaChoque(Atividade atividade){
+        EventoDAOImpl edao = new EventoDAOImpl();
+        List<Evento> eventos = edao.listaEventos();
+        List<List> choques = Collections.synchronizedList(new ArrayList<List>());
+        List<Atividade> chocadas = Collections.synchronizedList(new ArrayList<Atividade>());
+        List<Evento> chocados = Collections.synchronizedList(new ArrayList<Evento>());
+        Evento vinculado = null;
+        for(int i=0;i<eventos.size();i++){
+            Evento e = eventos.get(i);
+            List<Atividade> as = e.getAtividades();
+            for(int j=0;j<as.size();j++){
+                Atividade a = as.get(j);
+                if(a.getCodAtividade() == atividade.getCodAtividade()){
+                    vinculado = e;
+                    break;
+                }
+            }
+            if(vinculado !=null){
+                break;
+            }
+        }
+        if(vinculado!=null){
+            for(int i=0;i<vinculado.getAtividades().size();i++){
+                Atividade a = vinculado.getAtividades().get(i);
+                List<Periodo> periodos = a.getPeriodos();
+                if(a.getCodAtividade() != atividade.getCodAtividade()){
+                    for(int j=0;j<atividade.getPeriodos().size();j++){
+                        Periodo p = atividade.getPeriodos().get(j);
+                        if(p.detectaColisao(periodos).size()>0){
+                            chocadas.add(a);
+                            break;
+                        }
+                    }
+                }
+            }
+            for(int i=0;i<vinculado.getEventos().size();i++){
+                Evento e = vinculado.getEventos().get(i);
+                List<Periodo> periodos = e.getPeriodos();
+                for(int j=0;j<atividade.getPeriodos().size();j++){
+                    Periodo p = atividade.getPeriodos().get(j);
+                    if(p.detectaColisao(periodos).size()>0){
+                        chocados.add(e);
+                        break;
+                    }
+                }
+                
             }
         }
         choques.add(chocadas);

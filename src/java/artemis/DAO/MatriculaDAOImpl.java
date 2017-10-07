@@ -6,6 +6,7 @@
 package artemis.DAO;
 
 import artemis.model.Matricula;
+import hibernate.HibernateUtil;
 import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Session;
@@ -18,7 +19,7 @@ import org.hibernate.Transaction;
  */
 public class MatriculaDAOImpl implements MatriculaDAO{
 
-    private SessionFactory sessionFactory;
+    private SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
     
     public void setSessionFactory(SessionFactory sessionFactory){
         if(sessionFactory != null){
@@ -29,16 +30,19 @@ public class MatriculaDAOImpl implements MatriculaDAO{
     }
     
     @Override
-    public void adicionarMatricula(Matricula matricula) {
+    public Matricula adicionarMatricula(Matricula matricula) {
         Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
         try{
             if(matricula != null){
                 session.persist(matricula);
+                t.commit();
+                session.close();
+                return matricula;
             }else{
                 throw new NullPointerException("Matricula não pode ser nula!");
             }
-            t.commit();
+            
         }catch(RuntimeException e){
             t.rollback();
             throw e;
@@ -47,66 +51,45 @@ public class MatriculaDAOImpl implements MatriculaDAO{
 
     @Override
     public void atualizarMatricula(Matricula matricula) {
-         Session session = this.sessionFactory.openSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(matricula != null){
-                session.update(matricula);
-            }else{
-                throw new NullPointerException("Matricula não pode ser nula!");
-            }
+        if(matricula != null){
+            session.update(matricula);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Matricula não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public List<Matricula> listaMatriculas() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            List<Matricula> matriculas = session.createCriteria(Matricula.class).list();
-            t.commit();
-            if(matriculas != null)
-                return matriculas;
-            else
-                return new ArrayList<>();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Matricula> matriculas = session.createCriteria(Matricula.class).list();
+        if(matriculas != null)
+            return matriculas;
+        else
+            return new ArrayList<>();
     }
 
     @Override
     public void removeMatricula(Matricula matricula) {
-         Session session = this.sessionFactory.openSession();
+        Session session = this.sessionFactory.openSession();
         Transaction t = session.beginTransaction();
-        try{
-            if(matricula != null){
-                session.delete(matricula);
-            }else{
-                throw new NullPointerException("Matricula não pode ser nula!");
-            }
+        if(matricula != null){
+            session.delete(matricula);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
+        }else{
+            throw new NullPointerException("Matricula não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public Matricula getMatricula(long codMatricula) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-            Matricula matricula = (Matricula) session.load(Matricula.class, codMatricula);
-            t.commit();
-            return matricula;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }  
+        Session session = this.sessionFactory.getCurrentSession();
+        Matricula matricula = (Matricula) session.load(Matricula.class, codMatricula);
+        return matricula;
     }
     
 }

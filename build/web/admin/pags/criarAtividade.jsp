@@ -1,3 +1,5 @@
+<%@page import="java.time.format.DateTimeParseException"%>
+<%@page import="artemis.beans.InstituicaoBeans"%>
 <%@page import="artemis.beans.AtividadeBeans"%>
 <%@page import="artemis.beans.LocalizacaoBeans"%>
 <%@page import="artemis.beans.UsuarioBeans"%>
@@ -23,15 +25,17 @@
         List<UsuarioBeans> usuarios = facade.getUsuarios();
         if(request.getParameter("cadastro") != null){
             try{
+                if(request.getParameter("instituicao") != null && !request.getParameter("instituicao").isEmpty()){
                 AtividadeBeans atividade = new AtividadeBeans();
                 atividade.setNome(request.getParameter("nome"));
                 atividade.setDescricao(request.getParameter("descricao"));
                 atividade.setCategoria(request.getParameter("categoria"));
+                atividade.setTemCertificado((request.getParameter("temCertificado") != null && request.getParameter("temCertificado").equals("1")));
                 String[] inicioDatas = request.getParameterValues("dataInicio[]"),
                 inicioTempos = request.getParameterValues("tempoInicio[]"),
                 terminoDatas = request.getParameterValues("dataTermino[]"),
                 terminoTempos = request.getParameterValues("tempoTermino[]");
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
                 List<PeriodoBeans> periodos = new ArrayList<>();
                 for(int i=0;i<inicioTempos.length;i++){
                     if(inicioDatas[i] != null && inicioTempos[i] != null && terminoDatas[i] != null && terminoTempos[i] != null)
@@ -54,13 +58,22 @@
                     }
                     if(request.getParameter("ministrante") != null || !request.getParameter("ministrante").isEmpty()){
                         atividade.setMinistrante(facade.getUsuario(Long.parseLong(request.getParameter("ministrante"))));
+                        facade.adicionaNivelUsuario(facade.getUsuario(Long.parseLong(request.getParameter("ministrante"))), "ministrante");
                     }
                     atividade.setAdministradores(new ArrayList<UsuarioBeans>());
                     atividade.getAdministradores().add((UsuarioBeans)session.getAttribute("usuario"));
+                    InstituicaoBeans instituicao = facade.getInstituicao(Long.parseLong(request.getParameter("instituicao")));
+                    instituicao.getAtividades().add(atividade);
                     facade.atualizaAtividade(atividade);
+                    facade.atualizaInstituicao(instituicao);
                     request.setAttribute("msg", "Atividade cadastrada com sucesso!");
                 }else{
                     request.setAttribute("msg", "A soma da quantidade de vagas internas com as vagas externas devem ser igual a quantidade de vagas!");
+                }
+                }else{
+                    request.setAttribute("msg", "Deve ser selecionado uma instituição! "
+                            + "(Caso não haja uma instituição para selecionar, contactar"
+                            + " o administrador do sistema para ele adicionar uma instituição)");                  
                 }
             }catch(IllegalAccessException e){
                 request.setAttribute("msg", e.getMessage());
@@ -70,6 +83,8 @@
                 request.setAttribute("msg", e.getMessage());
             }catch(NullPointerException e){
                 request.setAttribute("msg", e.getMessage());
+            }catch(DateTimeParseException e){
+                request.setAttribute("msg","Formato de data inválido");
             }
         }
     %>
@@ -175,6 +190,32 @@
                         <%}%>
                     </select>
                 </div>
+               <div class="form-group">
+                <label>Instituição</label>
+                    <%
+                        if(request.getParameter("e")!=null){
+                            EventoBeans evento = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+                            InstituicaoBeans instituicao = facade.getInstituicao(evento);
+                        
+                    %>
+                    <input type="hidden" name="instituicao" value="<%=instituicao.getCodInstituicao() %>">
+                    <input type="text" class="form-control" id="nomeDaInstituicao" placeholder="Nome da instituição" name="nomeDaInstituicao" value="<%=instituicao.getNome() %>" disabled="disabled"/>
+                    <%
+                        }else{
+                    %>
+                    <select class="form-control select2" style="width: 100%;" name="instituicao">
+                        <option value="" >Selecione uma instituição</option>
+                        <%
+                            List<InstituicaoBeans> instituicoes = facade.getInstituicoes();
+                            for(int i=0;i<instituicoes.size();i++){
+                               InstituicaoBeans instituicao = instituicoes.get(i);
+                            
+                        %>
+                        <option  value="<%=instituicao.getCodInstituicao() %>"><%=instituicao.getNome() %></option>
+                        <%  }%>
+                    </select>
+                    <%  }%>
+                </div>   
                 <div class="form-group">
                   <label for="qtdVagas">Vagas</label>
                   <input type="number" class="form-control" id="qtdVagas" placeholder="Quantidade de vagas da atividade" name="qtdVagas" value="<%=(request.getParameter("qtdVagas") != null) ? request.getParameter("qtdVagas") : ""%>">
@@ -190,37 +231,40 @@
                 <div class="form-group">
                 <label>Nível de conhecimento na área</label>
                     <select class="form-control select2" style="width: 100%;" name="nivel">
-                        <option selected="selected" value="">Selecione um nível de conhecimento necessário na área</option>
-                        <option selected="selected" value="1">Nenhum nível</option>
-                        <option selected="selected" value="2">Básico</option>
-                        <option selected="selected" value="3">Médio</option>
-                        <option selected="selected" value="4">Avançado</option>
+                        <option value="1">Básico</option>
+                        <option value="2">Médio</option>
+                        <option value="3">Avançado</option>
                     </select>
                 </div>
                 <div class="form-group">
                 <label>Tipo de pagamento</label>
                     <select class="form-control select2" style="width: 100%;" name="tipoPagamento">
-                        <option selected="selected" value="">Selecione um pagamento necessário para a atividade</option>
-                        <option selected="selected" value="1">Nenhum pagamento</option>
-                        <option selected="selected" value="2">Dinheiro</option>
-                        <option selected="selected" value="3">Alimento não perecível</option>
+                        <option  value="1">Nenhum pagamento</option>
+                        <option  value="2">Dinheiro</option>
+                        <option  value="3">Alimento não perecível</option>
                     </select>
-                </div> 
+                </div>
+                <label>Tem certificado?</label>
+                    <select class="form-control select2" style="width: 100%;" name="temCertificado">
+                        <option selected="selected" value="1">Sim</option>
+                        <option value="0" >Não</option>
+                    </select>
+                </div>
                 <!-- Date and time range -->
                 <div class="form-group periodos">
                     <label>Periodos: <a href="javascript:void(0);" title="Adicionar novo periodo" class="adicionarNovoPeriodo" onclick="addPeriodo();"><i class="fa fa-plus"></i></a></label>
 
                   <div class="form-group">
                     <label for="dataInicio">Inicio</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataInicio[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoInicio[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <div class="form-group">
                     <label for="dataInicio">Termino</label>
-                    <input type="date" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Data incio" name="dataTermino[]" maxlength="10" onkeypress="formatar('##/##/####',this)">
                     <br />
-                    <input type="time" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]">
+                    <input type="text" class="form-control" id="dataInicio" placeholder="Tempo inicio" name="tempoTermino[]" maxlength="5" onkeypress="formatar('##:##',this)">
                   </div>
                   <!-- /.input group -->
                 </div>

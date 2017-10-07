@@ -9,12 +9,9 @@ import artemis.model.Atividade;
 import hibernate.HibernateUtil;
 import java.util.Collections;
 import java.util.List;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 
 /**
  *
@@ -33,104 +30,56 @@ public class AtividadeDAOImpl implements AtividadeDAO{
     @Override
     public Atividade adicionarAtividade(Atividade atividade) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(atividade != null){
-                session.persist(atividade);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(atividade != null){
+            session.persist(atividade);
             t.commit();
-            session.clear();
-            return atividade;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
+        return atividade;
     }
 
     @Override
     public void atualizarAtividade(Atividade atividade) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(atividade != null){
-                session.update(atividade);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(atividade != null){
+            session.update(atividade);
             t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<Atividade> listaAtividades() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            List<Atividade> atividades = Collections.synchronizedList(session.createCriteria(Atividade.class).list());
-            t.commit();
-            return atividades;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<Atividade> atividades = Collections.synchronizedList(session.createCriteria(Atividade.class).list());
+        return atividades;
     }
 
     @Override
     public void removerAtividade(Atividade atividade) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(atividade != null){
-                session.update(atividade);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(atividade != null){
+            session.update(atividade);
             t.commit();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public Atividade getAtividade(long codAtividade) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            Atividade atividade = (Atividade) session.get(Atividade.class, codAtividade);
-            t.commit();
-            return atividade;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        Atividade atividade = (Atividade) session.get(Atividade.class, codAtividade);
+        return atividade;
     }
-    
-    public List<Atividade>  buscaAtividade(String texto){
-        Session session = this.sessionFactory.openSession();
-        Transaction t = session.beginTransaction();
-        try{
-        Criteria crit = session.createCriteria(Atividade.class)
-                .add(Restrictions.ilike("nome",texto, MatchMode.ANYWHERE));
-        crit.add(Restrictions.conjunction(Restrictions.ilike("categoria", texto, MatchMode.ANYWHERE)));
-        List results = crit.list();
-        return results;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw  e;
-        }
-    }
-    
     
 }

@@ -7,21 +7,21 @@ package artemis.model;
 
 import artemis.DAO.AtividadeDAOImpl;
 import artemis.DAO.EventoDAOImpl;
+import artemis.DAO.ImagemDAOImpl;
 import artemis.DAO.InscricaoDAOImpl;
 import artemis.DAO.LocalizacaoDAOImpl;
 import artemis.DAO.PeriodoDAOImpl;
-import hibernate.HibernateUtil;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.*;
 import org.apache.commons.mail.EmailException;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  *
@@ -76,6 +76,10 @@ public class Evento implements Inscrevivel{
     @ManyToOne
     @JoinColumn(name="contas_sociais", referencedColumnName = "codContasSociais")
     private ContasSociais contasSociais;
+    private String tema = "default";
+    private boolean temCertificado = true;
+    private boolean temInscricao = true;
+    private float porcentagemMinimaGerarCertifciado;
     
     public Evento(){
     
@@ -267,6 +271,46 @@ public class Evento implements Inscrevivel{
         else
             throw new NullPointerException("Lista de organizadores não pode ser nula!");
     }    
+
+    public String getTema() {
+        return tema;
+    }
+
+    public void setTema(String tema) {
+        if(tema != null && !tema.isEmpty())
+            this.tema = tema;
+        else
+            throw new NullPointerException("Deve ser escolhido um tema!");
+    }
+
+    public boolean isTemCertificado() {
+        return temCertificado;
+    }
+
+    public void setTemCertificado(boolean temCertificado) {
+        this.temCertificado = temCertificado;
+    }
+
+    public boolean isTemInscricao() {
+        return temInscricao;
+    }
+
+    public void setTemInscricao(boolean temInscricao) {
+        this.temInscricao = temInscricao;
+    }
+
+    public float getPorcentagemMinimaGerarCertifciado() {
+        return porcentagemMinimaGerarCertifciado;
+    }
+
+    public void setPorcentagemMinimaGerarCertifciado(float porcentagemMinimaGerarCertifciado) {
+        if(porcentagemMinimaGerarCertifciado >= 0)
+            this.porcentagemMinimaGerarCertifciado = porcentagemMinimaGerarCertifciado;
+        else
+            throw new NullPointerException("Por centeagem mínima para gerar o certificado deve ser maior ou igual a zero!");
+    }
+    
+    
     
     public boolean colisaoPeriodos(){
         for(int i=0;i<this.getPeriodos().size();i++){
@@ -282,7 +326,7 @@ public class Evento implements Inscrevivel{
     }
     
     
-    public void removeAtividade(Atividade atividade) throws EmailException{
+    public void removeAtividade(Atividade atividade) throws EmailException, IllegalAccessException{
         Email email = new Email();
         InscricaoDAOImpl idao = new InscricaoDAOImpl();
         AtividadeDAOImpl adao = new AtividadeDAOImpl();
@@ -292,23 +336,46 @@ public class Evento implements Inscrevivel{
             email.setMessage("Pedimos desculpas, mas a atividade "+atividade.getNome()+" na qual o senhor estava inscrito foi cancelada, logo sua inscrição também.");
             email.setFromEmail(inscricao.getParticipante().getEmail());
             email.setNomeTo(inscricao.getParticipante().getNome());
-            enviaEmailContato(email);
+            email.sendEmail();
             idao.removerInscricao(inscricao);
         }
         adao.removerAtividade(atividade);
     }
     
-    public void removeAtividade(Evento evento, Atividade atividade) throws EmailException{
+    public void removeEvento(Evento evento) throws EmailException, IllegalAccessException{
+        EventoDAOImpl edao = new EventoDAOImpl();
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        Email email = new Email();
+        for(Inscricao inscricao : evento.getInscricoes()){
+            email.setAssunto("Evento cancelado!");
+            email.setMessage("Pedimos desculpas, mas o evento "+evento.getNome()+" no qual o senhor estava inscrito foi cancelado, logo sua inscrição também.");
+            email.setFromEmail(inscricao.getParticipante().getEmail());
+            email.setNomeTo(inscricao.getParticipante().getNome());
+            email.sendEmail();
+            idao.removerInscricao(inscricao);
+        }
+        evento.getEventos().clear();
+        edao.atualizarEvento(evento);
+        for(Atividade atividade : evento.getAtividades()){
+            evento.getAtividades().remove(atividade);
+            removeAtividade(atividade);
+        }
+        edao.removerEvento(evento);
+    }
+    
+    public void removeAtividade(Evento evento, Atividade atividade) throws EmailException, IllegalAccessException{
         AtividadeDAOImpl adao = new AtividadeDAOImpl();
         EventoDAOImpl edao = new EventoDAOImpl();
-        for(int i=0;i<evento.getAtividades().size();i++){
-            Atividade a = evento.getAtividades().get(i);
-            if(a.getCodAtividade() == atividade.getCodAtividade()){
-                evento.getAtividades().remove(a);
-                break;
+        if(evento!=null){
+            for(int i=0;i<evento.getAtividades().size();i++){
+                Atividade a = evento.getAtividades().get(i);
+                if(a.getCodAtividade() == atividade.getCodAtividade()){
+                    evento.getAtividades().remove(a);
+                    break;
+                }
             }
+            edao.atualizarEvento(evento);
         }
-        edao.atualizarEvento(evento);
         removeAtividade(atividade);
     }
         
@@ -337,16 +404,23 @@ public class Evento implements Inscrevivel{
             Usuario participante = inscricao.getParticipante();
             email.setFromEmail(participante.getEmail());
             email.setNomeTo(participante.getNome());
-            enviaEmailContato(email);
+            email.sendEmail();
         }
     }
     
-    public void enviaEmailContato(Email email) throws EmailException{
+    public void enviaEmailContato(String nome, String sobrenome, String menssagem, String telefone, String mail) throws EmailException{
+        System.out.println(this.getEmail());
+        Email email = new Email("Contato e-mail!", "De: "+nome+" "+sobrenome+"\nE-mail: "+mail+"\nTelefone: "+telefone+"\nMenssagem: "+menssagem, nome+" "+sobrenome, this.getEmail());
         email.sendEmail();
     }
     
     public void atualizaEvento(Evento evento) throws IllegalAccessException{
         if(evento.colisaoPeriodos()) throw new IllegalArgumentException("Choque interno de periodos, os periodos do evento não podem ser conflitantes!");
+        List<List> choques = evento.getConflitosInscricoesAtualizacao();
+        System.out.println("Evento: "+choques.get(0)+" "+choques.get(1));
+        int chocados = choques.get(0).size();
+        int chocadas = choques.get(1).size();
+        if(chocados == 0 && chocadas ==1)throw new IllegalArgumentException("Não é possível realizar a atualização, pois isso irá gerar choques em inscrições de participantes!(Resolva esse problema)");
         EventoDAOImpl edaoi = new EventoDAOImpl();
         edaoi.atualizarEvento(evento);
     }
@@ -359,12 +433,13 @@ public class Evento implements Inscrevivel{
     
     public void atualizaAtividade(Atividade atividade) throws IllegalAccessException{
         if(atividade.colisaoPeriodos()) throw new IllegalArgumentException("Choque interno de periodos, os periodos da atividade não podem ser conflitantes!");
+        List<List> choques = atividade.getConflitosInscricoesAtualizacao();
+        int chocados = choques.get(0).size();
+        int chocadas = choques.get(1).size();
+        System.out.println("Atividade: "+choques.get(0)+" "+choques.get(1));
+        if(chocados == 0 && chocadas ==1)throw new IllegalArgumentException("Não é possível realizar a atualização, pois isso irá gerar choques em inscrições de participantes!(Resolva esse problema)");
         AtividadeDAOImpl adaoi = new AtividadeDAOImpl();
         adaoi.atualizarAtividade(atividade);
-    }
-    
-    public void novoPeriodo(LocalDateTime inicio, LocalDateTime termino, ZoneId zoneId){
-    
     }
     
     public Evento novoEvento(Evento evento) throws IllegalAccessException{
@@ -373,11 +448,7 @@ public class Evento implements Inscrevivel{
         LocalizacaoDAOImpl ldaoi = new LocalizacaoDAOImpl();
         ldaoi.adicionarLocalizacao(evento.getLocalizacao());
         return edaoi.adicionarEvento(evento);
-    }
-    
-    public void mudaPeriodo(Periodo novo, Periodo antigo){
-    
-    }
+    }    
     
     public Periodo getMenorPeriodo(){
         List<Periodo> periodos = this.getPeriodos();
@@ -393,14 +464,42 @@ public class Evento implements Inscrevivel{
         return periodo;
     }
     
-    public Inscricao criaInscricao(Inscricao inscricao) throws IllegalAccessException{
-        if(!this.getInscricoes().contains(inscricao)){
-            this.getInscricoes().add(inscricao);
-            this.atualizaEvento(this);
-        }else{
-            throw new EntityExistsException("Inscrição já existe!");
+    public Periodo getMaiorPeriodo(){
+        List<Periodo> periodos = this.getPeriodos();
+        Periodo periodo = periodos.get(0);
+        for(int i=1;i<periodos.size();i++){
+            Periodo p = periodos.get(i);
+            if(periodo.getInicio().isAfter(p.getInicio()) || periodo.getInicio().equals(p.getInicio())){
+            }else{
+                periodo = p;
+            }
         }
-        return inscricao;
+        return periodo;
+    }
+    
+    public void removePeriodo(Periodo periodo) throws IllegalAccessException{
+        if(this.getPeriodos().size()>1){
+            this.getPeriodos().remove(periodo);
+            this.atualizaEvento(this);
+            PeriodoDAOImpl pdao = new PeriodoDAOImpl();
+            pdao.removerPeriodo(periodo);
+        }else{
+            throw new IllegalArgumentException("Evento contém só um período, portanto este período não pode ser removido!");
+        }
+    }
+    
+    public Inscricao criaInscricao(Inscricao inscricao) throws IllegalAccessException{
+        if(this.isTemInscricao()){
+            if(this.getInscricoes() != null && !this.getInscricoes().contains(inscricao)){
+                this.getInscricoes().add(inscricao);
+                this.atualizaEvento(this);
+            }else{
+                throw new EntityExistsException("Inscrição já existe!");
+            }
+            return inscricao;
+        }else{
+            throw new IllegalAccessException("Esse evento não tem inscrição!");
+        }
     }
     
     public void removeInscricao(Inscricao inscricao, Usuario usuario) throws IllegalAccessException{
@@ -418,6 +517,103 @@ public class Evento implements Inscrevivel{
         }
     }
     
-   
+    public List<List> getConflitosInscricoesAtualizacao(){
+        Inscricao i = new Inscricao();
+        List<List> choques = Collections.synchronizedList(new ArrayList<List>());
+        List<Inscricao> inscricoesAtividade = Collections.synchronizedList(new ArrayList<Inscricao>());
+        List<Inscricao> inscricoesEvento = Collections.synchronizedList(new ArrayList<Inscricao>());
+        List<List> conflitos = i.verificaChoque(this);
+        List<Atividade> atividades = conflitos.get(0);
+        List<Evento> eventos = conflitos.get(1);
+        for(Atividade atividade : atividades){
+            for(Inscricao inscricao : atividade.getInscricaoAtividades()){
+                for(Inscricao ins : this.getInscricoes()){
+                    if(inscricao.getParticipante().equals(ins.getParticipante())){
+                        inscricoesAtividade.add(ins);
+                        break;
+                    }
+                }
+            }
+        }
+        for(Evento evento : eventos){
+            for(Inscricao inscricao : evento.getInscricoes()){
+                for(Inscricao ins : this.getInscricoes()){
+                    if(inscricao.getParticipante().equals(ins.getParticipante())){
+                        inscricoesEvento.add(ins);
+                        break;
+                    }
+                }
+            }
+        }
+        choques.add(inscricoesAtividade);
+        choques.add(inscricoesEvento);
+        return choques;
+    }
     
+    public float getParticipacao(Usuario participante){
+        int total = this.getAtividades().size()+this.getEventos().size(), count =0;
+        for(Evento evento : this.getEventos()){
+            for(Inscricao inscricao : evento.getInscricoes()){
+                if(inscricao.getParticipante().equals(participante)){
+                    if(inscricao.isPresente()){
+                        count++;
+                    }
+                    break;
+                }
+            }
+        }
+        for(Atividade atividade : this.getAtividades()){
+            for(Inscricao inscricao : atividade.getInscricaoAtividades()){
+                if(inscricao.getParticipante().equals(participante)){
+                    total++;
+                    if(inscricao.isPresente()){
+                        count++;
+                    }
+                    break;
+                }
+            }
+        }
+        return (float)((float) count/total);
+    }
+    
+    public void removeImagem(Imagem imagem){
+        ImagemDAOImpl idao = new ImagemDAOImpl();
+        idao.removerImagem(imagem);
+    }
+    
+    public void removeImagemGaleria(Imagem imagem) throws IllegalAccessException{
+        for(int i=0;i<this.getGaleria().size();i++){
+            Imagem image = this.getGaleria().get(i);
+            if(image.getCodImagem() == imagem.getCodImagem()){
+                this.getGaleria().remove(i);
+                this.atualizaEvento(this);
+                removeImagem(imagem);
+                break;
+            }
+        }
+    }
+    
+    public void removeImagemSlideshow(Imagem imagem) throws IllegalAccessException{
+        for(int i=0;i<this.getSlideshow().size();i++){
+            Imagem image = this.getSlideshow().get(i);
+            if(image.getCodImagem() == imagem.getCodImagem()){
+                this.getSlideshow().remove(i);
+                this.atualizaEvento(this);
+                removeImagem(imagem);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + (int) (this.codEvento ^ (this.codEvento >>> 32));
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        return (this.getCodEvento()==((Evento) o).getCodEvento());
+    }
 }

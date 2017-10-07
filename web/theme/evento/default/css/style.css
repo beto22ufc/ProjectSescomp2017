@@ -303,6 +303,10 @@ body{
 }
 .wthree-services-grids,.gallery-w3lsrow,.news-agileinfo,.teamw3-agileinfo,.contact-w3ls-row{
 	margin:4em 0 0 0;
+       
+}
+.gallery-w3lsrow{
+    text-align: center;
 }
 .wthree-services-grid {
 	overflow: hidden;
@@ -371,6 +375,7 @@ body{
 /*-- gallery --*/ 
 .gallery-grids img {
     width: 100%;
+    
 }
 .gallery-grids { 
 	padding: 0;
@@ -387,6 +392,10 @@ body{
 	-o-transition: all 0.5s;
 	transition: all 0.5s;
 	text-align: center;
+        height: 250px;
+        width: 250px;
+        max-width: 100%;
+        float:left;
 }
 .w3ls-hover img {  
 	-webkit-transition: all 0.5s;

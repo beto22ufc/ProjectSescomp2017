@@ -8,14 +8,19 @@ package artemis.model;
 import artemis.DAO.AtividadeDAOImpl;
 import artemis.DAO.ContaAtivacaoDAOImpl;
 import artemis.DAO.ContasSociaisDAOImpl;
+import artemis.DAO.CursoDAOImpl;
 import artemis.DAO.EventoDAOImpl;
+import artemis.DAO.ImagemDAOImpl;
 import artemis.DAO.InscricaoDAOImpl;
 import artemis.DAO.InstituicaoDAOImpl;
+import artemis.DAO.LocalizacaoDAOImpl;
 import artemis.DAO.MatriculaDAOImpl;
+import artemis.DAO.PeriodoDAOImpl;
 import artemis.DAO.UsuarioDAOImpl;
 import artemis.beans.*;
 import artemis.service.Sign;
 import hibernate.HibernateUtil;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -23,8 +28,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javafx.scene.control.Alert;
 import org.apache.commons.mail.EmailException;
+import org.jdom2.JDOMException;
 
 /**
  *
@@ -51,7 +56,7 @@ public class Facade {
         }
     }
     
-    public void fazerCadastro(UsuarioBeans ub) throws EmailException{
+    public void fazerCadastro(UsuarioBeans ub) throws EmailException, IOException{
         Sign sign = new Sign((Usuario) ub.toBusiness());
         sign.cadastra();
     }
@@ -93,7 +98,7 @@ public class Facade {
         cadaoi.adicionarContaAtivacao(ca);
         Email e = new Email("E-mail atualizado com sucesso! Ativar conta!", 
                     "Ative sua conta!\nClique no link para ativar sua conta "
-                            + "http://localhost:8084/ArtemisTCC/validarConta?cv="+ca.getCodigo()+""
+                            + Constantes.URL+"/"+Constantes.DIR+"/validarConta?cv="+ca.getCodigo()+""
                     + "\n(Obs.: Link válido até 12 horas após o cadastro)", u.getEmail(), u.getNome());
             e.sendEmail();
         return ub;
@@ -106,14 +111,11 @@ public class Facade {
         boolean codExiste = false;
         for(int i=0;i<contas.size();i++){
             ContaAtivacao conta = contas.get(i);
-            if(conta.getCodigo().equals(cod)){
+            if(conta.getCodigo().replace(" ","").equalsIgnoreCase(cod.replace(" ", ""))){
                 codExiste = true;
-                ZoneId zoneId = ZoneId.of("America/Sao_Paulo");
-                ZonedDateTime zdtV = conta.getValidade().atZone(zoneId);
-                ZonedDateTime zdtN = LocalDateTime.now().atZone(zoneId);
                 UsuarioDAOImpl udaoi = new UsuarioDAOImpl();
                 udaoi.setSessionFactory(HibernateUtil.getSessionFactory());
-                if(zdtV.toEpochSecond()>=zdtN.toEpochSecond()){
+                if(conta.getValidade().isBefore(LocalDateTime.now())){
                     conta.getUsuario().setStatus(1);
                     udaoi.atualizarUsuario(conta.getUsuario());
                 }else{
@@ -153,7 +155,7 @@ public class Facade {
             cadaoi.adicionarContaAtivacao(conta);
             Email e = new Email("Cadastro realizado com sucesso! Ativar conta!", 
                     "Ative sua conta!\nClique no link para ativar sua conta "
-                            + "http://localhost:8084/ArtemisTCC/validarConta?cv="+conta.getCodigo()+""
+                            + Constantes.URL+"/"+Constantes.DIR+"/validarConta?cv="+conta.getCodigo()+""
                     + "\n(Obs.: Link válido até 12 horas após o cadastro)", usuario.getEmail(), usuario.getNome());
             e.sendEmail();
         }else{
@@ -190,17 +192,6 @@ public class Facade {
         return (EventoBeans) new EventoBeans().toBeans(edaoi.getEvento(codEvento));
     }
     
-    public List<EventoBeans> getEventos(String busca, String categoria){
-        EventoDAOImpl edaoi = new EventoDAOImpl();
-        edaoi.setSessionFactory(HibernateUtil.getSessionFactory());
-        List<EventoBeans> eventos = Collections.synchronizedList(new ArrayList<>());
-        List<Evento> events = edaoi.buscaEvento(busca,categoria);
-        for(int i=0;i<events.size();i++){
-            eventos.add((EventoBeans) new EventoBeans().toBeans(events.get(i)));
-        }
-        return eventos;
-    }
-    
     public AtividadeBeans cadastraAtividade(AtividadeBeans atividade) throws IllegalAccessException{
         EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
         Atividade a = ep.novaAtividade((Atividade) atividade.toBusiness());
@@ -210,6 +201,18 @@ public class Facade {
     public void atualizaAtividade(AtividadeBeans atividade) throws IllegalAccessException{
         EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
         ep.atualizaAtividade((Atividade) atividade.toBusiness());
+    }
+    
+    public void removePeriodoAtividade(AtividadeBeans atividade, PeriodoBeans periodo) throws IllegalAccessException{
+        Atividade a = (Atividade) atividade.toBusiness();
+        AtividadeProxy ap = new AtividadeProxy((Usuario) usuario.toBusiness());
+        ap.removePeriodo(a, (Periodo) periodo.toBusiness());
+    }
+    
+    public void removePeriodoEvento(EventoBeans evento, PeriodoBeans periodo) throws IllegalAccessException, EmailException{
+        Evento e = (Evento) evento.toBusiness();
+        EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
+        ep.removePeriodo(e, (Periodo) periodo.toBusiness());
     }
     
     public long getCodFromParameter(String s){
@@ -312,14 +315,13 @@ public class Facade {
             Usuario u = usuarios.get(i);
             if(u.getCpf().getFormatedCpf().equals(cpf.getFormatedCpf())){
                 usuario = u;
-              
             }
         }
         if(usuario != null){
             Sign sign = new Sign(usuario);
             sign.recuperaSenha();
         }else
-            throw new NullPointerException("Não existe usuário cadastrado com esse CPF!");
+            throw new NullPointerException("Não exite usuário cadastrado com esse e-mail!");
     }
     
     public String getAtividadesEventosJSON(EventoBeans evento){
@@ -359,6 +361,45 @@ public class Facade {
         return data;
     }
     
+    public String getAtividadesEventosUsuarioJSON(UsuarioBeans usuario){
+        String data = "";
+        InscricaoDAOImpl idao = new InscricaoDAOImpl();
+        List<Atividade> atividades = idao.listaInscricoesAtividades((Usuario)usuario.toBusiness());
+        List<Evento> eventos = idao.listaInscricoesEventos((Usuario)usuario.toBusiness());
+        for(int i=0;i<atividades.size();i++){
+            Atividade atividade = atividades.get(i);
+            for(int j=0;j<atividade.getPeriodos().size();j++){
+                Periodo periodo = atividade.getPeriodos().get(j);
+                data += "{title: \'"+atividade.getNome()+"\', start: \'"+periodo.getInicio().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\', "
+                        + "end: \'"+periodo.getTermino().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\',"+
+                        "backgroundColor: \'#00a65a\',"+ 
+                        "borderColor: \'#00a65a\'}";
+                if(j+1<atividade.getPeriodos().size()){
+                    data += ",";
+                }
+            }
+            if(i+1<eventos.size()){
+                data += ",";
+            }
+        }
+        if(eventos.size()>0){
+            data += ",";
+        }
+        for(int i=0;i<eventos.size();i++){
+            Evento e = eventos.get(i);
+            for(int j=0;j<e.getPeriodos().size();j++){
+                Periodo periodo = e.getPeriodos().get(j);
+                data += "{title: \'"+e.getNome()+"\', start: \'"+periodo.getInicio().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\', "
+                        + "end: \'"+periodo.getTermino().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)+"\',"+
+                        "backgroundColor: \'#0073b7\',"+ 
+                        "borderColor: \'#0073b7\'}";
+                if(j+1<e.getPeriodos().size()){
+                    data += ",";
+                }
+            }
+        }
+        return data;
+    }
     public List<UsuarioBeans> getMinistrantes(EventoBeans e){
         List<AtividadeBeans> atividades = e.getAtividades();
         List<UsuarioBeans> ministrantes = Collections.synchronizedList(new ArrayList<>());
@@ -376,89 +417,384 @@ public class Facade {
         ContasSociais contasSociais = (ContasSociais) contas.toBusiness();
         return (ContasSociaisBeans) new ContasSociaisBeans().toBeans(dao.adicionarContasSociais(contasSociais));
     }
-    public void enviarEmailEvento(EventoBeans e, String assunto, String messagem, String emailDe, String nome) throws EmailException{
-        Email email = new Email(assunto, emailDe+", \n"+messagem, e.getEmail(), nome);
-        Evento evento = (Evento) e.toBusiness();
-        evento.enviaEmailContato(email);
-    }
     
     public PeriodoBeans getMenorPeriodo(EventoBeans evento){
         Evento e = (Evento) evento.toBusiness();
         return (PeriodoBeans) new PeriodoBeans().toBeans(e.getMenorPeriodo());
-    }    
+    }
+
+    public PeriodoBeans getMenorPeriodo(AtividadeBeans atividade){
+        Atividade a = (Atividade) atividade.toBusiness();
+        return (PeriodoBeans) new PeriodoBeans().toBeans(a.getMenorPeriodo());
+    }
+    
+    public PeriodoBeans getMaiorPeriodo(EventoBeans evento){
+        Evento e = (Evento) evento.toBusiness();
+        return (PeriodoBeans) new PeriodoBeans().toBeans(e.getMaiorPeriodo());
+    }
+
+    public PeriodoBeans getMaiorPeriodo(AtividadeBeans atividade){
+        Atividade a = (Atividade) atividade.toBusiness();
+        return (PeriodoBeans) new PeriodoBeans().toBeans(a.getMaiorPeriodo());
+    }
+    
     public InscricaoBeans getInscricao(long codInscricao){
         InscricaoDAOImpl idao = new InscricaoDAOImpl();
         return (InscricaoBeans) new InscricaoBeans().toBeans(idao.getInscricao(codInscricao));
+    }
+    
+    public PeriodoBeans getPeriodo(long codPeriodo){
+        PeriodoDAOImpl pdao = new PeriodoDAOImpl();
+        return (PeriodoBeans) new PeriodoBeans().toBeans(pdao.getPeriodo(codPeriodo));
     }
     
     public InscricaoBeans fazerInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
         Evento e = (Evento) evento.toBusiness();
         return (InscricaoBeans) new InscricaoBeans().toBeans(e.criaInscricao((Inscricao) inscricao.toBusiness()));
     }
-    
-    public void removerInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
-        Evento e = (Evento) evento.toBusiness();
-        e.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
-    }
-    
     public InscricaoBeans fazerInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
         Atividade a = (Atividade) atividade.toBusiness();
         return (InscricaoBeans) new InscricaoBeans().toBeans(a.criaInscricao((Inscricao) inscricao.toBusiness()));
     }
     
+    public void removerInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
+        Evento e = (Evento) evento.toBusiness();
+        e.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
+    }
+   
     public void removerInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
         Atividade a = (Atividade) atividade.toBusiness();
         a.removeInscricao((Inscricao) inscricao.toBusiness(), (Usuario) usuario.toBusiness());
     }
     
-    public List<List> buscar(String texto){
-        texto = texto.replace("<", "").replace(">", "")
-                .replace("\'", "").replace("\"", "")
-                .replace("=", "");
-        List<List> result = Collections.synchronizedList(new ArrayList<List>());
-        result.add(buscarUsuarios(texto));
-        result.add(buscarAtividade(texto));
-        result.add(buscarEventos(texto));
-        return result;
+    public int quantidadeDeInscritosInternosAtividade(AtividadeBeans atividade){
+        Atividade a = (Atividade) atividade.toBusiness();
+        return a.inscritosInternos();
     }
-    public List<UsuarioBeans> buscarUsuarios(String texto){
-        UsuarioDAOImpl udao = new UsuarioDAOImpl();
-        List<UsuarioBeans> ubs = Collections.synchronizedList(new ArrayList<UsuarioBeans>());
-        List<Usuario> usuarios = udao.buscaUsuarios(texto);
-        for(int i=0;i<usuarios.size();i++){
-            ubs.add((UsuarioBeans)new UsuarioBeans().toBeans(usuarios.get(i)));
+    
+    public void criarInstituicao(InstituicaoBeans instituicao) throws IllegalAccessException{
+        //if(this.usuario.getTipo().contains("adminGeral")){
+            InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+            idao.adicionarInstituicao((Instituicao) instituicao.toBusiness());
+        /*}else{
+            throw new IllegalAccessException("Acesso negado!");
+        }*/
+    }
+    
+    public List<InstituicaoBeans> listaDeInstituicoes(){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes =  idao.listaInstituicoes();
+        List<InstituicaoBeans> ibs = Collections.synchronizedList(new ArrayList<InstituicaoBeans>());
+        for(int i=0;i<instituicoes.size();i++){
+            ibs.add((InstituicaoBeans) new InstituicaoBeans().toBeans(instituicoes.get(i)));
         }
-        return ubs;
+        return ibs;
     }
-    public List<EventoBeans> buscarEventos(String texto){
+    
+    public InstituicaoBeans getInstituicao(EventoBeans evento){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes =  idao.listaInstituicoes();
+        InstituicaoBeans instituicao = null;
+        List<InstituicaoBeans> ibs = Collections.synchronizedList(new ArrayList<InstituicaoBeans>());
+        for(int i=0;i<instituicoes.size();i++){
+            ibs.add((InstituicaoBeans) new InstituicaoBeans().toBeans(instituicoes.get(i)));
+        }
+        for(int i=0;i<ibs.size();i++){
+            InstituicaoBeans ins = ibs.get(i);
+            boolean encontrada = false;
+            for(int j=0;j<ins.getEventos().size();j++){
+                EventoBeans e = ins.getEventos().get(j);
+                encontrada = e.getCodEvento() == evento.getCodEvento();
+                if(encontrada){
+                    break;
+                }
+            }
+            if(encontrada){
+                instituicao = ins;
+                break;
+            }
+        }
+        return instituicao;
+    }
+    
+    public InstituicaoBeans getInstituicao(AtividadeBeans atividade){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes =  idao.listaInstituicoes();
+        InstituicaoBeans instituicao = null;
+        List<InstituicaoBeans> ibs = Collections.synchronizedList(new ArrayList<InstituicaoBeans>());
+        for(int i=0;i<instituicoes.size();i++){
+            ibs.add((InstituicaoBeans) new InstituicaoBeans().toBeans(instituicoes.get(i)));
+        }
+        for(int i=0;i<ibs.size();i++){
+            InstituicaoBeans ins = ibs.get(i);
+            boolean encontrada = false;
+            for(int j=0;j<ins.getAtividades().size();j++){
+                AtividadeBeans a = ins.getAtividades().get(j);
+                encontrada = a.getCodAtividade()== atividade.getCodAtividade();
+                if(encontrada){
+                    break;
+                }
+            }
+            if(encontrada){
+                instituicao = ins;
+                break;
+            }
+        }
+        return instituicao;
+    }
+    
+    public InstituicaoBeans getInstituicao(UsuarioBeans usuario){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes =  idao.listaInstituicoes();
+        InstituicaoBeans instituicao = null;
+        List<InstituicaoBeans> ibs = Collections.synchronizedList(new ArrayList<InstituicaoBeans>());
+        for(int i=0;i<instituicoes.size();i++){
+            ibs.add((InstituicaoBeans) new InstituicaoBeans().toBeans(instituicoes.get(i)));
+        }
+        for(int i=0;i<ibs.size();i++){
+            InstituicaoBeans ins = ibs.get(i);
+            boolean encontrada = false;
+            for(int j=0;j<ins.getAssociados().size();j++){
+                UsuarioBeans u = ins.getAssociados().get(j);
+                encontrada = u.equals(usuario);
+                if(encontrada){
+                    break;
+                }
+            }
+            if(encontrada){
+                instituicao = ins;
+                break;
+            }
+        }
+        return instituicao;
+    }
+    
+   public void atualizaInstituicao(InstituicaoBeans instituicao){
+       InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+       idao.atualizarInstituicao((Instituicao) instituicao.toBusiness());
+   }
+   
+   public CursoBeans getCurso(long codCurso){
+       CursoDAOImpl cdao = new CursoDAOImpl();
+       return (CursoBeans) new CursoBeans().toBeans(cdao.getCurso(codCurso));
+   }
+   
+   public EventoBeans getEventoVinculado(AtividadeBeans atividade){
+       EventoDAOImpl edao = new EventoDAOImpl();
+       List<Evento> eventos = edao.listaEventos();
+       EventoBeans vinculado = null;
+       for(Evento evento : eventos){
+           for(Atividade a : evento.getAtividades()){
+               if(a.getCodAtividade() == atividade.getCodAtividade()){
+                   vinculado = (EventoBeans) new EventoBeans().toBeans(evento);
+                   break;
+               }
+           }
+           if(vinculado!=null){
+               break;
+           }
+       }
+       return vinculado;
+   }
+   
+   public EventoBeans getEventoVinculado(EventoBeans evento){
+       EventoDAOImpl edao = new EventoDAOImpl();
+       List<Evento> eventos = edao.listaEventos();
+       EventoBeans vinculado = null;
+       for(Evento e : eventos){
+           for(Evento event : e.getEventos()){
+               if(event.getCodEvento() == evento.getCodEvento()){
+                   vinculado = (EventoBeans) new EventoBeans().toBeans(evento);
+                   break;
+               }
+           }
+           if(vinculado!=null){
+               break;
+           }
+       }
+       return vinculado;
+   }
+   
+   public List<EventoBeans> getInscricoesEvento(UsuarioBeans participante){
+       InscricaoDAOImpl idao = new InscricaoDAOImpl();
+       List<Evento> result = idao.listaInscricoesEventos((Usuario) participante.toBusiness());
+       List<EventoBeans> eventos = Collections.synchronizedList(new ArrayList<EventoBeans>());
+       Inscricao inscricao = new Inscricao();
+       inscricao.setParticipante((Usuario) participante.toBusiness());
+       InscricaoPredicate<Inscricao> predicate = new InscricaoPredicate<>(inscricao);
+       for(int i=0;i<result.size();i++){
+           result.get(i).getInscricoes().removeIf(predicate);
+           eventos.add((EventoBeans) new EventoBeans().toBeans(result.get(i)));
+       }
+       return eventos;
+   }
+   
+   public List<AtividadeBeans> getInscricoesAtividade(UsuarioBeans participante){
+       InscricaoDAOImpl idao = new InscricaoDAOImpl();
+       List<Atividade> result = idao.listaInscricoesAtividades((Usuario) participante.toBusiness());
+       List<AtividadeBeans> atividades = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
+       Inscricao inscricao = new Inscricao();
+       inscricao.setParticipante((Usuario) participante.toBusiness());
+       InscricaoPredicate<Inscricao> predicate = new InscricaoPredicate<>(inscricao);
+       for(int i=0;i<result.size();i++){
+           result.get(i).getInscricaoAtividades().removeIf(predicate);
+           atividades.add((AtividadeBeans) new AtividadeBeans().toBeans(result.get(i)));
+       }
+       return atividades;
+   }
+   
+   public float getParticipacao(EventoBeans evento, UsuarioBeans participante){
+       Evento e = (Evento) evento.toBusiness();
+       return e.getParticipacao((Usuario) participante.toBusiness());
+   }
+   public ImagemBeans getImagem(long codImagem){
+       ImagemDAOImpl idao = new ImagemDAOImpl();
+       return (ImagemBeans) new ImagemBeans().toBeans(idao.getImagem(codImagem));
+   }
+   public void atualizaImagem(ImagemBeans imagem){
+       ImagemDAOImpl idao = new ImagemDAOImpl();
+       Imagem i = (Imagem) imagem.toBusiness();
+       idao.atualizarImagem(i);
+   }
+   
+   public void removeImagemGaleria(EventoBeans evento, ImagemBeans imagem) throws IllegalAccessException{
+       Evento e = (Evento) evento.toBusiness();
+       EventoProxy ep = new EventoProxy((Usuario)usuario.toBusiness());
+       ep.removeImagemGaleria(e, (Imagem) imagem.toBusiness());
+   }
+   
+   public void removeImagemSlideshow(EventoBeans evento, ImagemBeans imagem) throws IllegalAccessException{
+       Evento e = (Evento) evento.toBusiness();
+       EventoProxy ep = new EventoProxy((Usuario)usuario.toBusiness());
+       ep.removeImagemSlideshow(e, (Imagem) imagem.toBusiness());
+   }
+   
+   public void removeInstituicao(InstituicaoBeans instituicao) throws IllegalAccessException{
+       UsuarioProxy up = new UsuarioProxy((Usuario) usuario.toBusiness());
+       up.removeInstituicao((Instituicao) instituicao.toBusiness());
+   }
+   
+   public void removeCurso(InstituicaoBeans instituicao, CursoBeans curso) throws IllegalAccessException{
+       InstituicaoProxy ip = new InstituicaoProxy((Usuario) usuario.toBusiness());
+       ip.removeCurso((Instituicao)instituicao.toBusiness(), (Curso) curso.toBusiness());
+   }
+   
+   public void atualizaCurso(CursoBeans curso) throws IllegalAccessException{
+       CursoProxy cp = new CursoProxy((Usuario) usuario.toBusiness());
+       cp.atualizaCurso((Curso) curso.toBusiness());
+   }
+   
+   public void marcaPresencaInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
+       UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+       up.marcaPresencaInscricao((Atividade)atividade.toBusiness(), (Inscricao) inscricao.toBusiness());
+   }
+   public void validaInscricaoAtividade(AtividadeBeans atividade, InscricaoBeans inscricao) throws IllegalAccessException{
+       UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+       up.validaInscricao((Atividade)atividade.toBusiness(), (Inscricao) inscricao.toBusiness());
+   }
+   
+   public void marcaPresencaInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
+       UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+       up.marcaPresencaInscricao((Evento)evento.toBusiness(), (Inscricao) inscricao.toBusiness());
+   }
+   
+   public void validaInscricaoEvento(EventoBeans evento, InscricaoBeans inscricao) throws IllegalAccessException{
+       UsuarioProxy up = new UsuarioProxy((Usuario)usuario.toBusiness());
+       up.validaInscricao((Evento)evento.toBusiness(), (Inscricao) inscricao.toBusiness());
+   }
+   
+   public int inscritosInternos(AtividadeBeans atividade){
+       Atividade a = (Atividade) atividade.toBusiness();
+       return a.inscritosInternos();
+   }
+   
+   public int inscritosExternos(AtividadeBeans atividade){
+       Atividade a = (Atividade) atividade.toBusiness();
+       return a.inscritosExternos();
+   }
+   
+   public void removeEvento(EventoBeans evento) throws IllegalAccessException, EmailException{
+       EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
+       ep.removeEvento((Evento) evento.toBusiness());
+   }
+   
+   public void removeAtividade(EventoBeans evento, AtividadeBeans atividade) throws IllegalAccessException, EmailException{
+       EventoProxy ep = new EventoProxy((Usuario) usuario.toBusiness());
+       Evento e = null;
+       if(evento!=null){
+           e = (Evento) evento.toBusiness();
+       }
+       ep.removeAtividade(e, (Atividade) atividade.toBusiness());
+   }
+   
+   public List<String> getTemas() throws IOException, JDOMException, JDOMException{
+       return Tema.getTemas();
+   }
+   
+   public TemaBeans getTema(String nome) throws IOException, JDOMException{
+       Tema tema = Tema.getTema(nome);
+       return (TemaBeans) new TemaBeans().toBeans(tema);
+   }
+
+   public MatriculaBeans adicionaMatricula(MatriculaBeans matricula){
+       MatriculaDAOImpl mdao = new MatriculaDAOImpl();
+       return (MatriculaBeans) new MatriculaBeans().toBeans(mdao.adicionarMatricula((Matricula) matricula.toBusiness()));
+   }
+   
+   public void enviaEmailContatoEvento(EventoBeans evento, String[] mail) throws EmailException{
+       Evento e = (Evento) evento.toBusiness();
+       e.enviaEmailContato(mail[0], mail[1], mail[2], mail[3], mail[4]);
+   }
+   
+   public LocalizacaoBeans adicionaLocalizacao(LocalizacaoBeans localizacao){
+       LocalizacaoDAOImpl ldao = new LocalizacaoDAOImpl();
+       return (LocalizacaoBeans) new LocalizacaoBeans().toBeans(ldao.adicionarLocalizacao((Localizacao) localizacao.toBusiness()));
+   }
+   
+   public void enviarEmailUsuario(UsuarioBeans usuario, String[] mail) throws EmailException{
+       Email email = new Email(mail[0], "Nome: "+mail[2]+"\n E-mail: "+mail[3]+"\n Menssagem: "+mail[1], usuario.getEmail(), mail[2]);
+       email.sendEmail();
+   }
+   
+   public String getUsuarioForQRCode(UsuarioBeans usuario) throws IOException{
+       Crip crip = new Crip("s3r14l724bl3U53rTeteh");
+       return crip.enc(usuario.getCodUsuario()+"");
+   }
+   
+   public UsuarioBeans getQRCodeForUsuario(String qrcode){
+       Crip crip = new Crip("s3r14l724bl3U53rTeteh");
+       return this.getUsuario(Long.parseLong(crip.dec(qrcode)));
+   }
+   
+   public List<EventoBeans> getPrimeirosEventos(){
         EventoDAOImpl edao = new EventoDAOImpl();
         List<EventoBeans> ebs = Collections.synchronizedList(new ArrayList<EventoBeans>());
-        List<Evento> eventos = edao.buscaEvento(texto);
-        for(Evento evt : eventos){
-            ebs.add((EventoBeans)new EventoBeans().toBeans(evt));
+        List<Evento> eventos = edao.listaEventos();
+        EventoBeans evento = null;
+        Evento evt = null;
+        if(eventos.size()>0){
+            evt = eventos.get(0);
+            for(int i=0;i<6;i++){
+                for(Evento e : eventos){
+                    if(evt.getMenorPeriodo().getInicio().isAfter(e.getMenorPeriodo().getInicio())){
+                        evt = e;
+                    }
+                }
+                ebs.add((EventoBeans) new EventoBeans().toBeans(evt));
+                eventos.remove(evt);
+                if(eventos.size()>0){
+                    evt = eventos.get(0);
+                }else{
+                    break;
+                }
+            }
         }
         return ebs;
     }
-    public List<AtividadeBeans> buscarAtividade(String texto){
-        AtividadeDAOImpl adao = new AtividadeDAOImpl();
-        List<AtividadeBeans> abs = Collections.synchronizedList(new ArrayList<AtividadeBeans>());
-        List<Atividade> atividades = adao.buscaAtividade(texto);
-        for(Atividade atv : atividades){
-            abs.add((AtividadeBeans)new AtividadeBeans().toBeans(atv));
-        }
-        return abs;
-    }
-    
-    public List<EventoBeans> getPrimeirosEventos(){
-        EventoDAOImpl edao = new EventoDAOImpl();
-        List<EventoBeans> ebs = Collections.synchronizedList(new ArrayList<EventoBeans>());
-        List<Evento> eventos = edao.getPrimeirosEventos(6);
-        for(Evento evt: eventos){
-            ebs.add((EventoBeans) new EventoBeans().toBeans(evt));
-        }
-        return ebs;
-    }
-    
-    
-    
+   
+   public int getInscritosAtividadeEvento(EventoBeans evento){
+       int count =0;
+       count = evento.getAtividades().stream().map((atividade) -> atividade.getInscricoes().size()).reduce(count, Integer::sum);
+       return count;
+   }
 }

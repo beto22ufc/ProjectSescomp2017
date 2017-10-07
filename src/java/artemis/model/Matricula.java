@@ -24,18 +24,18 @@ public class Matricula {
     @JoinColumn(name = "curso", referencedColumnName = "codCurso")
     private Curso curso;
     //Semestre atual
-    private byte periodo;
+    private int periodo;
     
     public Matricula(){}
     
-    public Matricula(long codMatricula, int numero, Curso curso, byte periodo){
+    public Matricula(long codMatricula, int numero, Curso curso, int periodo){
         setCodMatricula(codMatricula);
         setNumero(numero);
         setCurso(curso);
         setPeriodo(periodo);
     }
     
-    public Matricula(int numero, Curso curso, byte periodo){
+    public Matricula(int numero, Curso curso, int periodo){
         setNumero(numero);
         setCurso(curso);
         setPeriodo(periodo);
@@ -74,11 +74,11 @@ public class Matricula {
             throw new NullPointerException("Curso não pode ser nulo!");
     }
 
-    public byte getPeriodo() {
+    public int getPeriodo() {
         return periodo;
     }
 
-    public void setPeriodo(byte periodo) {
+    public void setPeriodo(int periodo) {
         if(periodo>0)
             this.periodo = periodo;
         else

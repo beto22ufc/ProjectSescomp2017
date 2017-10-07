@@ -38,14 +38,36 @@ import org.hibernate.service.ServiceRegistry;
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
     public static SessionFactory getSessionFactory(){
+                /*
+            <hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.show_sql">true</property>
+    <property name="hibernate.current_session_context_class">thread</property>
+    <property name="hibernate.query.factory_class">org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory</property>
+    <property name="hibernate.hbm2ddl.auto">update</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://200.129.62.41:5432/artemis</property>
+    <property name="hibernate.connection.username">artemis</property>
+    <property name="hibernate.connection.password">4rt3m15</property>
+    <property name="hibernate.event.merge.entity_copy_observer">allow</property>
+  </session-factory>
+</hibernate-configuration>
+        Configuration conf = new Configuration();
+            conf.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+            conf.setProperty("hibernate.connection.url", "jdbc:postgresql://200.129.62.41:5432/artemis");
+            conf.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
+            conf.setProperty("hibernate.connection.username", "artemis");
+            conf.setProperty("hibernate.connection.password", "4rt3m15");
+        */
         if(sessionFactory == null){
             Configuration conf = new Configuration();
             conf.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-            conf.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/artemis");
+            conf.setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/artemis2");
             conf.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
             conf.setProperty("hibernate.connection.username", "postgres");
-            //conf.setProperty("hibernate.connection.password", "aqbp!@12");
-            conf.setProperty("hibernate.connection.password", "senha");
+            conf.setProperty("hibernate.connection.password", "aqbp!@12");
+            conf.setProperty("current_session_context_class", "thread");
             conf.addAnnotatedClass(CPF.class);
             conf.addAnnotatedClass(Curso.class);
             conf.addAnnotatedClass(Matricula.class);

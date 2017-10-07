@@ -1,10 +1,6 @@
 package artemis.beans;
 
-import artemis.model.Atividade;
-import artemis.model.Evento;
-import artemis.model.Inscrevivel;
 import artemis.model.Inscricao;
-import artemis.model.Local;
 import artemis.model.Usuario;
 import java.time.LocalDate;
 
@@ -13,8 +9,8 @@ public class InscricaoBeans implements Beans{
     private long codInscricao;
     private UsuarioBeans participante;
     private LocalDate data;
-    private boolean valida = false;
-    private boolean presente = false;
+    private boolean valida;
+    private boolean presente;
 
     public long getCodInscricao() {
         return codInscricao;
@@ -56,13 +52,10 @@ public class InscricaoBeans implements Beans{
                 this.setPresente(i.isPresente());
                 this.setValida(i.isValidada());
                 this.setData(i.getData());
-                UsuarioBeans participante = new UsuarioBeans();
-                System.out.println("Oi");
+                UsuarioBeans p = new UsuarioBeans();
                 if(i.getParticipante() != null){
-                    System.out.println("Oi");
-                    participante.toBeans(i.getParticipante());
-                    System.out.println("Oi");
-                    this.setParticipante(participante);
+                    p.toBeans(i.getParticipante());
+                    this.setParticipante(p);
                 }
                 return this;
             }else{
@@ -77,12 +70,9 @@ public class InscricaoBeans implements Beans{
     public Object toBusiness() {
         Inscricao i = new Inscricao();
         i.setPresente(this.isPresente());
-        i.setValidada(i.isValidada());
-        System.out.println("Olá");
+        i.setValidada(this.isValida());
         i.setParticipante((Usuario) this.getParticipante().toBusiness());
-        System.out.println("Olá");
         i.setData(this.getData());
-        System.out.println("Olá");
         if(this.getCodInscricao()>0){
             i.setCodInscricao(this.getCodInscricao());
         }

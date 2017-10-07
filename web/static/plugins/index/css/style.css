@@ -196,7 +196,7 @@ header {
     border-left: none;
     padding: 10.5px 10px;
 }
-.agileits_search input[type="text"], #agileinfo_search {
+.agileits_search input[type="text"], .agileits_search input[type="date"], #agileinfo_search {
     outline: none;
     border: 1px solid #191e21;
     background: #fff;
@@ -1008,7 +1008,7 @@ i.real-estate {
     text-align: center;
     text-transform: uppercase;
     color: #000;
-	margin-bottom:20px;
+	margin-bottom:5px;
 }
 .agileinfo_signin{
 	width: 30%;
@@ -1020,7 +1020,7 @@ i.real-estate {
 .agileinfo_signin form{
 	display:block;
 }
-.agileinfo_signin input[type="text"],.agileinfo_signin input[type="tel"],.agileinfo_signin input[type="email"],.agileinfo_signin input[type="password"] {
+.agileinfo_signin input[type="text"], .agileinfo_signin input[type="date"],.agileinfo_signin input[type="tel"],.agileinfo_signin input[type="email"],.agileinfo_signin input[type="password"] {
     outline: none;
     padding: 10px;
     border: 1px solid #086FDF;
@@ -1035,7 +1035,7 @@ i.real-estate {
 	-ms-transition:0.5s all;
 	-moz-transition:0.5s all;
 }
-.agileinfo_signin input[type="text"]:hover,.agileinfo_signin input[type="tel"]:hover,.agileinfo_signin input[type="email"]:hover, .agileinfo_signin input[type="password"]:hover {
+.agileinfo_signin input[type="text"]:hover, .agileinfo_signin input[type="date"]:hover, .agileinfo_signin input[type="tel"]:hover,.agileinfo_signin input[type="email"]:hover, .agileinfo_signin input[type="password"]:hover {
 	border: 1px solid #ff4c4c;
 	transition:0.5s all;
 	-webkit-transition:0.5s all;
@@ -1046,7 +1046,7 @@ i.real-estate {
 .agileinfo_signin input[type="submit"]{
 	outline: none;
     padding: 10px 0;
-    background: #033b79;
+    background: #000;
     border: none;
     color: #fff;
     font-size: 1em;
@@ -1059,7 +1059,7 @@ i.real-estate {
 	letter-spacing:2px;
 }
 .agileinfo_signin input[type="submit"]:hover{
-	background:#060e56;
+	background:orange;
 }
 .forgot-grid {
     margin-top: 2em;
@@ -1892,7 +1892,7 @@ span.price:after {
     transform: translateY(8px);
 }
 .agile-info-mobile-app {
-    background-color: rgba(0, 153, 229, 0.83);
+    background-color: rgba(0, 0, 0, 0.9);
 	padding-top:80px;
 }
 .w3-app-right {
@@ -1904,7 +1904,7 @@ span.price:after {
     line-height: 35px;
 }
 .w3-app-right h3 span {
-	color:#000;
+	color:orange;
 	margin:0 7px;
 }
 .w3-app-right p {
@@ -1956,7 +1956,7 @@ span.price:after {
 }
 h4.footer-head {
     font-size: 28px;
-    color: #ff4c4c;
+    color: rgba(0, 0, 0, 1);
     margin-bottom: 16px;
 }
 .wthree-footer-grid p {
@@ -2051,7 +2051,7 @@ ul.location li:nth-child(2) {
 	margin-left:2px;
 }
 .copyrights p a:hover,.diff p a:hover {
-	color:#ff4c4c;
+	color:rgba(0, 0, 0, 1);
 }
 .w3-footer-social-icons ul li {
 	display:inline-block;
@@ -6906,7 +6906,21 @@ label {
 .login-box-msg{
     text-align: center;
     color: rgb(255,0,0);
+    margin-bottom: 10px;
 }
+
+.login-box-msg-success{
+    text-align: center;
+    color: rgb(0,255,0);
+    margin-bottom: 10px;
+}
+.login-box-msg-alert{
+    text-align: center;
+    color: rgb(255,0,0);
+    margin-bottom: 10px;
+}
+
+
 
 input[type=date]:hover{
     border: 1px solid rgb(200,0,0);

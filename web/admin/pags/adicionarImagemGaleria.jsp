@@ -11,7 +11,17 @@
     String dir = config.getServletContext().getInitParameter("dir");
     UsuarioBeans u = ((UsuarioBeans) session.getAttribute("usuario"));
     Facade facade = new Facade(u);
-    EventoBeans evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+    EventoBeans evt = null;
+    try{
+        evt = facade.getEvento(facade.getCodFromParameter(request.getParameter("e")));
+        if(!evt.getAdministradores().contains(u)){
+            response.sendRedirect("/"+dir+"/404");
+        }
+    }catch(NumberFormatException e){
+        response.sendRedirect("/"+dir+"/404");
+    }catch(NullPointerException e){
+        response.sendRedirect("/"+dir+"/404");            
+    }
     session.setAttribute("eventoUpadate", evt);
 %>
 <section class="content-header">
@@ -49,7 +59,7 @@
                     </div>
                     <div class="form-group">
                       <label>Descrição</label>
-                      <textarea  class="textarea" rows="3" name="descricao" placeholder="Uma descrição para esta imagem..." style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                      <textarea  class="textarea" rows="3" name="descricao" placeholder="Uma descrição para esta imagem..." style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" value="<%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : "" %>"><%=(request.getParameter("descricao") != null) ? request.getParameter("descricao") : "" %></textarea>
                     </div>
               <!-- /.form group -->  
               </div>

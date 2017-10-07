@@ -31,89 +31,54 @@ public class ContasSociaisDAOImpl implements ContasSociaisDAO{
     @Override
     public ContasSociais adicionarContasSociais(ContasSociais contasSociais) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(contasSociais != null){
-                session.persist(contasSociais);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(contasSociais != null){
+            session.persist(contasSociais);
             t.commit();
-            session.clear();
-            return contasSociais;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
+        return contasSociais;
     }
 
     @Override
     public void atualizarContasSociais(ContasSociais contasSociais) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(contasSociais != null){
-                session.update(contasSociais);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(contasSociais != null){
+            session.update(contasSociais);
             t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public List<ContasSociais> listaContasSociais() {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            List<ContasSociais> atividades = Collections.synchronizedList(session.createCriteria(ContasSociais.class).list());
-            t.commit();
-            return atividades;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        List<ContasSociais> atividades = Collections.synchronizedList(session.createCriteria(ContasSociais.class).list());
+        return atividades;
     }
 
     @Override
     public void removerAtividade(ContasSociais contasSociais) {
         Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            if(contasSociais != null){
-                session.delete(contasSociais);
-            }else{
-                throw new NullPointerException("Atividade não pode ser nula!");
-            }
+        Transaction t = session.beginTransaction();
+        if(contasSociais != null){
+            session.delete(contasSociais);
             t.commit();
-            session.clear();
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }finally{
-            session.close();
+        }else{
+            throw new NullPointerException("Atividade não pode ser nula!");
         }
+        session.close();
     }
 
     @Override
     public ContasSociais getContasSociais(long codContasSociais) {
-        Session session = this.sessionFactory.openSession();
-        Transaction t= session.beginTransaction();
-        try{
-            ContasSociais contasSociais = (ContasSociais) session.get(ContasSociais.class, codContasSociais);
-            t.commit();
-            return contasSociais;
-        }catch(RuntimeException e){
-            t.rollback();
-            throw e;
-        }
+        Session session = this.sessionFactory.getCurrentSession();
+        ContasSociais contasSociais = (ContasSociais) session.get(ContasSociais.class, codContasSociais);
+        return contasSociais;
     }
 }

@@ -6,8 +6,12 @@
 package artemis.model;
 
 import artemis.DAO.InscricaoDAOImpl;
+import artemis.DAO.InstituicaoDAOImpl;
+import artemis.DAO.PeriodoDAOImpl;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.*;
 
@@ -49,7 +53,7 @@ public class Atividade implements Inscrevivel{
     @JoinTable(name="lista_de_espera", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="espera", referencedColumnName = "codEspera")})
     private List<Espera> listaDeEspera;
-    @ManyToMany(targetEntity = Inscricao.class)
+    @ManyToMany(targetEntity = Inscricao.class, cascade = CascadeType.ALL)
     @JoinTable(name="inscricoes_atividade", joinColumns = {@JoinColumn(name="atividade", referencedColumnName = "codAtividade")},
             inverseJoinColumns = {@JoinColumn(name="inscricao", referencedColumnName = "codInscricao")})
     private List<Inscricao> inscricaoAtividades;
@@ -62,6 +66,7 @@ public class Atividade implements Inscrevivel{
             inverseJoinColumns = {@JoinColumn(name="administrador", referencedColumnName = "codUsuario")})
     private List<Usuario> administradores;
     private String recursosSolicitados;
+    private boolean temCertificado;
     
     public Atividade(){
     
@@ -294,6 +299,16 @@ public class Atividade implements Inscrevivel{
         else
             throw new NullPointerException("Recursos solicitados não pode nulo!");
     }
+
+    public boolean isTemCertificado() {
+        return temCertificado;
+    }
+
+    public void setTemCertificado(boolean temCertificado) {
+        this.temCertificado = temCertificado;
+    }
+    
+    
     
     public boolean colisaoPeriodos(){
         for(int i=0;i<this.getPeriodos().size();i++){
@@ -332,8 +347,20 @@ public class Atividade implements Inscrevivel{
     
     }
     
+    public void removePeriodo(Periodo periodo) throws IllegalAccessException{
+        if(this.getPeriodos().size()>1){
+            this.getPeriodos().remove(periodo);
+            Evento evento = new Evento();
+            evento.atualizaAtividade(this);
+            PeriodoDAOImpl pdao = new PeriodoDAOImpl();
+            pdao.removerPeriodo(periodo);
+        }else{
+            throw new IllegalArgumentException("Atividade contém só um período, portanto este período não pode ser removido!");
+        }
+    }
+    
     public Inscricao criaInscricao(Inscricao inscricao) throws IllegalAccessException{
-        if(!this.getInscricaoAtividades().contains(inscricao)){
+        if(this.getInscricaoAtividades() != null && !this.getInscricaoAtividades().contains(inscricao)){
             this.getInscricaoAtividades().add(inscricao);
             Evento evento = new Evento();
             evento.atualizaAtividade(this);
@@ -359,4 +386,113 @@ public class Atividade implements Inscrevivel{
         }
     }
     
+    public int inscritosInternos(){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes = idao.listaInstituicoes();
+        int count = 0;
+        Instituicao ins = null;
+        for(Instituicao instituicao : instituicoes){
+            if(instituicao.getAtividades() !=null && instituicao.getAtividades().contains(this)){
+                ins = instituicao;
+                break;
+            }
+        }
+        for(int i=0;i<this.getInscricaoAtividades().size();i++){
+            Inscricao inscricao = this.getInscricaoAtividades().get(i);
+            if(ins != null && ins.getAssociados() !=null && ins.getAssociados().contains(inscricao.getParticipante())){
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public int inscritosExternos(){
+        InstituicaoDAOImpl idao = new InstituicaoDAOImpl();
+        List<Instituicao> instituicoes = idao.listaInstituicoes();
+        int count = 0;
+        Instituicao ins = null;
+        for(Instituicao instituicao : instituicoes){
+            if(instituicao.getAtividades() !=null && instituicao.getAtividades().contains(this)){
+                ins = instituicao;
+                break;
+            }
+        }
+        for(Inscricao inscricao : this.getInscricaoAtividades()){
+            if(ins !=null && ins.getAssociados() !=null && !ins.getAssociados().contains(inscricao.getParticipante())){
+                count++;
+            }
+        }
+        return count;
+    }
+    
+    public Periodo getMenorPeriodo(){
+        List<Periodo> periodos = this.getPeriodos();
+        Periodo periodo = periodos.get(0);
+        for(int i=1;i<periodos.size();i++){
+            Periodo p = periodos.get(i);
+            if(periodo.getInicio().isBefore(p.getInicio()) || periodo.getInicio().equals(p.getInicio())){
+            }else{
+                periodo = p;
+            }
+        }
+        return periodo;
+    }
+    
+    public Periodo getMaiorPeriodo(){
+        List<Periodo> periodos = this.getPeriodos();
+        Periodo periodo = periodos.get(0);
+        for(int i=1;i<periodos.size();i++){
+            Periodo p = periodos.get(i);
+            if(periodo.getInicio().isAfter(p.getInicio()) || periodo.getInicio().equals(p.getInicio())){
+            }else{
+                periodo = p;
+            }
+        }
+        return periodo;
+    }
+    
+    public List<List> getConflitosInscricoesAtualizacao(){
+        Inscricao i = new Inscricao();
+        List<List> choques = Collections.synchronizedList(new ArrayList<List>());
+        List<Inscricao> inscricoesAtividade = Collections.synchronizedList(new ArrayList<Inscricao>());
+        List<Inscricao> inscricoesEvento = Collections.synchronizedList(new ArrayList<Inscricao>());
+        List<List> conflitos = i.verificaChoque(this);
+        List<Atividade> atividades = conflitos.get(0);
+        List<Evento> eventos = conflitos.get(1);
+        for(Atividade atividade : atividades){
+            for(Inscricao inscricao : atividade.getInscricaoAtividades()){
+                for(Inscricao ins : this.getInscricaoAtividades()){
+                    if(inscricao.getParticipante().equals(ins.getParticipante())){
+                        inscricoesAtividade.add(ins);
+                        break;
+                    }
+                }
+            }
+        }
+        for(Evento evento : eventos){
+            for(Inscricao inscricao : evento.getInscricoes()){
+                for(Inscricao ins : this.getInscricaoAtividades()){
+                    if(inscricao.getParticipante().equals(ins.getParticipante())){
+                        inscricoesEvento.add(ins);
+                        break;
+                    }
+                }
+            }
+        }
+        choques.add(inscricoesAtividade);
+        choques.add(inscricoesEvento);
+        return choques;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 71 * hash + (int) (this.codAtividade ^ (this.codAtividade >>> 32));
+        return hash;
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        return (this.getCodAtividade() == ((Atividade) o).getCodAtividade());
+    }
 }

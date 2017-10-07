@@ -7,13 +7,17 @@ package artemis.service;
 
 import artemis.DAO.ContaAtivacaoDAOImpl;
 import artemis.DAO.UsuarioDAOImpl;
+import artemis.model.Constantes;
 import artemis.model.ContaAtivacao;
 import artemis.model.Crip;
 import artemis.model.Email;
+import artemis.model.FileManipulation;
 import artemis.model.Usuario;
 import hibernate.HibernateUtil;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import org.apache.commons.mail.EmailException;
@@ -42,12 +46,11 @@ public class Sign {
     //@Transactional
     public Usuario entra(){
         this.getUsuarioDAOImpl().setSessionFactory(HibernateUtil.getSessionFactory());
-        List<Usuario> usuarios = Collections.synchronizedList(this.getUsuarioDAOImpl().listaUsuarios());
-        if(usuarios.contains(this.getUsuario())){
-            Usuario u = usuarios.get(usuarios.indexOf(this.getUsuario()));
-            String senha = this.crip.dec(u.getSenha());
+        Usuario recuperado = this.getUsuarioDAOImpl().getUsuarioFromEmail(this.getUsuario().getEmail());
+        if(recuperado != null){
+            String senha = this.crip.dec(recuperado.getSenha());
             if(senha.equals(this.getUsuario().getSenha())){
-                return u;
+                return recuperado;
             }else{
                 return null;
             }
@@ -70,7 +73,7 @@ public class Sign {
     }
     
     //@Transactional
-    public void cadastra() throws EmailException{
+    public void cadastra() throws EmailException, IOException{
         this.getUsuario().setSenha(this.crip.enc(this.getUsuario().getSenha()));
         this.getUsuarioDAOImpl().setSessionFactory(HibernateUtil.getSessionFactory());
         if(usuarioIsUnico(this.getUsuario(), this.getUsuarioDAOImpl().listaUsuarios())){
@@ -82,9 +85,18 @@ public class Sign {
             conta.setValidade(LocalDateTime.now().plusHours(12));
             this.getContaAtivacaoDAO().setSessionFactory(HibernateUtil.getSessionFactory());
             this.getContaAtivacaoDAO().adicionarContaAtivacao(conta);
-            Email email = new Email("Cadastro realizado com sucesso! Ativar conta!", "Ative sua conta!\nClique no link para ativar sua conta http://localhost:8084/ArtemisTCC/validarConta?cv="+conta.getCodigo()+""
-                    + "\n(Obs.: Link válido até 12 horas após o cadastro)", this.getUsuario().getEmail(), this.getUsuario().getNome());
-            email.sendEmail();
+            File file  = FileManipulation.getFileStream(FileManipulation.getStreamFromURL(""+Constantes.URL+"/ArtemisTCC/theme/sistema/email/confirm/index.html"), "html");
+            String html = FileManipulation.fileToString(file);
+            html = html.replace("#{keywords}", "Sistema de gerenciamento de eventos Artemis Events")
+                    .replace("#{image01}", Constantes.URL+"/"+Constantes.DIR+"/theme/sistema/email/confirm/images/image01.png")
+                    .replace("#{image02}", Constantes.URL+"/"+Constantes.DIR+"/theme/sistema/email/confirm/images/image02.png")
+                    .replace("#{image03}", Constantes.URL+"/"+Constantes.DIR+"/theme/sistema/email/confirm/images/image03.png")
+                    .replace("#{image04}", Constantes.URL+"/"+Constantes.DIR+"/theme/sistema/email/confirm/images/image04.jpg")
+                    .replace("#{linkConfirmaConta}", Constantes.URL+"/"+Constantes.DIR+"/validarConta?cv="+conta.getCodigo()+"")
+                    .replace("#{data}", ""+LocalDate.now().getYear());
+
+            Email email = new Email("Cadastro realizado com sucesso! Ativar conta! ", html, this.getUsuario().getEmail(), this.getUsuario().getNome());
+            email.sendEmailHtml();
         }
     }
     
